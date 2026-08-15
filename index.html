@@ -1,1061 +1,531 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="fr" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brico-Match | Handyman & Client Hub Algeria</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Cairo', 'sans-serif'],
-                    }
-                }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brico-Match - Plateforme Bricolage & Artisans</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
             }
+          }
         }
-    </script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <style>
-        body { font-family: 'Inter', 'Cairo', sans-serif; }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        @keyframes pulse-red {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(1.02); }
-        }
-        .urgent-pulse {
-            animation: pulse-red 2s infinite ease-in-out;
-        }
-    </style>
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
 
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <!-- Header / Navbar -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" id="navLogo">
+        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-xl">BM</div>
+        <span class="text-xl font-bold tracking-tight text-white">Brico-<span class="text-emerald-500">Match</span></span>
+      </div>
 
-    <!-- Blocked / Expired Trial Modal -->
-    <div id="modal-access-blocked" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 sm:p-8 rounded-2xl max-w-md w-full text-center border-red-500/30 shadow-2xl shadow-red-950/20">
-            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-                <i data-lucide="shield-alert" class="w-8 h-8"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-white mb-2">Access Suspended</h3>
-            <p id="blocked-reason-text" class="text-slate-400 text-sm mb-6">Your trial period has expired or your account access has been restricted. Please contact the creator of Brico-Match to extend your subscription.</p>
-            <a href="tel:0662558982" class="w-full py-3 px-4 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-red-600/30">
-                <i data-lucide="phone-call" class="w-5 h-5"></i>
-                Call Creator (0662558982)
-            </a>
-        </div>
+      <div id="userInfoNav" class="hidden flex items-center gap-4">
+        <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-slate-800 text-slate-300 border border-slate-700">Guest</span>
+        <span id="userEmailNav" class="text-sm font-medium text-slate-300"></span>
+        <button id="logoutBtn" class="text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition">Déconnexion</button>
+      </div>
     </div>
+  </header>
 
-    <!-- Review Modal -->
-    <div id="modal-review" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-2xl max-w-md w-full border-slate-800 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-white">Rate & Review Handyman</h3>
-                <button onclick="closeReviewModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <input type="hidden" id="review-job-id">
-            <input type="hidden" id="review-handyman-username">
+  <!-- Global Alert Box -->
+  <div class="max-w-7xl mx-auto px-4 mt-4 w-full">
+    <div id="globalAlert" class="hidden p-4 rounded-xl text-sm font-medium border shadow-lg transition-all"></div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+
+    <!-- VIEW 1: AUTHENTICATION (Login / Register) -->
+    <section id="viewAuth" class="max-w-md mx-auto my-8">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl">
+        
+        <!-- Auth Tabs -->
+        <div class="flex border-b border-slate-800 mb-6">
+          <button id="tabRegister" class="flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400">Inscription</button>
+          <button id="tabLogin" class="flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Connexion</button>
+        </div>
+
+        <!-- Register Form -->
+        <form id="formRegister" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nom Complet</label>
+            <input type="text" id="regFullName" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Karim Benali">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
+            <input type="email" id="regEmail" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="exemple@mail.com">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Mot de passe</label>
+            <input type="password" id="regPassword" required minlength="6" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="••••••••">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Rôle</label>
+            <select id="regRole" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
+              <option value="client">Client (Je cherche un artisan)</option>
+              <option value="artisan">Artisan / Bricoleur (Je propose mes services)</option>
+            </select>
+          </div>
+
+          <div id="artisanSpecialtyGroup" class="hidden">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Spécialité</label>
+            <select id="regSpecialty" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
+              <option value="Plomberie">Plomberie</option>
+              <option value="Électricité">Électricité</option>
+              <option value="Peinture">Peinture</option>
+              <option value="Menuiserie">Menuiserie</option>
+              <option value="Climatisation">Climatisation / HVAC</option>
+              <option value="Autre">Autre Service</option>
+            </select>
+          </div>
+
+          <button type="submit" id="btnRegisterSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-950/50 mt-2">
+            Créer un compte
+          </button>
+        </form>
+
+        <!-- Login Form -->
+        <form id="formLogin" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
+            <input type="email" id="loginEmail" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="exemple@mail.com">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Mot de passe</label>
+            <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="••••••••">
+          </div>
+
+          <button type="submit" id="btnLoginSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-950/50 mt-2">
+            Se Connecter
+          </button>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- VIEW 2: CLIENT DASHBOARD -->
+    <section id="viewClient" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+        <div>
+          <h1 class="text-2xl font-bold text-white">Espace Client</h1>
+          <p class="text-sm text-slate-400">Publiez des demandes de travaux et gérez vos demandes en cours.</p>
+        </div>
+        <button id="btnOpenNewJobModal" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition flex items-center gap-2">
+          <span>+ Publier une demande</span>
+        </button>
+      </div>
+
+      <!-- Posted Jobs List -->
+      <div class="space-y-4">
+        <h2 class="text-lg font-bold text-slate-200">Mes Demandes Publiées</h2>
+        <div id="clientJobsList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Dynamically Injected -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: ARTISAN DASHBOARD -->
+    <section id="viewArtisan" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+        <h1 class="text-2xl font-bold text-white">Espace Artisan / Bricoleur</h1>
+        <p class="text-sm text-slate-400">Parcourez les offres de travaux disponibles et postulez directement.</p>
+      </div>
+
+      <!-- Available Jobs List -->
+      <div class="space-y-4">
+        <h2 class="text-lg font-bold text-slate-200">Offres de Travaux Disponibles</h2>
+        <div id="artisanJobsList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Dynamically Injected -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: NEW JOB POST -->
+  <div id="modalJob" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative">
+      <h3 class="text-xl font-bold text-white mb-4">Nouvelle Demande de Service</h3>
+      
+      <form id="formNewJob" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Titre de la demande</label>
+          <input type="text" id="jobTitle" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Réparation fuite d'eau cuisine">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Catégorie</label>
+          <select id="jobCategory" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
+            <option value="Plomberie">Plomberie</option>
+            <option value="Électricité">Électricité</option>
+            <option value="Peinture">Peinture</option>
+            <option value="Menuiserie">Menuiserie</option>
+            <option value="Climatisation">Climatisation / HVAC</option>
+            <option value="Autre">Autre Service</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Wilaya / Ville</label>
+          <input type="text" id="jobLocation" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Bordj Bou Arreridj / Alger">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Description détaillée</label>
+          <textarea id="jobDescription" rows="3" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Décrivez clairement le travail demandé..."></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" id="btnCloseJobModal" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition">Annuler</button>
+          <button type="submit" id="btnSubmitJob" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition">Publier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts (Modular v10) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      set, 
+      get, 
+      push, 
+      onValue 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // Your Exact Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTlrCFNqiMBAgemAVPmbIQ87mAoTDibSs",
+      authDomain: "brico-match.firebaseapp.com",
+      projectId: "brico-match",
+      storageBucket: "brico-match.firebasestorage.app",
+      messagingSenderId: "576015588951",
+      appId: "1:576015588951:web:695db99916c5c42df80d12",
+      measurementId: "G-QYEVVXHCSL"
+    };
+
+    // Explicit Database URL targeting Europe-West1 Regional Node
+    const RTDB_URL = "https://brico-match-default-rtdb.europe-west1.firebasedatabase.app";
+
+    // Initialize Firebase Services
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app, RTDB_URL);
+
+    // App State
+    let currentUser = null;
+    let currentUserProfile = null;
+
+    // DOM Elements
+    const globalAlert = document.getElementById("globalAlert");
+    const viewAuth = document.getElementById("viewAuth");
+    const viewClient = document.getElementById("viewClient");
+    const viewArtisan = document.getElementById("viewArtisan");
+    const userInfoNav = document.getElementById("userInfoNav");
+    const userBadge = document.getElementById("userBadge");
+    const userEmailNav = document.getElementById("userEmailNav");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Auth Form Elements
+    const tabRegister = document.getElementById("tabRegister");
+    const tabLogin = document.getElementById("tabLogin");
+    const formRegister = document.getElementById("formRegister");
+    const formLogin = document.getElementById("formLogin");
+    const regRole = document.getElementById("regRole");
+    const artisanSpecialtyGroup = document.getElementById("artisanSpecialtyGroup");
+
+    // Modal Elements
+    const modalJob = document.getElementById("modalJob");
+    const btnOpenNewJobModal = document.getElementById("btnOpenNewJobModal");
+    const btnCloseJobModal = document.getElementById("btnCloseJobModal");
+    const formNewJob = document.getElementById("formNewJob");
+
+    // UI Helper Functions
+    function showAlert(msg, type = "error") {
+      globalAlert.textContent = msg;
+      globalAlert.className = `p-4 rounded-xl text-sm font-medium border shadow-lg transition-all block ${
+        type === "error" 
+          ? "bg-red-500/10 text-red-400 border-red-500/30" 
+          : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+      }`;
+      setTimeout(() => { globalAlert.classList.add("hidden"); }, 5000);
+    }
+
+    function switchView(viewName) {
+      viewAuth.classList.add("hidden");
+      viewClient.classList.add("hidden");
+      viewArtisan.classList.add("hidden");
+
+      if (viewName === "auth") viewAuth.classList.remove("hidden");
+      if (viewName === "client") viewClient.classList.remove("hidden");
+      if (viewName === "artisan") viewArtisan.classList.remove("hidden");
+    }
+
+    // Toggle Role-Specific Specialty Input
+    regRole.addEventListener("change", (e) => {
+      if (e.target.value === "artisan") {
+        artisanSpecialtyGroup.classList.remove("hidden");
+      } else {
+        artisanSpecialtyGroup.classList.add("hidden");
+      }
+    });
+
+    // Toggle Auth Tabs
+    tabRegister.addEventListener("click", () => {
+      tabRegister.className = "flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400";
+      tabLogin.className = "flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+      formRegister.classList.remove("hidden");
+      formLogin.classList.add("hidden");
+    });
+
+    tabLogin.addEventListener("click", () => {
+      tabLogin.className = "flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400";
+      tabRegister.className = "flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+      formLogin.classList.remove("hidden");
+      formRegister.classList.add("hidden");
+    });
+
+    // Auth State Listener
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        try {
+          const snapshot = await get(ref(database, `users/${user.uid}`));
+          if (snapshot.exists()) {
+            currentUserProfile = snapshot.val();
             
-            <div class="mb-4 text-center">
-                <p class="text-sm text-slate-400 mb-2">How satisfied were you with the service?</p>
-                <div class="flex justify-center gap-2" id="star-rating-picker">
-                    <button type="button" onclick="setRating(1)" class="star-btn text-slate-600 hover:text-amber-400 transition" data-star="1"><i data-lucide="star" class="w-8 h-8 fill-current"></i></button>
-                    <button type="button" onclick="setRating(2)" class="star-btn text-slate-600 hover:text-amber-400 transition" data-star="2"><i data-lucide="star" class="w-8 h-8 fill-current"></i></button>
-                    <button type="button" onclick="setRating(3)" class="star-btn text-slate-600 hover:text-amber-400 transition" data-star="3"><i data-lucide="star" class="w-8 h-8 fill-current"></i></button>
-                    <button type="button" onclick="setRating(4)" class="star-btn text-slate-600 hover:text-amber-400 transition" data-star="4"><i data-lucide="star" class="w-8 h-8 fill-current"></i></button>
-                    <button type="button" onclick="setRating(5)" class="star-btn text-slate-600 hover:text-amber-400 transition" data-star="5"><i data-lucide="star" class="w-8 h-8 fill-current"></i></button>
-                </div>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Feedback Comment (Optional)</label>
-                <textarea id="review-comment" rows="3" placeholder="Punctual, great quality work..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500"></textarea>
-            </div>
+            // Update Header Nav
+            userInfoNav.classList.remove("hidden");
+            userEmailNav.textContent = currentUserProfile.fullName || user.email;
+            userBadge.textContent = currentUserProfile.role.toUpperCase();
 
-            <button onclick="submitReview()" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition shadow-lg shadow-brand-600/20">Submit Review</button>
-        </div>
-    </div>
+            // Redirect based on role
+            if (currentUserProfile.role === "client") {
+              switchView("client");
+              listenToClientJobs();
+            } else {
+              switchView("artisan");
+              listenToAllJobs();
+            }
+          } else {
+            showAlert("Profil utilisateur introuvable dans la base de données.", "error");
+          }
+        } catch (err) {
+          console.error("User Profile Error:", err);
+          showAlert("Erreur lors de la récupération du profil: " + err.message, "error");
+        }
+      } else {
+        currentUser = null;
+        currentUserProfile = null;
+        userInfoNav.classList.add("hidden");
+        switchView("auth");
+      }
+    });
 
-    <!-- Navigation Header -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-brand-500 text-slate-950 p-2 rounded-xl font-bold flex items-center justify-center">
-                    <i data-lucide="wrench" class="w-5 h-5"></i>
-                </div>
-                <span class="text-xl font-bold tracking-tight text-white">Brico<span class="text-brand-500">-Match</span></span>
-            </div>
+    // Handle Registration
+    formRegister.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btnRegisterSubmit");
+      btn.disabled = true;
+      btn.textContent = "Création en cours...";
 
-            <div id="nav-user-controls" class="hidden items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p id="nav-user-name" class="text-sm font-semibold text-slate-200">Loading...</p>
-                    <p id="nav-user-role" class="text-xs text-brand-500 capitalize">Role</p>
-                </div>
-                <button onclick="logout()" class="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition" title="Logout">
-                    <i data-lucide="log-out" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </header>
+      const fullName = document.getElementById("regFullName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const role = regRole.value;
+      const specialty = role === "artisan" ? document.getElementById("regSpecialty").value : "";
 
-    <!-- Main Dynamic Content Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
 
-        <!-- 1. LANDING & ROLE SELECTION VIEW -->
-        <section id="view-landing" class="max-w-3xl mx-auto w-full text-center my-auto py-8">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-semibold mb-6 border border-brand-500/20">
-                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Connecting Algeria Handymen & Clients
-            </div>
-            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4 leading-tight">
-                Get Your Repairs Done or Offer Your Expertise Fast.
-            </h1>
-            <p class="text-slate-400 text-base sm:text-lg mb-8 max-w-xl mx-auto">
-                The premier hub linking skilled technicians with home and business owners across Algeria. Choose your account type to continue.
-            </p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <button onclick="selectRole('client')" class="glass-panel p-6 rounded-2xl hover:border-brand-500/50 hover:bg-slate-800/80 transition text-left group">
-                    <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <i data-lucide="user" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-1">I am a Client</h3>
-                    <p class="text-slate-400 text-sm">Post maintenance jobs, request service, and hire top-rated handymen.</p>
-                </button>
-
-                <button onclick="selectRole('handyman')" class="glass-panel p-6 rounded-2xl hover:border-brand-500/50 hover:bg-slate-800/80 transition text-left group">
-                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <i data-lucide="hard-hat" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-1">I am a Handyman</h3>
-                    <p class="text-slate-400 text-sm">Receive direct requests, showcase your skills, and earn income.</p>
-                </button>
-            </div>
-
-            <button onclick="showAdminAuthModal()" class="text-xs text-slate-500 hover:text-slate-300 transition underline underline-offset-4">
-                Administrator Access Portal
-            </button>
-        </section>
-
-        <!-- 2. AUTHENTICATION VIEW -->
-        <section id="view-auth" class="max-w-md mx-auto w-full hidden my-auto py-8">
-            <div class="glass-panel p-6 sm:p-8 rounded-2xl shadow-xl">
-                <button onclick="showLanding()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 mb-4">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to selection
-                </button>
-
-                <div class="flex border-b border-slate-800 mb-6">
-                    <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-center text-sm font-semibold border-b-2 border-brand-500 text-brand-500">Sign In</button>
-                    <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-center text-sm font-semibold text-slate-400 border-b-2 border-transparent">Register</button>
-                </div>
-
-                <form id="form-auth" onsubmit="handleAuthSubmit(event)">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Username</label>
-                            <input type="text" id="auth-username" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition" placeholder="Enter username">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Password</label>
-                            <input type="password" id="auth-password" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500 transition" placeholder="••••••••">
-                        </div>
-                    </div>
-
-                    <button type="submit" id="btn-auth-submit" class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition shadow-lg shadow-brand-600/20">
-                        Sign In
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 3. PROFILE ONBOARDING VIEW -->
-        <section id="view-profile-onboarding" class="max-w-md mx-auto w-full hidden my-auto py-8">
-            <div class="glass-panel p-6 sm:p-8 rounded-2xl shadow-xl">
-                <h2 class="text-2xl font-bold text-white mb-2">Complete Your Profile</h2>
-                <p class="text-slate-400 text-xs mb-6">Provide your verified details so users can get in touch with you.</p>
-
-                <form onsubmit="handleProfileSubmit(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
-                        <input type="text" id="profile-fullname" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500" placeholder="e.g. Karim Benali">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Phone Number (Algeria)</label>
-                        <input type="tel" id="profile-phone" required pattern="^(05|06|07)[0-9]{8}$" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500" placeholder="0661234567">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Wilaya / Address</label>
-                        <input type="text" id="profile-wilaya" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500" placeholder="e.g. Algiers, Oran, Setif">
-                    </div>
-
-                    <div id="container-handyman-category" class="hidden">
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Primary Specialty Category</label>
-                        <select id="profile-category" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500">
-                            <option value="Plumber">Plumber</option>
-                            <option value="Electrician">Electrician</option>
-                            <option value="CCTV Security">CCTV Security</option>
-                            <option value="HVAC / AC">HVAC / AC</option>
-                            <option value="Painter">Painter</option>
-                            <option value="Appliance Repair">Appliance Repair</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition shadow-lg shadow-brand-600/20">
-                        Save Profile & Continue
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 4. CLIENT DASHBOARD VIEW -->
-        <section id="view-dashboard-client" class="hidden space-y-8">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Client Dashboard</h2>
-                    <p class="text-slate-400 text-xs">Post new jobs or browse active Algerian handymen.</p>
-                </div>
-                <button onclick="openPostJobModal()" class="py-2.5 px-4 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2 shadow-lg shadow-brand-600/20">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Post New Job
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left 2 Cols: Handymen List -->
-                <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-bold text-white">Available Handymen</h3>
-                        <select id="filter-handyman-category" onchange="renderHandymenList()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-brand-500">
-                            <option value="ALL">All Categories</option>
-                            <option value="Plumber">Plumbers</option>
-                            <option value="Electrician">Electricians</option>
-                            <option value="CCTV Security">CCTV Security</option>
-                            <option value="HVAC / AC">HVAC / AC</option>
-                            <option value="Painter">Painters</option>
-                            <option value="Appliance Repair">Appliance Repair</option>
-                        </select>
-                    </div>
-
-                    <div id="list-handymen" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Dynamic Handymen Cards -->
-                    </div>
-                </div>
-
-                <!-- Right Col: My Job Posts -->
-                <div class="space-y-4">
-                    <h3 class="text-lg font-bold text-white">My Posted Jobs</h3>
-                    <div id="list-client-jobs" class="space-y-3">
-                        <!-- Dynamic Client Jobs Cards -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. HANDYMAN DASHBOARD VIEW -->
-        <section id="view-dashboard-handyman" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-2xl font-bold text-white">Handyman Dashboard</h2>
-                        <span id="handyman-rating-badge" class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20 flex items-center gap-1">
-                            <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 0.0 (0 reviews)
-                        </span>
-                    </div>
-                    <p id="handyman-spec-display" class="text-slate-400 text-xs">Specialty Category</p>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <span class="text-xs text-slate-400 font-medium">Availability Status:</span>
-                    <button id="btn-toggle-availability" onclick="toggleHandymanAvailability()" class="px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        Available (Online)
-                    </button>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <h3 class="text-lg font-bold text-white">Matching Service Requests</h3>
-                <div id="list-handyman-jobs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Dynamic Handyman Job Cards -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 6. SUPER ADMIN DASHBOARD VIEW -->
-        <section id="view-dashboard-admin" class="hidden space-y-8">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Super Admin Control Panel</h2>
-                    <p class="text-slate-400 text-xs">Manage subscriptions, user accounts, and moderation.</p>
-                </div>
-                <span class="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold rounded-full">Root Admin</span>
-            </div>
-
-            <!-- Users Management Table -->
-            <div class="glass-panel rounded-2xl overflow-hidden border-slate-800">
-                <div class="p-4 border-b border-slate-800 font-bold text-white">Registered App Users</div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider">
-                            <tr>
-                                <th class="p-3">User</th>
-                                <th class="p-3">Role</th>
-                                <th class="p-3">Phone / Wilaya</th>
-                                <th class="p-3">Rating</th>
-                                <th class="p-3">Trial Expires</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-admin-users" class="divide-y divide-slate-800 text-slate-300">
-                            <!-- Dynamic User Rows -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Global Jobs Moderation -->
-            <div class="glass-panel rounded-2xl overflow-hidden border-slate-800">
-                <div class="p-4 border-b border-slate-800 font-bold text-white">Global Job Posts Moderation</div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider">
-                            <tr>
-                                <th class="p-3">Job Title</th>
-                                <th class="p-3">Client</th>
-                                <th class="p-3">Category</th>
-                                <th class="p-3">Urgency</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3 text-right">Moderation</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-admin-jobs" class="divide-y divide-slate-800 text-slate-300">
-                            <!-- Dynamic Job Rows -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Create Job Modal -->
-    <div id="modal-post-job" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-2xl max-w-lg w-full border-slate-800 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-white">Post a Service Job</h3>
-                <button onclick="closePostJobModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <form onsubmit="handlePostJobSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Job Title</label>
-                    <input type="text" id="job-title" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500" placeholder="e.g. Leaking water pipe in kitchen">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Required Specialty</label>
-                    <select id="job-category" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500">
-                        <option value="Plumber">Plumber</option>
-                        <option value="Electrician">Electrician</option>
-                        <option value="CCTV Security">CCTV Security</option>
-                        <option value="HVAC / AC">HVAC / AC</option>
-                        <option value="Painter">Painter</option>
-                        <option value="Appliance Repair">Appliance Repair</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Detailed Description</label>
-                    <textarea id="job-description" rows="3" required class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500" placeholder="Explain the problem or work to be done..."></textarea>
-                </div>
-
-                <div class="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                    <div>
-                        <span class="text-sm font-semibold text-white block">Mark as Urgent</span>
-                        <span class="text-xs text-slate-400">Highlights post for immediate response</span>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="job-urgent" class="sr-only peer">
-                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-                    </label>
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl transition shadow-lg shadow-brand-600/20">
-                    Publish Job Post
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Firebase App Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child, update, remove, push, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-        // Firebase Credentials
-        const firebaseConfig = {
-            apiKey: "AIzaSyBTlrCFNqiMBAgemAVPmbIQ87mAoTDibSs",
-            authDomain: "brico-match.firebaseapp.com",
-            projectId: "brico-match",
-            storageBucket: "brico-match.firebasestorage.app",
-            messagingSenderId: "576015588951",
-            appId: "1:576015588951:web:695db99916c5c42df80d12",
-            measurementId: "G-QYEVVXHCSL"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // Constants
-        const ADMIN_USERNAME = "admin";
-        const ADMIN_PASSWORD = "adminpassword123";
-        const DEFAULT_TRIAL_DAYS = 7;
-
-        // Global State
-        let currentUser = null;
-        let selectedRole = null;
-        let authMode = 'login';
-        let selectedRatingValue = 0;
-        let localUsersCache = {};
-        let localJobsCache = {};
-
-        // Expose Functions Globally
-        window.selectRole = selectRole;
-        window.showLanding = showLanding;
-        window.switchAuthTab = switchAuthTab;
-        window.handleAuthSubmit = handleAuthSubmit;
-        window.handleProfileSubmit = handleProfileSubmit;
-        window.logout = logout;
-        window.openPostJobModal = openPostJobModal;
-        window.closePostJobModal = closePostJobModal;
-        window.handlePostJobSubmit = handlePostJobSubmit;
-        window.toggleHandymanAvailability = toggleHandymanAvailability;
-        window.sendDirectRequest = sendDirectRequest;
-        window.acceptJob = acceptJob;
-        window.refuseJob = refuseJob;
-        window.showAdminAuthModal = showAdminAuthModal;
-        window.adminAddDays = adminAddDays;
-        window.adminToggleBlock = adminToggleBlock;
-        window.adminDeleteUser = adminDeleteUser;
-        window.adminDeleteJob = adminDeleteJob;
-        window.openReviewModal = openReviewModal;
-        window.closeReviewModal = closeReviewModal;
-        window.setRating = setRating;
-        window.submitReview = submitReview;
-        window.renderHandymenList = renderHandymenList;
-
-        // Init App
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            initSession();
+        // Write profile to Realtime Database
+        await set(ref(database, `users/${uid}`), {
+          uid,
+          fullName,
+          email,
+          role,
+          specialty,
+          createdAt: new Date().toISOString()
         });
 
-        // Toast Helper
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bg = type === 'error' ? 'bg-red-600' : 'bg-brand-600';
-            toast.className = `${bg} text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg transition-all duration-300 pointer-events-auto flex items-center gap-2`;
-            toast.innerHTML = `<i data-lucide="${type === 'error' ? 'alert-circle' : 'check-circle'}" class="w-4 h-4"></i> ${message}`;
-            container.appendChild(toast);
-            lucide.createIcons();
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-[-10px]');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        showAlert("Compte créé avec succès!", "success");
+      } catch (err) {
+        console.error("Registration Error:", err);
+        showAlert(err.message || "Erreur lors de l'inscription.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Créer un compte";
+      }
+    });
+
+    // Handle Login
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btnLoginSubmit");
+      btn.disabled = true;
+      btn.textContent = "Connexion en cours...";
+
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showAlert("Connexion réussie!", "success");
+      } catch (err) {
+        console.error("Login Error:", err);
+        showAlert("Échec de connexion: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Se Connecter";
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener("click", () => signOut(auth));
+
+    // Modal Operations
+    btnOpenNewJobModal.addEventListener("click", () => modalJob.classList.remove("hidden"));
+    btnCloseJobModal.addEventListener("click", () => modalJob.classList.add("hidden"));
+
+    // Handle Posting New Job (Client)
+    formNewJob.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btnSubmitJob");
+      btn.disabled = true;
+
+      const title = document.getElementById("jobTitle").value.trim();
+      const category = document.getElementById("jobCategory").value;
+      const location = document.getElementById("jobLocation").value.trim();
+      const description = document.getElementById("jobDescription").value.trim();
+
+      try {
+        const newJobRef = push(ref(database, 'jobs'));
+        await set(newJobRef, {
+          id: newJobRef.key,
+          clientId: currentUser.uid,
+          clientName: currentUserProfile.fullName || currentUser.email,
+          title,
+          category,
+          location,
+          description,
+          status: 'open',
+          createdAt: new Date().toISOString()
+        });
+
+        showAlert("Demande publiée avec succès!", "success");
+        formNewJob.reset();
+        modalJob.classList.add("hidden");
+      } catch (err) {
+        console.error("Job Post Error:", err);
+        showAlert("Erreur de publication: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // Listeners for Realtime Database Updates
+    function listenToClientJobs() {
+      const clientJobsList = document.getElementById("clientJobsList");
+      onValue(ref(database, 'jobs'), (snapshot) => {
+        clientJobsList.innerHTML = "";
+        if (!snapshot.exists()) {
+          clientJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Aucune demande publiée pour le moment.</p>`;
+          return;
         }
 
-        // Session Persistence
-        async function initSession() {
-            const savedUsername = localStorage.getItem('brico_user');
-            if (savedUsername) {
-                const snapshot = await get(child(ref(db), `users/${savedUsername}`));
-                if (snapshot.exists()) {
-                    currentUser = snapshot.val();
-                    if (checkUserAccessGuard(currentUser)) {
-                        navigateByRole();
-                        listenToData();
-                    }
-                    return;
-                }
-            }
-            showLanding();
+        const jobs = snapshot.val();
+        let myJobsCount = 0;
+
+        Object.values(jobs).forEach(job => {
+          if (job.clientId === currentUser.uid) {
+            myJobsCount++;
+            const card = document.createElement("div");
+            card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
+            card.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
+                  <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
+                </div>
+                <h3 class="font-bold text-white mb-1">${job.title}</h3>
+                <p class="text-xs text-slate-400 mb-3">${job.location}</p>
+                <p class="text-sm text-slate-300 line-clamp-3">${job.description}</p>
+              </div>
+            `;
+            clientJobsList.appendChild(card);
+          }
+        });
+
+        if (myJobsCount === 0) {
+          clientJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Vous n'avez pas encore publié de demande.</p>`;
+        }
+      });
+    }
+
+    function listenToAllJobs() {
+      const artisanJobsList = document.getElementById("artisanJobsList");
+      onValue(ref(database, 'jobs'), (snapshot) => {
+        artisanJobsList.innerHTML = "";
+        if (!snapshot.exists()) {
+          artisanJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Aucune offre de travail disponible.</p>`;
+          return;
         }
 
-        // Access Guard Check (Trial & Block)
-        function checkUserAccessGuard(user) {
-            if (!user || user.role === 'admin') return true;
-
-            const isExpired = user.trialEndDate && Date.now() > user.trialEndDate;
-            if (user.isBlocked || isExpired) {
-                document.getElementById('modal-access-blocked').classList.remove('hidden');
-                document.getElementById('blocked-reason-text').innerText = user.isBlocked 
-                    ? "Your account access has been suspended by the administrator."
-                    : "Your trial period has expired. Please contact the creator of Brico-Match to extend your access.";
-                return false;
-            }
-            document.getElementById('modal-access-blocked').classList.add('hidden');
-            return true;
-        }
-
-        // View Router
-        function hideAllViews() {
-            ['view-landing', 'view-auth', 'view-profile-onboarding', 'view-dashboard-client', 'view-dashboard-handyman', 'view-dashboard-admin'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-        }
-
-        function showLanding() {
-            hideAllViews();
-            document.getElementById('view-landing').classList.remove('hidden');
-            document.getElementById('nav-user-controls').classList.add('hidden');
-        }
-
-        function selectRole(role) {
-            selectedRole = role;
-            hideAllViews();
-            document.getElementById('view-auth').classList.remove('hidden');
-        }
-
-        function showAdminAuthModal() {
-            selectedRole = 'admin';
-            hideAllViews();
-            document.getElementById('view-auth').classList.remove('hidden');
-        }
-
-        function switchAuthTab(tab) {
-            authMode = tab;
-            document.getElementById('tab-login').className = tab === 'login' ? 'flex-1 py-2 text-center text-sm font-semibold border-b-2 border-brand-500 text-brand-500' : 'flex-1 py-2 text-center text-sm font-semibold text-slate-400 border-b-2 border-transparent';
-            document.getElementById('tab-register').className = tab === 'register' ? 'flex-1 py-2 text-center text-sm font-semibold border-b-2 border-brand-500 text-brand-500' : 'flex-1 py-2 text-center text-sm font-semibold text-slate-400 border-b-2 border-transparent';
-            document.getElementById('btn-auth-submit').innerText = tab === 'login' ? 'Sign In' : 'Register Account';
-        }
-
-        // Auth Logic
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const username = document.getElementById('auth-username').value.trim().toLowerCase();
-            const password = document.getElementById('auth-password').value;
-
-            if (selectedRole === 'admin') {
-                if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                    currentUser = { username: ADMIN_USERNAME, role: 'admin', fullName: 'Root Administrator' };
-                    localStorage.setItem('brico_user', ADMIN_USERNAME);
-                    showToast('Welcome Administrator');
-                    navigateByRole();
-                    listenToData();
-                } else {
-                    showToast('Invalid admin credentials', 'error');
-                }
-                return;
-            }
-
-            const userRef = ref(db, `users/${username}`);
-            const snapshot = await get(userRef);
-
-            if (authMode === 'login') {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    if (userData.password === password) {
-                        currentUser = userData;
-                        if (!checkUserAccessGuard(currentUser)) return;
-                        localStorage.setItem('brico_user', username);
-                        showToast('Signed in successfully');
-                        navigateByRole();
-                        listenToData();
-                    } else {
-                        showToast('Incorrect password', 'error');
-                    }
-                } else {
-                    showToast('User does not exist', 'error');
-                }
-            } else {
-                // Register
-                if (snapshot.exists()) {
-                    showToast('Username already taken', 'error');
-                    return;
-                }
-                const newUser = {
-                    username,
-                    password,
-                    role: selectedRole,
-                    isProfileComplete: false,
-                    isBlocked: false,
-                    trialEndDate: Date.now() + (DEFAULT_TRIAL_DAYS * 24 * 60 * 60 * 1000),
-                    createdAt: new Date().toISOString()
-                };
-                if (selectedRole === 'handyman') {
-                    newUser.isAvailable = true;
-                    newUser.averageRating = 0;
-                    newUser.totalReviews = 0;
-                }
-                await set(userRef, newUser);
-                currentUser = newUser;
-                localStorage.setItem('brico_user', username);
-                showToast('Account created!');
-                navigateByRole();
-                listenToData();
-            }
-        }
-
-        // Profile Logic
-        async function handleProfileSubmit(e) {
-            e.preventDefault();
-            const fullName = document.getElementById('profile-fullname').value;
-            const phone = document.getElementById('profile-phone').value;
-            const wilaya = document.getElementById('profile-wilaya').value;
-            const category = currentUser.role === 'handyman' ? document.getElementById('profile-category').value : null;
-
-            const updates = {
-                fullName,
-                phone,
-                wilaya,
-                isProfileComplete: true
-            };
-            if (category) updates.category = category;
-
-            await update(ref(db, `users/${currentUser.username}`), updates);
-            currentUser = { ...currentUser, ...updates };
-            showToast('Profile updated!');
-            navigateByRole();
-        }
-
-        function navigateByRole() {
-            hideAllViews();
-            document.getElementById('nav-user-controls').classList.remove('hidden');
-            document.getElementById('nav-user-controls').classList.add('flex');
-            document.getElementById('nav-user-name').innerText = currentUser.fullName || currentUser.username;
-            document.getElementById('nav-user-role').innerText = currentUser.role;
-
-            if (!currentUser.isProfileComplete && currentUser.role !== 'admin') {
-                document.getElementById('view-profile-onboarding').classList.remove('hidden');
-                document.getElementById('container-handyman-category').className = currentUser.role === 'handyman' ? 'block' : 'hidden';
-                return;
-            }
-
-            if (currentUser.role === 'admin') {
-                document.getElementById('view-dashboard-admin').classList.remove('hidden');
-            } else if (currentUser.role === 'client') {
-                document.getElementById('view-dashboard-client').classList.remove('hidden');
-            } else if (currentUser.role === 'handyman') {
-                document.getElementById('view-dashboard-handyman').classList.remove('hidden');
-                document.getElementById('handyman-spec-display').innerText = `Specialty: ${currentUser.category || 'General'}`;
-                updateHandymanRatingDisplay();
-            }
-            lucide.createIcons();
-        }
-
-        function updateHandymanRatingDisplay() {
-            const score = (currentUser.averageRating || 0).toFixed(1);
-            const reviews = currentUser.totalReviews || 0;
-            document.getElementById('handyman-rating-badge').innerHTML = `<i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> ${score} (${reviews} reviews)`;
-            lucide.createIcons();
-        }
-
-        function logout() {
-            localStorage.removeItem('brico_user');
-            currentUser = null;
-            showLanding();
-            showToast('Logged out');
-        }
-
-        // Live Realtime Listeners
-        function listenToData() {
-            onValue(ref(db, 'users'), (snapshot) => {
-                localUsersCache = snapshot.val() || {};
-                if (currentUser && currentUser.role !== 'admin') {
-                    if (localUsersCache[currentUser.username]) {
-                        currentUser = localUsersCache[currentUser.username];
-                        if (!checkUserAccessGuard(currentUser)) return;
-                    }
-                }
-                renderHandymenList();
-                if (currentUser && currentUser.role === 'admin') renderAdminUsersTable();
-            });
-
-            onValue(ref(db, 'jobs'), (snapshot) => {
-                localJobsCache = snapshot.val() || {};
-                renderJobsList();
-                if (currentUser && currentUser.role === 'admin') renderAdminJobsTable();
-            });
-        }
-
-        // Render Handymen List (Client View)
-        function renderHandymenList() {
-            if (!currentUser || currentUser.role !== 'client') return;
-            const filterCat = document.getElementById('filter-handyman-category').value;
-            const container = document.getElementById('list-handymen');
-            container.innerHTML = '';
-
-            const handymen = Object.values(localUsersCache).filter(u => u.role === 'handyman' && u.isProfileComplete && !u.isBlocked);
-
-            const filtered = filterCat === 'ALL' ? handymen : handymen.filter(h => h.category === filterCat);
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-500 col-span-2 py-4 text-center">No handymen available in this category.</p>`;
-                return;
-            }
-
-            filtered.forEach(h => {
-                const score = (h.averageRating || 0).toFixed(1);
-                const isAvail = h.isAvailable;
-                const card = document.createElement('div');
-                card.className = "glass-panel p-4 rounded-xl space-y-3 border-slate-800";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-bold text-white text-sm">${h.fullName}</h4>
-                            <p class="text-xs text-brand-500">${h.category}</p>
-                            <p class="text-xs text-slate-400"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> ${h.wilaya}</p>
-                        </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isAvail ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400'}">
-                            ${isAvail ? 'Available' : 'Busy'}
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
-                        <span class="text-xs text-amber-400 font-bold flex items-center gap-1">
-                            <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> ${score} (${h.totalReviews || 0})
-                        </span>
-                        <button onclick="sendDirectRequest('${h.username}')" ${!isAvail ? 'disabled' : ''} class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition">
-                            Direct Request
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        // Render Jobs List for Client & Handyman Dashboards
-        function renderJobsList() {
-            if (!currentUser) return;
-
-            const allJobs = Object.values(localJobsCache);
-
-            if (currentUser.role === 'client') {
-                const container = document.getElementById('list-client-jobs');
-                container.innerHTML = '';
-                const clientJobs = allJobs.filter(j => j.clientUsername === currentUser.username);
-
-                if (clientJobs.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">You have not posted any jobs yet.</p>`;
-                    return;
-                }
-
-                clientJobs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(j => {
-                    const card = document.createElement('div');
-                    card.className = `glass-panel p-4 rounded-xl space-y-2 border-slate-800 ${j.isUrgent ? 'border-l-4 border-l-red-500' : ''}`;
-                    
-                    let statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-800 text-slate-300">${j.status.toUpperCase()}</span>`;
-                    if (j.status === 'accepted') statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ACCEPTED</span>`;
-
-                    let actionBtn = '';
-                    if (j.status === 'accepted' && !j.hasBeenRated) {
-                        actionBtn = `<button onclick="openReviewModal('${j.jobId}', '${j.assignedHandyman}')" class="mt-2 w-full py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition">Mark Completed & Rate</button>`;
-                    }
-
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-white text-sm">${j.title}</h4>
-                            ${statusBadge}
-                        </div>
-                        <p class="text-xs text-slate-400 line-clamp-2">${j.description}</p>
-                        <div class="text-[10px] text-slate-500 flex justify-between pt-1">
-                            <span>Category: ${j.category}</span>
-                            <span>${new Date(j.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        ${actionBtn}
-                    `;
-                    container.appendChild(card);
-                });
-            } else if (currentUser.role === 'handyman') {
-                const container = document.getElementById('list-handyman-jobs');
-                container.innerHTML = '';
-
-                // Matching category & status open or assigned to this handyman
-                const handymanJobs = allJobs.filter(j => 
-                    (j.category === currentUser.category && j.status === 'open') ||
-                    (j.assignedHandyman === currentUser.username && (j.status === 'requested' || j.status === 'accepted'))
-                );
-
-                if (handymanJobs.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-slate-500 col-span-3 py-4 text-center">No service requests matching your specialty right now.</p>`;
-                    return;
-                }
-
-                handymanJobs.sort((a,b) => (b.isUrgent ? 1 : 0) - (a.isUrgent ? 1 : 0)).forEach(j => {
-                    const card = document.createElement('div');
-                    card.className = `glass-panel p-5 rounded-2xl space-y-3 border-slate-800 relative overflow-hidden ${j.isUrgent ? 'urgent-pulse border-red-500/50' : ''}`;
-                    
-                    const isAccepted = j.status === 'accepted';
-
-                    card.innerHTML = `
-                        ${j.isUrgent ? '<span class="absolute top-0 right-0 bg-red-600 text-white text-[9px] font-extrabold px-3 py-1 rounded-bl-xl uppercase tracking-wider">URGENT</span>' : ''}
-                        <div>
-                            <span class="text-[10px] font-bold text-brand-500 uppercase">${j.category}</span>
-                            <h4 class="font-bold text-white text-base">${j.title}</h4>
-                            <p class="text-xs text-slate-400 mt-1">${j.description}</p>
-                        </div>
-                        <div class="text-xs text-slate-300 space-y-1 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                            <p><i data-lucide="user" class="w-3.5 h-3.5 inline text-slate-500"></i> Client: ${j.clientName}</p>
-                            <p><i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-slate-500"></i> Location: ${j.wilaya}</p>
-                            ${isAccepted ? `<p class="text-emerald-400 font-bold"><i data-lucide="phone" class="w-3.5 h-3.5 inline"></i> Phone: <a href="tel:${j.clientPhone}" class="underline">${j.clientPhone}</a></p>` : ''}
-                        </div>
-                        <div class="flex gap-2 pt-1">
-                            ${!isAccepted ? `
-                                <button onclick="acceptJob('${j.jobId}')" class="flex-1 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition">Accept Work</button>
-                                <button onclick="refuseJob('${j.jobId}')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-semibold text-xs rounded-xl transition">Refuse</button>
-                            ` : `<span class="w-full text-center py-2 bg-emerald-500/10 text-emerald-400 font-bold text-xs rounded-xl border border-emerald-500/20">Accepted - Phone Exposed</span>`}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-            lucide.createIcons();
-        }
-
-        // Job Operations
-        function openPostJobModal() { document.getElementById('modal-post-job').classList.remove('hidden'); }
-        function closePostJobModal() { document.getElementById('modal-post-job').classList.add('hidden'); }
-
-        async function handlePostJobSubmit(e) {
-            e.preventDefault();
-            const title = document.getElementById('job-title').value;
-            const category = document.getElementById('job-category').value;
-            const description = document.getElementById('job-description').value;
-            const isUrgent = document.getElementById('job-urgent').checked;
-
-            const newJobRef = push(ref(db, 'jobs'));
-            const jobData = {
-                jobId: newJobRef.key,
-                clientUsername: currentUser.username,
-                clientName: currentUser.fullName,
-                clientPhone: currentUser.phone,
-                wilaya: currentUser.wilaya,
-                category,
-                title,
-                description,
-                isUrgent,
-                assignedHandyman: null,
-                status: 'open',
-                hasBeenRated: false,
-                createdAt: new Date().toISOString()
-            };
-
-            await set(newJobRef, jobData);
-            closePostJobModal();
-            showToast('Job post published successfully!');
-        }
-
-        async function sendDirectRequest(handymanUsername) {
-            const title = prompt("Enter a brief summary for this job request:");
-            if (!title) return;
-
-            const handyman = localUsersCache[handymanUsername];
-            const newJobRef = push(ref(db, 'jobs'));
-            const jobData = {
-                jobId: newJobRef.key,
-                clientUsername: currentUser.username,
-                clientName: currentUser.fullName,
-                clientPhone: currentUser.phone,
-                wilaya: currentUser.wilaya,
-                category: handyman.category,
-                title,
-                description: `Direct request sent specifically to ${handyman.fullName}`,
-                isUrgent: false,
-                assignedHandyman: handymanUsername,
-                status: 'requested',
-                hasBeenRated: false,
-                createdAt: new Date().toISOString()
-            };
-
-            await set(newJobRef, jobData);
-            showToast(`Request sent to ${handyman.fullName}`);
-        }
-
-        async function acceptJob(jobId) {
-            await update(ref(db, `jobs/${jobId}`), {
-                status: 'accepted',
-                assignedHandyman: currentUser.username
-            });
-            showToast('Job accepted! Client contact exposed.');
-        }
-
-        async function refuseJob(jobId) {
-            await update(ref(db, `jobs/${jobId}`), {
-                status: 'refused'
-            });
-            showToast('Job refused.');
-        }
-
-        async function toggleHandymanAvailability() {
-            const newStatus = !currentUser.isAvailable;
-            await update(ref(db, `users/${currentUser.username}`), { isAvailable: newStatus });
-            currentUser.isAvailable = newStatus;
-            const btn = document.getElementById('btn-toggle-availability');
-            btn.className = newStatus 
-                ? 'px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition bg-slate-800 text-slate-400';
-            btn.innerHTML = `<span class="w-2 h-2 rounded-full ${newStatus ? 'bg-emerald-400' : 'bg-slate-500'}"></span> ${newStatus ? 'Available (Online)' : 'Busy (Offline)'}`;
-            showToast(`Status set to ${newStatus ? 'Available' : 'Busy'}`);
-        }
-
-        // Review Modal Operations
-        function openReviewModal(jobId, handymanUsername) {
-            document.getElementById('review-job-id').value = jobId;
-            document.getElementById('review-handyman-username').value = handymanUsername;
-            setRating(5);
-            document.getElementById('modal-review').classList.remove('hidden');
-        }
-
-        function closeReviewModal() { document.getElementById('modal-review').classList.add('hidden'); }
-
-        function setRating(val) {
-            selectedRatingValue = val;
-            const buttons = document.querySelectorAll('.star-btn');
-            buttons.forEach((btn, idx) => {
-                btn.className = idx < val ? 'star-btn text-amber-400 transition' : 'star-btn text-slate-600 transition';
-            });
-        }
-
-        async function submitReview() {
-            const jobId = document.getElementById('review-job-id').value;
-            const handymanUsername = document.getElementById('review-handyman-username').value;
-            const comment = document.getElementById('review-comment').value;
-
-            const newReviewRef = push(ref(db, 'reviews'));
-            await set(newReviewRef, {
-                reviewId: newReviewRef.key,
-                jobId,
-                handymanUsername,
-                clientUsername: currentUser.username,
-                clientName: currentUser.fullName,
-                rating: selectedRatingValue,
-                comment,
-                createdAt: new Date().toISOString()
-            });
-
-            await update(ref(db, `jobs/${jobId}`), {
-                status: 'completed',
-                hasBeenRated: true
-            });
-
-            // Recalculate Handyman Rating
-            const handyman = localUsersCache[handymanUsername];
-            const currentTotal = handyman.totalReviews || 0;
-            const currentAvg = handyman.averageRating || 0;
-            const newTotal = currentTotal + 1;
-            const newAvg = ((currentAvg * currentTotal) + selectedRatingValue) / newTotal;
-
-            await update(ref(db, `users/${handymanUsername}`), {
-                averageRating: newAvg,
-                totalReviews: newTotal
-            });
-
-            closeReviewModal();
-            showToast('Thank you! Review submitted.');
-        }
-
-        // Super Admin Dashboard Controls
-        function renderAdminUsersTable() {
-            const tbody = document.getElementById('table-admin-users');
-            tbody.innerHTML = '';
-
-            Object.values(localUsersCache).forEach(u => {
-                if (u.role === 'admin') return;
-
-                const isExpired = u.trialEndDate && Date.now() > u.trialEndDate;
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/50";
-                tr.innerHTML = `
-                    <td class="p-3 font-semibold text-white">${u.fullName || u.username} <span class="text-slate-500 text-[10px]">(@${u.username})</span></td>
-                    <td class="p-3 capitalize">${u.role}</td>
-                    <td class="p-3">${u.phone || 'N/A'} (${u.wilaya || 'N/A'})</td>
-                    <td class="p-3">${u.role === 'handyman' ? `⭐ ${(u.averageRating || 0).toFixed(1)}` : 'N/A'}</td>
-                    <td class="p-3">${u.trialEndDate ? new Date(u.trialEndDate).toLocaleDateString() : 'N/A'}</td>
-                    <td class="p-3">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${u.isBlocked ? 'bg-red-500/10 text-red-400 border border-red-500/20' : isExpired ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">
-                            ${u.isBlocked ? 'BLOCKED' : isExpired ? 'EXPIRED' : 'ACTIVE'}
-                        </span>
-                    </td>
-                    <td class="p-3 text-right space-x-1">
-                        <button onclick="adminAddDays('${u.username}', 7)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] rounded font-semibold">+7 Days</button>
-                        <button onclick="adminToggleBlock('${u.username}', ${!u.isBlocked})" class="px-2 py-1 ${u.isBlocked ? 'bg-emerald-600' : 'bg-amber-600'} text-white text-[10px] rounded font-semibold">${u.isBlocked ? 'Unblock' : 'Block'}</button>
-                        <button onclick="adminDeleteUser('${u.username}')" class="px-2 py-1 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white text-[10px] rounded font-semibold">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderAdminJobsTable() {
-            const tbody = document.getElementById('table-admin-jobs');
-            tbody.innerHTML = '';
-
-            Object.values(localJobsCache).forEach(j => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-900/50";
-                tr.innerHTML = `
-                    <td class="p-3 font-semibold text-white">${j.title}</td>
-                    <td class="p-3">${j.clientName}</td>
-                    <td class="p-3">${j.category}</td>
-                    <td class="p-3"><span class="${j.isUrgent ? 'text-red-400 font-bold' : 'text-slate-400'}">${j.isUrgent ? 'URGENT' : 'Normal'}</span></td>
-                    <td class="p-3 uppercase text-[10px] font-bold">${j.status}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="adminDeleteJob('${j.jobId}')" class="px-2 py-1 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white text-[10px] rounded font-semibold">Delete Post</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        async function adminAddDays(username, days) {
-            const user = localUsersCache[username];
-            const currentExp = (user.trialEndDate && user.trialEndDate > Date.now()) ? user.trialEndDate : Date.now();
-            const newExp = currentExp + (days * 24 * 60 * 60 * 1000);
-
-            await update(ref(db, `users/${username}`), { trialEndDate: newExp, isBlocked: false });
-            showToast(`Added ${days} days to @${username}`);
-        }
-
-        async function adminToggleBlock(username, blockStatus) {
-            await update(ref(db, `users/${username}`), { isBlocked: blockStatus });
-            showToast(`User @${username} ${blockStatus ? 'blocked' : 'unblocked'}`);
-        }
-
-        async function adminDeleteUser(username) {
-            if (confirm(`Are you sure you want to delete user @${username}?`)) {
-                await remove(ref(db, `users/${username}`));
-                showToast(`User @${username} deleted`);
-            }
-        }
-
-        async function adminDeleteJob(jobId) {
-            if (confirm(`Delete job post ID: ${jobId}?`)) {
-                await remove(ref(db, `jobs/${jobId}`));
-                showToast('Job post deleted');
-            }
-        }
-    </script>
+        const jobs = snapshot.val();
+        Object.values(jobs).forEach(job => {
+          const card = document.createElement("div");
+          card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
+                <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
+              </div>
+              <h3 class="font-bold text-white mb-1">${job.title}</h3>
+              <p class="text-xs text-slate-400 mb-2">📍 ${job.location} • Client: ${job.clientName}</p>
+              <p class="text-sm text-slate-300 mb-4">${job.description}</p>
+            </div>
+            <button onclick="alert('Demande de contact envoyée au client!')" class="w-full py-2 bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-emerald-400 font-bold rounded-xl transition text-sm">
+              Postuler à cette offre
+            </button>
+          `;
+          artisanJobsList.appendChild(card);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
