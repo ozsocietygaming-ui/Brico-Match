@@ -63,9 +63,19 @@
   input[type="checkbox"].switch:checked { background: #C1694F; }
   input[type="checkbox"].switch::before { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; background:white; border-radius:50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
   input[type="checkbox"].switch:checked::before { transform: translateX(20px); }
+  html[dir="rtl"] input[type="checkbox"].switch::before { left: auto; right: 2px; }
+  html[dir="rtl"] input[type="checkbox"].switch:checked::before { transform: translateX(-20px); }
+  .lang-btn { cursor: pointer; }
 </style>
 </head>
 <body class="text-ink antialiased">
+
+<!-- LANGUAGE SWITCHER (always visible) -->
+<div id="lang-switcher" class="fixed top-3 right-3 z-[95] flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+  <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition">EN</button>
+  <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition">FR</button>
+  <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition">AR</button>
+</div>
 
 <!-- TOAST CONTAINER -->
 <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto flex flex-col gap-2 z-[100] items-end"></div>
@@ -74,10 +84,10 @@
 <div id="modal-blocked" class="hidden-force fixed inset-0 bg-ink/70 z-[90] items-center justify-center p-4">
   <div class="bg-cream rounded-2xl shadow-card max-w-sm w-full p-8 text-center fade-in">
     <div class="w-16 h-16 rounded-full bg-terracotta/10 text-terracotta text-3xl flex items-center justify-center mx-auto mb-4">⛔</div>
-    <h2 class="text-xl font-bold font-display mb-2">Access Restricted</h2>
-    <p class="text-ink/70 text-sm leading-relaxed mb-6">Your trial period has ended or your account is restricted. Please contact the administrator.</p>
-    <a href="tel:0662558982" class="block w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">📞 Call Administrator: 0662 55 89 82</a>
-    <button onclick="logout()" class="mt-3 text-sm text-ink/50 hover:text-ink/80 underline">Log out</button>
+    <h2 class="text-xl font-bold font-display mb-2" data-i18n="blocked_title">Access Restricted</h2>
+    <p class="text-ink/70 text-sm leading-relaxed mb-6" data-i18n="blocked_msg">Your trial period has ended or your account is restricted. Please contact the administrator.</p>
+    <a href="tel:0662558982" class="block w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition" data-i18n="blocked_call_admin">📞 Call Administrator: 0662 55 89 82</a>
+    <button onclick="logout()" class="mt-3 text-sm text-ink/50 hover:text-ink/80 underline" data-i18n="logout_btn">Log out</button>
   </div>
 </div>
 
@@ -86,21 +96,21 @@
   <div class="bg-cream rounded-2xl shadow-card max-w-md w-full p-6 fade-in max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-start mb-4">
       <div>
-        <h3 class="text-lg font-bold font-display">Direct Hire Request</h3>
-        <p class="text-sm text-ink/60">Sending a request to <span id="dh-handyman-name" class="font-semibold text-terracotta"></span></p>
+        <h3 class="text-lg font-bold font-display" data-i18n="dh_modal_title">Direct Hire Request</h3>
+        <p class="text-sm text-ink/60"><span data-i18n="dh_modal_sending_to">Sending a request to</span> <span id="dh-handyman-name" class="font-semibold text-terracotta"></span></p>
       </div>
       <button onclick="closeModal('modal-direct-hire')" class="text-ink/40 hover:text-ink text-xl leading-none">✕</button>
     </div>
     <form id="form-direct-hire" onsubmit="submitDirectHire(event)" class="space-y-3">
       <div>
-        <label class="text-xs font-semibold text-ink/60 mb-1 block">Job Title</label>
-        <input required id="dh-title" type="text" placeholder="e.g. Fix leaking kitchen pipe" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <label class="text-xs font-semibold text-ink/60 mb-1 block" data-i18n="dh_job_title_label">Job Title</label>
+        <input required id="dh-title" type="text" data-i18n-ph="dh_job_title_ph" placeholder="e.g. Fix leaking kitchen pipe" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
       </div>
       <div>
-        <label class="text-xs font-semibold text-ink/60 mb-1 block">Details</label>
-        <textarea required id="dh-details" rows="3" placeholder="Describe the job..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
+        <label class="text-xs font-semibold text-ink/60 mb-1 block" data-i18n="dh_details_label">Details</label>
+        <textarea required id="dh-details" rows="3" data-i18n-ph="dh_details_ph" placeholder="Describe the job..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
       </div>
-      <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Send Request</button>
+      <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition" data-i18n="dh_send_btn">Send Request</button>
     </form>
   </div>
 </div>
@@ -108,12 +118,12 @@
 <!-- ADD TRIAL DAYS MODAL -->
 <div id="modal-trial" class="hidden-force fixed inset-0 bg-ink/60 z-[80] items-center justify-center p-4">
   <div class="bg-cream rounded-2xl shadow-card max-w-xs w-full p-6 fade-in">
-    <h3 class="text-lg font-bold font-display mb-1">Add Trial Days</h3>
-    <p class="text-sm text-ink/60 mb-4">User: <span id="trial-username" class="font-semibold"></span></p>
+    <h3 class="text-lg font-bold font-display mb-1" data-i18n="trial_modal_title">Add Trial Days</h3>
+    <p class="text-sm text-ink/60 mb-4"><span data-i18n="trial_modal_user">User:</span> <span id="trial-username" class="font-semibold"></span></p>
     <input id="trial-days-input" type="number" min="1" value="7" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white mb-4 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
     <div class="flex gap-2">
-      <button onclick="closeModal('modal-trial')" class="flex-1 py-2.5 rounded-xl border border-stone text-ink/70 font-medium hover:bg-stone-light">Cancel</button>
-      <button onclick="confirmAddTrialDays()" class="flex-1 py-2.5 rounded-xl bg-terracotta text-white font-semibold hover:bg-terracotta-dark">Confirm</button>
+      <button onclick="closeModal('modal-trial')" class="flex-1 py-2.5 rounded-xl border border-stone text-ink/70 font-medium hover:bg-stone-light" data-i18n="trial_cancel">Cancel</button>
+      <button onclick="confirmAddTrialDays()" class="flex-1 py-2.5 rounded-xl bg-terracotta text-white font-semibold hover:bg-terracotta-dark" data-i18n="trial_confirm">Confirm</button>
     </div>
   </div>
 </div>
@@ -121,13 +131,13 @@
 <!-- RATE HANDYMAN MODAL -->
 <div id="modal-rate-handyman" class="hidden-force fixed inset-0 bg-ink/60 z-[85] items-center justify-center p-4">
   <div class="bg-cream rounded-2xl shadow-card max-w-sm w-full p-6 fade-in">
-    <h3 class="text-lg font-bold font-display mb-1">Rate Your Handyman</h3>
-    <p class="text-sm text-ink/60 mb-4">Optional — let others know how it went with <span id="rate-handyman-name" class="font-semibold text-terracotta"></span></p>
+    <h3 class="text-lg font-bold font-display mb-1" data-i18n="rate_modal_title">Rate Your Handyman</h3>
+    <p class="text-sm text-ink/60 mb-4"><span data-i18n="rate_modal_sub">Optional — let others know how it went with</span> <span id="rate-handyman-name" class="font-semibold text-terracotta"></span></p>
     <div id="rate-stars" class="flex gap-1 justify-center mb-4 text-4xl"></div>
-    <textarea id="rate-comment" rows="3" placeholder="Write a short review (optional)..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white mb-4 focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
+    <textarea id="rate-comment" rows="3" data-i18n-ph="rate_comment_ph" placeholder="Write a short review (optional)..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white mb-4 focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
     <div class="flex gap-2">
-      <button onclick="closeModal('modal-rate-handyman')" class="flex-1 py-2.5 rounded-xl border border-stone text-ink/70 font-medium hover:bg-stone-light">Skip</button>
-      <button onclick="submitRating()" class="flex-1 py-2.5 rounded-xl bg-terracotta text-white font-semibold hover:bg-terracotta-dark">Submit Review</button>
+      <button onclick="closeModal('modal-rate-handyman')" class="flex-1 py-2.5 rounded-xl border border-stone text-ink/70 font-medium hover:bg-stone-light" data-i18n="rate_skip">Skip</button>
+      <button onclick="submitRating()" class="flex-1 py-2.5 rounded-xl bg-terracotta text-white font-semibold hover:bg-terracotta-dark" data-i18n="rate_submit">Submit Review</button>
     </div>
   </div>
 </div>
@@ -149,22 +159,22 @@
     <div class="text-center mb-10">
       <div onclick="handleLogoSecretClick()" class="w-16 h-16 rounded-2xl bg-terracotta text-white text-3xl flex items-center justify-center mx-auto mb-4 shadow-soft cursor-default select-none">🛠️</div>
       <h1 class="text-3xl sm:text-4xl font-extrabold font-display text-ink mb-2">Brico-Match</h1>
-      <p class="text-ink/60">Connecting Clients &amp; Handymen across Algeria</p>
+      <p class="text-ink/60" data-i18n="brand_tagline">Connecting Clients &amp; Handymen across Algeria</p>
     </div>
     <div class="grid gap-4">
       <button onclick="selectRole('client')" class="group bg-white hover:border-terracotta border-2 border-transparent rounded-2xl p-5 shadow-soft flex items-center gap-4 transition text-left">
         <div class="w-12 h-12 rounded-xl bg-sand flex items-center justify-center text-2xl group-hover:bg-terracotta/10">🧑‍💼</div>
         <div class="flex-1">
-          <h3 class="font-bold font-display text-ink">I'm a Client</h3>
-          <p class="text-sm text-ink/60">Post jobs and hire trusted handymen</p>
+          <h3 class="font-bold font-display text-ink" data-i18n="role_client_title">I'm a Client</h3>
+          <p class="text-sm text-ink/60" data-i18n="role_client_sub">Post jobs and hire trusted handymen</p>
         </div>
         <span class="text-ink/30 group-hover:text-terracotta transition">→</span>
       </button>
       <button onclick="selectRole('handyman')" class="group bg-white hover:border-terracotta border-2 border-transparent rounded-2xl p-5 shadow-soft flex items-center gap-4 transition text-left">
         <div class="w-12 h-12 rounded-xl bg-sand flex items-center justify-center text-2xl group-hover:bg-terracotta/10">🔧</div>
         <div class="flex-1">
-          <h3 class="font-bold font-display text-ink">I'm a Handyman</h3>
-          <p class="text-sm text-ink/60">Find jobs and grow your business</p>
+          <h3 class="font-bold font-display text-ink" data-i18n="role_handyman_title">I'm a Handyman</h3>
+          <p class="text-sm text-ink/60" data-i18n="role_handyman_sub">Find jobs and grow your business</p>
         </div>
         <span class="text-ink/30 group-hover:text-terracotta transition">→</span>
       </button>
@@ -175,7 +185,7 @@
 <!-- ===================== AUTH SCREEN (Client / Handyman) ===================== -->
 <div id="screen-auth" class="hidden-force min-h-screen flex items-center justify-center p-4">
   <div class="max-w-md w-full fade-in">
-    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1">← Back</button>
+    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1" data-i18n="back_btn">← Back</button>
     <div class="bg-white rounded-2xl shadow-card p-6 sm:p-8">
       <div class="flex items-center gap-3 mb-6">
         <div id="auth-role-icon" class="w-11 h-11 rounded-xl bg-sand flex items-center justify-center text-xl"></div>
@@ -186,34 +196,34 @@
       </div>
 
       <div class="flex bg-sand rounded-xl p-1 mb-6">
-        <button id="tab-login-btn" onclick="switchAuthMode('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition">Login</button>
-        <button id="tab-register-btn" onclick="switchAuthMode('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition">Register</button>
+        <button id="tab-login-btn" onclick="switchAuthMode('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition" data-i18n="tab_login">Login</button>
+        <button id="tab-register-btn" onclick="switchAuthMode('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition" data-i18n="tab_register">Register</button>
       </div>
 
       <!-- LOGIN FORM -->
       <form id="form-login" onsubmit="handleLogin(event)" class="space-y-3">
-        <input required id="login-username" type="text" placeholder="Username" autocomplete="username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-        <input required id="login-password" type="password" placeholder="Password" autocomplete="current-password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Log In</button>
+        <input required id="login-username" type="text" data-i18n-ph="login_username_ph" placeholder="Username" autocomplete="username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="login-password" type="password" data-i18n-ph="login_password_ph" placeholder="Password" autocomplete="current-password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition" data-i18n="login_btn">Log In</button>
       </form>
 
       <!-- REGISTER FORM -->
       <form id="form-register" class="hidden-force space-y-3" onsubmit="handleRegister(event)">
-        <input required id="reg-fullname" type="text" placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-        <input required id="reg-username" type="text" placeholder="Choose a Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-        <input required id="reg-password" type="password" placeholder="Choose a Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-        <input required id="reg-phone" type="tel" placeholder="Phone Number (05/06/07XXXXXXXX)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-fullname" type="text" data-i18n-ph="reg_fullname_ph" placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-username" type="text" data-i18n-ph="reg_username_ph" placeholder="Choose a Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-password" type="password" data-i18n-ph="reg_password_ph" placeholder="Choose a Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-phone" type="tel" data-i18n-ph="reg_phone_ph" placeholder="Phone Number (05/06/07XXXXXXXX)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <select required id="reg-wilaya" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
           <option value="" disabled selected>Select your Wilaya</option>
         </select>
-        <input required id="reg-address" type="text" placeholder="Address (street, commune)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-address" type="text" data-i18n-ph="reg_address_ph" placeholder="Address (street, commune)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <div id="reg-category-wrap" class="hidden-force">
           <select id="reg-category" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
             <option value="" disabled selected>Select your Specialty</option>
           </select>
         </div>
-        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Create Account</button>
-        <p class="text-xs text-center text-ink/40">You'll get a 7-day free trial upon registration.</p>
+        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition" data-i18n="reg_btn">Create Account</button>
+        <p class="text-xs text-center text-ink/40" data-i18n="reg_trial_note">You'll get a 7-day free trial upon registration.</p>
       </form>
     </div>
   </div>
@@ -222,15 +232,15 @@
 <!-- ===================== ADMIN LOGIN SCREEN ===================== -->
 <div id="screen-admin-login" class="hidden-force min-h-screen flex items-center justify-center p-4">
   <div class="max-w-sm w-full fade-in">
-    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1">← Back</button>
+    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1" data-i18n="back_btn">← Back</button>
     <div class="bg-white rounded-2xl shadow-card p-8 text-center">
       <div class="w-12 h-12 rounded-xl bg-slateaccent/10 text-slateaccent flex items-center justify-center mx-auto mb-4 text-xl">🔐</div>
-      <h2 class="text-xl font-bold font-display mb-1">Admin Login</h2>
-      <p class="text-sm text-ink/50 mb-6">Master control access</p>
+      <h2 class="text-xl font-bold font-display mb-1" data-i18n="admin_login_title">Admin Login</h2>
+      <p class="text-sm text-ink/50 mb-6" data-i18n="admin_login_sub">Master control access</p>
       <form onsubmit="handleAdminLogin(event)" class="space-y-3 text-left">
-        <input required id="admin-username" type="text" placeholder="Admin Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
-        <input required id="admin-password" type="password" placeholder="Admin Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
-        <button type="submit" class="w-full bg-slateaccent hover:bg-ink text-white font-semibold py-3 rounded-xl transition">Enter Dashboard</button>
+        <input required id="admin-username" type="text" data-i18n-ph="admin_username_ph" placeholder="Admin Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+        <input required id="admin-password" type="password" data-i18n-ph="admin_password_ph" placeholder="Admin Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+        <button type="submit" class="w-full bg-slateaccent hover:bg-ink text-white font-semibold py-3 rounded-xl transition" data-i18n="admin_enter_btn">Enter Dashboard</button>
       </form>
     </div>
   </div>
@@ -244,18 +254,18 @@
         <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">🛠️</div>
         <div>
           <h1 class="font-display font-extrabold leading-none">Brico-Match</h1>
-          <p class="text-[11px] text-ink/40 leading-none mt-0.5">Client Space</p>
+          <p class="text-[11px] text-ink/40 leading-none mt-0.5" data-i18n="client_space">Client Space</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <span id="client-name-display" class="text-sm font-medium hidden sm:inline"></span>
-        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition">Log out</button>
+        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
       </div>
     </div>
     <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
-      <button data-tab="post-job" onclick="switchClientTab('post-job')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📝 Post a Job</button>
-      <button data-tab="explore" onclick="switchClientTab('explore')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">🔍 Explore Handymen</button>
-      <button data-tab="requests" onclick="switchClientTab('requests')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📋 My Requests</button>
+      <button data-tab="post-job" onclick="switchClientTab('post-job')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_post_job">📝 Post a Job</button>
+      <button data-tab="explore" onclick="switchClientTab('explore')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_explore">🔍 Explore Handymen</button>
+      <button data-tab="requests" onclick="switchClientTab('requests')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_requests">📋 My Requests</button>
     </div>
   </header>
 
@@ -265,20 +275,20 @@
     <section id="client-tab-post-job" class="client-tab-panel">
       <div class="grid md:grid-cols-5 gap-6">
         <div class="md:col-span-2 bg-white rounded-2xl shadow-soft p-6 h-fit">
-          <h2 class="font-display font-bold text-lg mb-4">Post a New Job</h2>
+          <h2 class="font-display font-bold text-lg mb-4" data-i18n="post_job_heading">Post a New Job</h2>
           <form onsubmit="handlePostJob(event)" class="space-y-3">
-            <input required id="job-title" type="text" placeholder="Job Title" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-            <textarea required id="job-details" rows="4" placeholder="Describe what you need done..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
+            <input required id="job-title" type="text" data-i18n-ph="job_title_ph" placeholder="Job Title" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            <textarea required id="job-details" rows="4" data-i18n-ph="job_details_ph" placeholder="Describe what you need done..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
             <select required id="job-category" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80"></select>
             <label class="flex items-center justify-between px-4 py-2.5 rounded-xl border border-stone bg-cream cursor-pointer">
-              <span class="text-sm font-medium">🚨 Mark as Urgent</span>
+              <span class="text-sm font-medium" data-i18n="job_urgent_label">🚨 Mark as Urgent</span>
               <input type="checkbox" id="job-urgent" class="switch">
             </label>
-            <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Post Job</button>
+            <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition" data-i18n="post_job_btn">Post Job</button>
           </form>
         </div>
         <div class="md:col-span-3">
-          <h2 class="font-display font-bold text-lg mb-4">My Posted Jobs</h2>
+          <h2 class="font-display font-bold text-lg mb-4" data-i18n="my_posted_jobs_heading">My Posted Jobs</h2>
           <div id="my-posted-jobs-list" class="space-y-3"></div>
         </div>
       </div>
@@ -287,18 +297,18 @@
     <!-- EXPLORE HANDYMEN TAB -->
     <section id="client-tab-explore" class="client-tab-panel hidden-force">
       <div class="flex flex-col sm:flex-row gap-3 mb-3">
-        <input id="handyman-search" oninput="renderHandymenList()" type="text" placeholder="Search by name..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input id="handyman-search" oninput="renderHandymenList()" type="text" data-i18n-ph="explore_search_ph" placeholder="Search by name..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <select id="handyman-category-filter" onchange="renderHandymenList()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
-          <option value="">All Categories</option>
+          <option value="" data-i18n="all_categories">All Categories</option>
         </select>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 mb-5">
         <select id="handyman-wilaya-filter" onchange="renderHandymenList()" class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
-          <option value="">All Wilayas (Address)</option>
+          <option value="" data-i18n="all_wilayas_address">All Wilayas (Address)</option>
         </select>
         <select id="handyman-sort" onchange="renderHandymenList()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
-          <option value="">Sort: Default</option>
-          <option value="rating">Sort: Highest Rated</option>
+          <option value="" data-i18n="sort_default">Sort: Default</option>
+          <option value="rating" data-i18n="sort_rating">Sort: Highest Rated</option>
         </select>
       </div>
       <div id="handymen-list" class="grid sm:grid-cols-2 gap-4"></div>
@@ -306,7 +316,7 @@
 
     <!-- MY REQUESTS TAB -->
     <section id="client-tab-requests" class="client-tab-panel hidden-force">
-      <h2 class="font-display font-bold text-lg mb-4">My Direct Hire Requests</h2>
+      <h2 class="font-display font-bold text-lg mb-4" data-i18n="my_requests_heading">My Direct Hire Requests</h2>
       <div id="my-requests-list" class="space-y-3"></div>
     </section>
 
@@ -321,46 +331,46 @@
         <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">🛠️</div>
         <div>
           <h1 class="font-display font-extrabold leading-none">Brico-Match</h1>
-          <p class="text-[11px] text-ink/40 leading-none mt-0.5">Handyman Space</p>
+          <p class="text-[11px] text-ink/40 leading-none mt-0.5" data-i18n="handyman_space">Handyman Space</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <label class="flex items-center gap-2 bg-sand px-3 py-1.5 rounded-full cursor-pointer">
-          <span class="text-xs font-semibold">Available for Work</span>
+          <span class="text-xs font-semibold" data-i18n="available_for_work_label">Available for Work</span>
           <input type="checkbox" id="availability-toggle" class="switch" onchange="toggleAvailability()">
         </label>
-        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition">Log out</button>
+        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
       </div>
     </div>
     <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
-      <button data-tab="feed" onclick="switchHandymanTab('feed')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">💼 Job Opportunities</button>
-      <button data-tab="direct" onclick="switchHandymanTab('direct')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📥 Direct Requests <span id="direct-req-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
-      <button data-tab="fulfilled" onclick="switchHandymanTab('fulfilled')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">✅ Fulfilled Jobs</button>
+      <button data-tab="feed" onclick="switchHandymanTab('feed')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_feed">💼 Job Opportunities</span></button>
+      <button data-tab="direct" onclick="switchHandymanTab('direct')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_direct">📥 Direct Requests</span> <span id="direct-req-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
+      <button data-tab="fulfilled" onclick="switchHandymanTab('fulfilled')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_fulfilled">✅ Fulfilled Jobs</span></button>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-4 mt-6">
     <section id="handyman-tab-feed" class="handyman-tab-panel">
       <div class="flex flex-col sm:flex-row gap-3 mb-3">
-        <input id="job-feed-search" oninput="renderJobFeed()" type="text" placeholder="Search jobs by title..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input id="job-feed-search" oninput="renderJobFeed()" type="text" data-i18n-ph="job_feed_search_ph" placeholder="Search jobs by title..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <span id="specialty-badge" class="px-4 py-2.5 rounded-xl bg-sand text-sm font-semibold whitespace-nowrap"></span>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 mb-5">
         <select id="job-feed-wilaya-filter" onchange="renderJobFeed()" class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
-          <option value="">All Wilayas (Client Address)</option>
+          <option value="" data-i18n="all_wilayas_client">All Wilayas (Client Address)</option>
         </select>
       </div>
       <div id="job-feed-list" class="grid sm:grid-cols-2 gap-4"></div>
     </section>
 
     <section id="handyman-tab-direct" class="handyman-tab-panel hidden-force">
-      <h2 class="font-display font-bold text-lg mb-4">Direct Requests From Clients</h2>
+      <h2 class="font-display font-bold text-lg mb-4" data-i18n="direct_requests_heading">Direct Requests From Clients</h2>
       <div id="direct-requests-list" class="space-y-3"></div>
     </section>
 
     <section id="handyman-tab-fulfilled" class="handyman-tab-panel hidden-force">
-      <h2 class="font-display font-bold text-lg mb-4">Fulfilled Jobs</h2>
-      <p class="text-sm text-ink/50 mb-4">Jobs confirmed complete by both you and the client. This builds your public track record.</p>
+      <h2 class="font-display font-bold text-lg mb-4" data-i18n="fulfilled_heading">Fulfilled Jobs</h2>
+      <p class="text-sm text-ink/50 mb-4" data-i18n="fulfilled_sub">Jobs confirmed complete by both you and the client. This builds your public track record.</p>
       <div id="fulfilled-jobs-list" class="space-y-3"></div>
     </section>
   </main>
@@ -374,37 +384,37 @@
         <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">⚙️</div>
         <div>
           <h1 class="font-display font-extrabold leading-none text-cream">Brico-Match</h1>
-          <p class="text-[11px] text-cream/50 leading-none mt-0.5">Master Control</p>
+          <p class="text-[11px] text-cream/50 leading-none mt-0.5" data-i18n="master_control">Master Control</p>
         </div>
       </div>
-      <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-1.5 rounded-lg font-medium transition">Log out</button>
+      <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
     </div>
     <div class="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
-      <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">👥 Users</button>
-      <button data-tab="jobs" onclick="switchAdminTab('jobs')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📋 Job Posts</button>
+      <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_users">👥 Users</button>
+      <button data-tab="jobs" onclick="switchAdminTab('jobs')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_jobs">📋 Job Posts</button>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 mt-6">
     <section id="admin-tab-users" class="admin-tab-panel">
       <div class="flex flex-col sm:flex-row gap-3 mb-5">
-        <input id="admin-user-search" oninput="renderUsersTable()" type="text" placeholder="Search by name, username or phone..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+        <input id="admin-user-search" oninput="renderUsersTable()" type="text" data-i18n-ph="admin_users_search_ph" placeholder="Search by name, username or phone..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
         <select id="admin-role-filter" onchange="renderUsersTable()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40 text-ink/80">
-          <option value="">All Roles</option>
-          <option value="client">Clients</option>
-          <option value="handyman">Handymen</option>
+          <option value="" data-i18n="admin_all_roles">All Roles</option>
+          <option value="client" data-i18n="admin_clients">Clients</option>
+          <option value="handyman" data-i18n="admin_handymen">Handymen</option>
         </select>
       </div>
       <div class="bg-white rounded-2xl shadow-soft overflow-x-auto">
         <table class="w-full text-sm min-w-[720px]">
           <thead>
             <tr class="text-left text-ink/50 border-b border-stone">
-              <th class="px-4 py-3 font-semibold">Name / Username</th>
-              <th class="px-4 py-3 font-semibold">Role</th>
-              <th class="px-4 py-3 font-semibold">Phone</th>
-              <th class="px-4 py-3 font-semibold">Status</th>
-              <th class="px-4 py-3 font-semibold">Trial Ends</th>
-              <th class="px-4 py-3 font-semibold text-right">Actions</th>
+              <th class="px-4 py-3 font-semibold" data-i18n="th_name">Name / Username</th>
+              <th class="px-4 py-3 font-semibold" data-i18n="th_role">Role</th>
+              <th class="px-4 py-3 font-semibold" data-i18n="th_phone">Phone</th>
+              <th class="px-4 py-3 font-semibold" data-i18n="th_status">Status</th>
+              <th class="px-4 py-3 font-semibold" data-i18n="th_trial_ends">Trial Ends</th>
+              <th class="px-4 py-3 font-semibold text-right" data-i18n="th_actions">Actions</th>
             </tr>
           </thead>
           <tbody id="admin-users-tbody"></tbody>
@@ -414,7 +424,7 @@
     </section>
 
     <section id="admin-tab-jobs" class="admin-tab-panel hidden-force">
-      <input id="admin-job-search" oninput="renderJobsAdmin()" type="text" placeholder="Search job posts..." class="w-full mb-5 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+      <input id="admin-job-search" oninput="renderJobsAdmin()" type="text" data-i18n-ph="admin_jobs_search_ph" placeholder="Search job posts..." class="w-full mb-5 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
       <div id="admin-jobs-list" class="grid sm:grid-cols-2 gap-4"></div>
     </section>
   </main>
@@ -442,6 +452,7 @@ const db = firebase.database();
 // ---------- Constants ----------
 const CATEGORIES = ["Plumber","Electrician","CCTV","HVAC","Painter","Carpenter","Mason","General Repair"];
 const CATEGORY_ICONS = { "Plumber":"🚰","Electrician":"⚡","CCTV":"📹","HVAC":"❄️","Painter":"🎨","Carpenter":"🪚","Mason":"🧱","General Repair":"🔩" };
+const CATEGORY_KEY_MAP = { "Plumber":"cat_plumber","Electrician":"cat_electrician","CCTV":"cat_cctv","HVAC":"cat_hvac","Painter":"cat_painter","Carpenter":"cat_carpenter","Mason":"cat_mason","General Repair":"cat_general" };
 const WILAYAS = [
   "01 - Adrar","02 - Chlef","03 - Laghouat","04 - Oum El Bouaghi","05 - Batna","06 - Béjaïa","07 - Biskra",
   "08 - Béchar","09 - Blida","10 - Bouira","11 - Tamanrasset","12 - Tébessa","13 - Tlemcen","14 - Tiaret",
@@ -458,6 +469,686 @@ const ADMIN_PASSWORD = "adminmaster123";
 const ADMIN_PHONE = "0662558982";
 const TRIAL_DAYS = 7;
 const SESSION_KEY = "bricomatch_session";
+const LANG_KEY = "bricomatch_lang";
+
+// ============================================================
+// TRANSLATIONS (EN / FR / AR)
+// ============================================================
+const TRANSLATIONS = {
+en: {
+  brand_tagline: "Connecting Clients & Handymen across Algeria",
+  role_client_title: "I'm a Client",
+  role_client_sub: "Post jobs and hire trusted handymen",
+  role_handyman_title: "I'm a Handyman",
+  role_handyman_sub: "Find jobs and grow your business",
+  back_btn: "← Back",
+  auth_subtitle: "Log in or create your account",
+  tab_login: "Login",
+  tab_register: "Register",
+  login_username_ph: "Username",
+  login_password_ph: "Password",
+  login_btn: "Log In",
+  reg_fullname_ph: "Full Name",
+  reg_username_ph: "Choose a Username",
+  reg_password_ph: "Choose a Password",
+  reg_phone_ph: "Phone Number (05/06/07XXXXXXXX)",
+  reg_wilaya_ph: "Select your Wilaya",
+  reg_address_ph: "Address (street, commune)",
+  reg_category_ph: "Select your Specialty",
+  reg_btn: "Create Account",
+  reg_trial_note: "You'll get a 7-day free trial upon registration.",
+  role_access: "{role} Access",
+  role_client: "Client",
+  role_handyman: "Handyman",
+  admin_login_title: "Admin Login",
+  admin_login_sub: "Master control access",
+  admin_username_ph: "Admin Username",
+  admin_password_ph: "Admin Password",
+  admin_enter_btn: "Enter Dashboard",
+  logout_btn: "Log out",
+  client_space: "Client Space",
+  handyman_space: "Handyman Space",
+  master_control: "Master Control",
+  tab_post_job: "📝 Post a Job",
+  tab_explore: "🔍 Explore Handymen",
+  tab_requests: "📋 My Requests",
+  tab_feed: "💼 Job Opportunities",
+  tab_direct: "📥 Direct Requests",
+  tab_fulfilled: "✅ Fulfilled Jobs",
+  tab_users: "👥 Users",
+  tab_jobs: "📋 Job Posts",
+  post_job_heading: "Post a New Job",
+  job_title_ph: "Job Title",
+  job_details_ph: "Describe what you need done...",
+  job_category_ph: "Select Category",
+  job_urgent_label: "🚨 Mark as Urgent",
+  post_job_btn: "Post Job",
+  my_posted_jobs_heading: "My Posted Jobs",
+  explore_search_ph: "Search by name...",
+  all_categories: "All Categories",
+  all_wilayas_address: "All Wilayas (Address)",
+  sort_default: "Sort: Default",
+  sort_rating: "Sort: Highest Rated",
+  my_requests_heading: "My Direct Hire Requests",
+  available_for_work_label: "Available for Work",
+  job_feed_search_ph: "Search jobs by title...",
+  all_wilayas_client: "All Wilayas (Client Address)",
+  direct_requests_heading: "Direct Requests From Clients",
+  fulfilled_heading: "Fulfilled Jobs",
+  fulfilled_sub: "Jobs confirmed complete by both you and the client. This builds your public track record.",
+  admin_users_search_ph: "Search by name, username or phone...",
+  admin_all_roles: "All Roles",
+  admin_clients: "Clients",
+  admin_handymen: "Handymen",
+  th_name: "Name / Username",
+  th_role: "Role",
+  th_phone: "Phone",
+  th_status: "Status",
+  th_trial_ends: "Trial Ends",
+  th_actions: "Actions",
+  admin_jobs_search_ph: "Search job posts...",
+  dh_modal_title: "Direct Hire Request",
+  dh_modal_sending_to: "Sending a request to",
+  dh_job_title_label: "Job Title",
+  dh_job_title_ph: "e.g. Fix leaking kitchen pipe",
+  dh_details_label: "Details",
+  dh_details_ph: "Describe the job...",
+  dh_send_btn: "Send Request",
+  trial_modal_title: "Add Trial Days",
+  trial_modal_user: "User:",
+  trial_cancel: "Cancel",
+  trial_confirm: "Confirm",
+  rate_modal_title: "Rate Your Handyman",
+  rate_modal_sub: "Optional — let others know how it went with",
+  rate_comment_ph: "Write a short review (optional)...",
+  rate_skip: "Skip",
+  rate_submit: "Submit Review",
+  profile_reviews: "Reviews",
+  profile_jobs_fulfilled: "Jobs Fulfilled",
+  profile_no_reviews: "No reviews yet.",
+  profile_fulfilled_jobs: "Fulfilled Jobs",
+  profile_no_fulfilled: "No fulfilled jobs yet.",
+  profile_review_count: "{count} review(s)",
+  blocked_title: "Access Restricted",
+  blocked_msg: "Your trial period has ended or your account is restricted. Please contact the administrator.",
+  blocked_call_admin: "📞 Call Administrator: 0662 55 89 82",
+  toast_invalid_phone: "Please enter a valid Algerian phone number (e.g. 0555123456)",
+  toast_select_specialty: "Please select your specialty category",
+  toast_password_short: "Password must be at least 4 characters",
+  toast_username_taken: "This username is already taken",
+  toast_account_created: "Account created! Welcome to Brico-Match 🎉",
+  toast_registration_failed: "Registration failed: ",
+  toast_no_account: "No account found with that username",
+  toast_incorrect_password: "Incorrect password",
+  toast_wrong_role: "This account is registered as a {actual}, not a {attempted}",
+  toast_welcome_back: "Welcome back, {name}!",
+  toast_login_failed: "Login failed: ",
+  toast_welcome_admin: "Welcome, Administrator",
+  toast_invalid_admin: "Invalid admin credentials",
+  toast_select_category: "Please select a category",
+  toast_job_posted: "Job posted successfully!",
+  toast_job_post_failed: "Failed to post job: ",
+  toast_job_removed: "Job removed",
+  toast_dh_sent: "Direct hire request sent!",
+  toast_dh_failed: "Failed to send request: ",
+  toast_avail_on: "You're now visible as available",
+  toast_avail_off: "You're now marked unavailable",
+  toast_invalid_days: "Enter a valid number of days",
+  toast_trial_added: "Added {days} trial day(s)",
+  toast_user_blocked: "User blocked",
+  toast_user_unblocked: "User unblocked",
+  toast_user_deleted: "User deleted",
+  toast_job_deleted: "Job post deleted",
+  toast_request_accepted: "Request accepted!",
+  toast_request_refused: "Request refused",
+  toast_rating_stars_required: "Please select at least 1 star, or tap Skip",
+  toast_rating_submitted: "Thanks for your review!",
+  toast_rating_failed: "Failed to submit review: ",
+  toast_completion_locked: "This job status was already set and cannot be changed",
+  toast_marked_fulfilled: "Marked as fulfilled",
+  toast_marked_unfulfilled: "Marked as unfulfilled",
+  status_pending: "pending",
+  status_accepted: "accepted",
+  status_refused: "refused",
+  status_active: "Active",
+  status_blocked_label: "Blocked",
+  status_trial_expired: "Trial Expired",
+  mark_completion_prompt: "Mark this job as:",
+  btn_fulfilled: "✅ Job Fulfilled",
+  btn_unfulfilled: "❌ Job Unfulfilled",
+  locked_label: "🔒 locked",
+  rate_handyman_btn: "⭐ Rate Handyman",
+  already_reviewed: "You already reviewed this job",
+  confirmed_both: "✔ Confirmed complete by both sides",
+  confirmed_both_added: "✔ Confirmed complete by both sides — added to your Fulfilled Jobs",
+  call_btn: "📞 Call",
+  profile_btn: "👤 Profile",
+  hire_btn: "Hire",
+  accept_btn: "Accept",
+  refuse_btn: "Refuse",
+  call_client_btn: "📞 Call Client",
+  urgent_badge: "URGENT",
+  available_badge: "● Available",
+  fulfilled_badge: "FULFILLED",
+  no_reviews_yet: "No reviews yet",
+  to_label: "To:",
+  from_label: "From:",
+  by_label: "By",
+  empty_no_jobs_title: "No jobs posted yet",
+  empty_no_jobs_sub: "Use the form to post your first job request.",
+  empty_no_handymen_title: "No handymen found",
+  empty_no_handymen_sub: "Try adjusting your search or filters, or check back later.",
+  empty_no_requests_title: "No requests sent yet",
+  empty_no_requests_sub: "Explore handymen and send a direct hire request.",
+  empty_no_feed_title: "No matching jobs right now",
+  empty_no_feed_sub: "New jobs in your specialty will appear here automatically.",
+  empty_no_direct_title: "No direct requests yet",
+  empty_no_direct_sub: "Clients who hire you directly will appear here.",
+  empty_no_fulfilled_title: "No fulfilled jobs yet",
+  empty_no_fulfilled_sub: "Jobs confirmed complete by you and the client will show up here.",
+  empty_no_users_title: "No users found",
+  empty_no_users_sub: "Try a different search or filter.",
+  empty_no_jobposts_title: "No job posts",
+  empty_no_jobposts_sub: "Client job posts will appear here for moderation.",
+  delete_btn: "Delete",
+  block_btn: "Block",
+  unblock_btn: "Unblock",
+  add_trial_btn: "➕ Trial",
+  confirm_delete_user: "Permanently delete {name}'s account? This cannot be undone.",
+  confirm_delete_job: "Delete this job post permanently?",
+  cat_plumber: "Plumber",
+  cat_electrician: "Electrician",
+  cat_cctv: "CCTV",
+  cat_hvac: "HVAC",
+  cat_painter: "Painter",
+  cat_carpenter: "Carpenter",
+  cat_mason: "Mason",
+  cat_general: "General Repair"
+},
+fr: {
+  brand_tagline: "Connecter clients et artisans à travers l'Algérie",
+  role_client_title: "Je suis Client",
+  role_client_sub: "Publiez des annonces et engagez des artisans de confiance",
+  role_handyman_title: "Je suis Artisan",
+  role_handyman_sub: "Trouvez des missions et développez votre activité",
+  back_btn: "← Retour",
+  auth_subtitle: "Connectez-vous ou créez votre compte",
+  tab_login: "Connexion",
+  tab_register: "Inscription",
+  login_username_ph: "Nom d'utilisateur",
+  login_password_ph: "Mot de passe",
+  login_btn: "Se connecter",
+  reg_fullname_ph: "Nom complet",
+  reg_username_ph: "Choisissez un nom d'utilisateur",
+  reg_password_ph: "Choisissez un mot de passe",
+  reg_phone_ph: "Numéro de téléphone (05/06/07XXXXXXXX)",
+  reg_wilaya_ph: "Sélectionnez votre wilaya",
+  reg_address_ph: "Adresse (rue, commune)",
+  reg_category_ph: "Sélectionnez votre spécialité",
+  reg_btn: "Créer un compte",
+  reg_trial_note: "Vous bénéficierez d'un essai gratuit de 7 jours à l'inscription.",
+  role_access: "Accès {role}",
+  role_client: "Client",
+  role_handyman: "Artisan",
+  admin_login_title: "Connexion Admin",
+  admin_login_sub: "Accès au contrôle principal",
+  admin_username_ph: "Identifiant Admin",
+  admin_password_ph: "Mot de passe Admin",
+  admin_enter_btn: "Accéder au tableau de bord",
+  logout_btn: "Déconnexion",
+  client_space: "Espace Client",
+  handyman_space: "Espace Artisan",
+  master_control: "Contrôle Principal",
+  tab_post_job: "📝 Publier une annonce",
+  tab_explore: "🔍 Explorer les artisans",
+  tab_requests: "📋 Mes demandes",
+  tab_feed: "💼 Offres de missions",
+  tab_direct: "📥 Demandes directes",
+  tab_fulfilled: "✅ Missions accomplies",
+  tab_users: "👥 Utilisateurs",
+  tab_jobs: "📋 Annonces",
+  post_job_heading: "Publier une nouvelle annonce",
+  job_title_ph: "Titre de l'annonce",
+  job_details_ph: "Décrivez ce dont vous avez besoin...",
+  job_category_ph: "Choisir une catégorie",
+  job_urgent_label: "🚨 Marquer comme urgent",
+  post_job_btn: "Publier l'annonce",
+  my_posted_jobs_heading: "Mes annonces publiées",
+  explore_search_ph: "Rechercher par nom...",
+  all_categories: "Toutes les catégories",
+  all_wilayas_address: "Toutes les wilayas (adresse)",
+  sort_default: "Trier : Par défaut",
+  sort_rating: "Trier : Mieux notés",
+  my_requests_heading: "Mes demandes d'embauche directe",
+  available_for_work_label: "Disponible pour travailler",
+  job_feed_search_ph: "Rechercher une annonce par titre...",
+  all_wilayas_client: "Toutes les wilayas (adresse client)",
+  direct_requests_heading: "Demandes directes des clients",
+  fulfilled_heading: "Missions accomplies",
+  fulfilled_sub: "Missions confirmées terminées par vous et le client. Cela construit votre historique public.",
+  admin_users_search_ph: "Rechercher par nom, identifiant ou téléphone...",
+  admin_all_roles: "Tous les rôles",
+  admin_clients: "Clients",
+  admin_handymen: "Artisans",
+  th_name: "Nom / Identifiant",
+  th_role: "Rôle",
+  th_phone: "Téléphone",
+  th_status: "Statut",
+  th_trial_ends: "Fin d'essai",
+  th_actions: "Actions",
+  admin_jobs_search_ph: "Rechercher une annonce...",
+  dh_modal_title: "Demande d'embauche directe",
+  dh_modal_sending_to: "Envoi d'une demande à",
+  dh_job_title_label: "Titre de la mission",
+  dh_job_title_ph: "ex. Réparer une fuite d'eau en cuisine",
+  dh_details_label: "Détails",
+  dh_details_ph: "Décrivez la mission...",
+  dh_send_btn: "Envoyer la demande",
+  trial_modal_title: "Ajouter des jours d'essai",
+  trial_modal_user: "Utilisateur :",
+  trial_cancel: "Annuler",
+  trial_confirm: "Confirmer",
+  rate_modal_title: "Évaluez votre artisan",
+  rate_modal_sub: "Optionnel — partagez votre expérience avec",
+  rate_comment_ph: "Rédigez un court avis (facultatif)...",
+  rate_skip: "Passer",
+  rate_submit: "Envoyer l'avis",
+  profile_reviews: "Avis",
+  profile_jobs_fulfilled: "Missions accomplies",
+  profile_no_reviews: "Aucun avis pour le moment.",
+  profile_fulfilled_jobs: "Missions accomplies",
+  profile_no_fulfilled: "Aucune mission accomplie pour le moment.",
+  profile_review_count: "{count} avis",
+  blocked_title: "Accès restreint",
+  blocked_msg: "Votre période d'essai est terminée ou votre compte est restreint. Veuillez contacter l'administrateur.",
+  blocked_call_admin: "📞 Appeler l'administrateur : 0662 55 89 82",
+  toast_invalid_phone: "Veuillez saisir un numéro de téléphone algérien valide (ex. 0555123456)",
+  toast_select_specialty: "Veuillez sélectionner votre catégorie de spécialité",
+  toast_password_short: "Le mot de passe doit contenir au moins 4 caractères",
+  toast_username_taken: "Ce nom d'utilisateur est déjà pris",
+  toast_account_created: "Compte créé ! Bienvenue sur Brico-Match 🎉",
+  toast_registration_failed: "Échec de l'inscription : ",
+  toast_no_account: "Aucun compte trouvé avec ce nom d'utilisateur",
+  toast_incorrect_password: "Mot de passe incorrect",
+  toast_wrong_role: "Ce compte est enregistré en tant que {actual}, pas {attempted}",
+  toast_welcome_back: "Bon retour, {name} !",
+  toast_login_failed: "Échec de la connexion : ",
+  toast_welcome_admin: "Bienvenue, Administrateur",
+  toast_invalid_admin: "Identifiants administrateur invalides",
+  toast_select_category: "Veuillez sélectionner une catégorie",
+  toast_job_posted: "Annonce publiée avec succès !",
+  toast_job_post_failed: "Échec de la publication : ",
+  toast_job_removed: "Annonce supprimée",
+  toast_dh_sent: "Demande d'embauche directe envoyée !",
+  toast_dh_failed: "Échec de l'envoi de la demande : ",
+  toast_avail_on: "Vous êtes maintenant visible comme disponible",
+  toast_avail_off: "Vous êtes maintenant marqué comme indisponible",
+  toast_invalid_days: "Saisissez un nombre de jours valide",
+  toast_trial_added: "{days} jour(s) d'essai ajouté(s)",
+  toast_user_blocked: "Utilisateur bloqué",
+  toast_user_unblocked: "Utilisateur débloqué",
+  toast_user_deleted: "Utilisateur supprimé",
+  toast_job_deleted: "Annonce supprimée",
+  toast_request_accepted: "Demande acceptée !",
+  toast_request_refused: "Demande refusée",
+  toast_rating_stars_required: "Veuillez sélectionner au moins 1 étoile, ou appuyez sur Passer",
+  toast_rating_submitted: "Merci pour votre avis !",
+  toast_rating_failed: "Échec de l'envoi de l'avis : ",
+  toast_completion_locked: "Ce statut de mission a déjà été défini et ne peut pas être modifié",
+  toast_marked_fulfilled: "Marqué comme accompli",
+  toast_marked_unfulfilled: "Marqué comme non accompli",
+  status_pending: "en attente",
+  status_accepted: "acceptée",
+  status_refused: "refusée",
+  status_active: "Actif",
+  status_blocked_label: "Bloqué",
+  status_trial_expired: "Essai expiré",
+  mark_completion_prompt: "Marquer cette mission comme :",
+  btn_fulfilled: "✅ Mission accomplie",
+  btn_unfulfilled: "❌ Mission non accomplie",
+  locked_label: "🔒 verrouillé",
+  rate_handyman_btn: "⭐ Évaluer l'artisan",
+  already_reviewed: "Vous avez déjà évalué cette mission",
+  confirmed_both: "✔ Confirmée terminée par les deux parties",
+  confirmed_both_added: "✔ Confirmée terminée par les deux parties — ajoutée à vos missions accomplies",
+  call_btn: "📞 Appeler",
+  profile_btn: "👤 Profil",
+  hire_btn: "Engager",
+  accept_btn: "Accepter",
+  refuse_btn: "Refuser",
+  call_client_btn: "📞 Appeler le client",
+  urgent_badge: "URGENT",
+  available_badge: "● Disponible",
+  fulfilled_badge: "ACCOMPLIE",
+  no_reviews_yet: "Aucun avis pour le moment",
+  to_label: "À :",
+  from_label: "De :",
+  by_label: "Par",
+  empty_no_jobs_title: "Aucune annonce publiée pour le moment",
+  empty_no_jobs_sub: "Utilisez le formulaire pour publier votre première demande.",
+  empty_no_handymen_title: "Aucun artisan trouvé",
+  empty_no_handymen_sub: "Essayez d'ajuster votre recherche ou vos filtres, ou revenez plus tard.",
+  empty_no_requests_title: "Aucune demande envoyée pour le moment",
+  empty_no_requests_sub: "Explorez les artisans et envoyez une demande d'embauche directe.",
+  empty_no_feed_title: "Aucune mission correspondante pour le moment",
+  empty_no_feed_sub: "Les nouvelles missions de votre spécialité apparaîtront ici automatiquement.",
+  empty_no_direct_title: "Aucune demande directe pour le moment",
+  empty_no_direct_sub: "Les clients qui vous engagent directement apparaîtront ici.",
+  empty_no_fulfilled_title: "Aucune mission accomplie pour le moment",
+  empty_no_fulfilled_sub: "Les missions confirmées terminées par vous et le client apparaîtront ici.",
+  empty_no_users_title: "Aucun utilisateur trouvé",
+  empty_no_users_sub: "Essayez une autre recherche ou un autre filtre.",
+  empty_no_jobposts_title: "Aucune annonce",
+  empty_no_jobposts_sub: "Les annonces des clients apparaîtront ici pour modération.",
+  delete_btn: "Supprimer",
+  block_btn: "Bloquer",
+  unblock_btn: "Débloquer",
+  add_trial_btn: "➕ Essai",
+  confirm_delete_user: "Supprimer définitivement le compte de {name} ? Cette action est irréversible.",
+  confirm_delete_job: "Supprimer définitivement cette annonce ?",
+  cat_plumber: "Plombier",
+  cat_electrician: "Électricien",
+  cat_cctv: "Vidéosurveillance",
+  cat_hvac: "Climatisation",
+  cat_painter: "Peintre",
+  cat_carpenter: "Menuisier",
+  cat_mason: "Maçon",
+  cat_general: "Réparation générale"
+},
+ar: {
+  brand_tagline: "نربط بين العملاء والحرفيين في جميع أنحاء الجزائر",
+  role_client_title: "أنا عميل",
+  role_client_sub: "انشر طلبات واستعن بحرفيين موثوقين",
+  role_handyman_title: "أنا حرفي",
+  role_handyman_sub: "ابحث عن فرص عمل ونمِّ نشاطك",
+  back_btn: "→ رجوع",
+  auth_subtitle: "سجّل الدخول أو أنشئ حسابك",
+  tab_login: "تسجيل الدخول",
+  tab_register: "إنشاء حساب",
+  login_username_ph: "اسم المستخدم",
+  login_password_ph: "كلمة المرور",
+  login_btn: "تسجيل الدخول",
+  reg_fullname_ph: "الاسم الكامل",
+  reg_username_ph: "اختر اسم مستخدم",
+  reg_password_ph: "اختر كلمة مرور",
+  reg_phone_ph: "رقم الهاتف (05/06/07XXXXXXXX)",
+  reg_wilaya_ph: "اختر ولايتك",
+  reg_address_ph: "العنوان (الشارع، البلدية)",
+  reg_category_ph: "اختر تخصصك",
+  reg_btn: "إنشاء الحساب",
+  reg_trial_note: "ستحصل على فترة تجريبية مجانية لمدة 7 أيام عند التسجيل.",
+  role_access: "دخول {role}",
+  role_client: "العميل",
+  role_handyman: "الحرفي",
+  admin_login_title: "دخول المسؤول",
+  admin_login_sub: "الوصول إلى لوحة التحكم الرئيسية",
+  admin_username_ph: "اسم مستخدم المسؤول",
+  admin_password_ph: "كلمة مرور المسؤول",
+  admin_enter_btn: "الدخول إلى لوحة التحكم",
+  logout_btn: "تسجيل الخروج",
+  client_space: "مساحة العميل",
+  handyman_space: "مساحة الحرفي",
+  master_control: "التحكم الرئيسي",
+  tab_post_job: "📝 نشر طلب",
+  tab_explore: "🔍 استكشاف الحرفيين",
+  tab_requests: "📋 طلباتي",
+  tab_feed: "💼 فرص العمل",
+  tab_direct: "📥 الطلبات المباشرة",
+  tab_fulfilled: "✅ الأعمال المنجزة",
+  tab_users: "👥 المستخدمون",
+  tab_jobs: "📋 المنشورات",
+  post_job_heading: "نشر طلب جديد",
+  job_title_ph: "عنوان الطلب",
+  job_details_ph: "صف ما تحتاج إنجازه...",
+  job_category_ph: "اختر الفئة",
+  job_urgent_label: "🚨 وضع علامة عاجل",
+  post_job_btn: "نشر الطلب",
+  my_posted_jobs_heading: "طلباتي المنشورة",
+  explore_search_ph: "البحث بالاسم...",
+  all_categories: "كل الفئات",
+  all_wilayas_address: "كل الولايات (العنوان)",
+  sort_default: "الترتيب: افتراضي",
+  sort_rating: "الترتيب: الأعلى تقييمًا",
+  my_requests_heading: "طلبات التوظيف المباشر",
+  available_for_work_label: "متاح للعمل",
+  job_feed_search_ph: "البحث في الطلبات بالعنوان...",
+  all_wilayas_client: "كل الولايات (عنوان العميل)",
+  direct_requests_heading: "الطلبات المباشرة من العملاء",
+  fulfilled_heading: "الأعمال المنجزة",
+  fulfilled_sub: "الأعمال المؤكدة من طرفك ومن طرف العميل. هذا يبني سجلك العام.",
+  admin_users_search_ph: "البحث بالاسم أو اسم المستخدم أو الهاتف...",
+  admin_all_roles: "كل الأدوار",
+  admin_clients: "العملاء",
+  admin_handymen: "الحرفيون",
+  th_name: "الاسم / اسم المستخدم",
+  th_role: "الدور",
+  th_phone: "الهاتف",
+  th_status: "الحالة",
+  th_trial_ends: "نهاية التجربة",
+  th_actions: "الإجراءات",
+  admin_jobs_search_ph: "البحث في الطلبات...",
+  dh_modal_title: "طلب توظيف مباشر",
+  dh_modal_sending_to: "إرسال طلب إلى",
+  dh_job_title_label: "عنوان المهمة",
+  dh_job_title_ph: "مثال: إصلاح تسرب في أنبوب المطبخ",
+  dh_details_label: "التفاصيل",
+  dh_details_ph: "صف المهمة...",
+  dh_send_btn: "إرسال الطلب",
+  trial_modal_title: "إضافة أيام تجريبية",
+  trial_modal_user: "المستخدم:",
+  trial_cancel: "إلغاء",
+  trial_confirm: "تأكيد",
+  rate_modal_title: "قيّم حرفيك",
+  rate_modal_sub: "اختياري — شارك تجربتك مع",
+  rate_comment_ph: "اكتب مراجعة قصيرة (اختياري)...",
+  rate_skip: "تخطي",
+  rate_submit: "إرسال المراجعة",
+  profile_reviews: "المراجعات",
+  profile_jobs_fulfilled: "الأعمال المنجزة",
+  profile_no_reviews: "لا توجد مراجعات بعد.",
+  profile_fulfilled_jobs: "الأعمال المنجزة",
+  profile_no_fulfilled: "لا توجد أعمال منجزة بعد.",
+  profile_review_count: "{count} مراجعة",
+  blocked_title: "الوصول مقيّد",
+  blocked_msg: "انتهت فترتك التجريبية أو تم تقييد حسابك. يرجى التواصل مع المسؤول.",
+  blocked_call_admin: "📞 اتصل بالمسؤول: 0662 55 89 82",
+  toast_invalid_phone: "يرجى إدخال رقم هاتف جزائري صالح (مثال: 0555123456)",
+  toast_select_specialty: "يرجى اختيار فئة تخصصك",
+  toast_password_short: "يجب أن تتكون كلمة المرور من 4 أحرف على الأقل",
+  toast_username_taken: "اسم المستخدم هذا مستخدم بالفعل",
+  toast_account_created: "تم إنشاء الحساب! مرحبًا بك في Brico-Match 🎉",
+  toast_registration_failed: "فشل التسجيل: ",
+  toast_no_account: "لم يتم العثور على حساب بهذا الاسم",
+  toast_incorrect_password: "كلمة مرور غير صحيحة",
+  toast_wrong_role: "هذا الحساب مسجل كـ {actual}، وليس {attempted}",
+  toast_welcome_back: "مرحبًا بعودتك، {name}!",
+  toast_login_failed: "فشل تسجيل الدخول: ",
+  toast_welcome_admin: "مرحبًا أيها المسؤول",
+  toast_invalid_admin: "بيانات اعتماد المسؤول غير صحيحة",
+  toast_select_category: "يرجى اختيار فئة",
+  toast_job_posted: "تم نشر الطلب بنجاح!",
+  toast_job_post_failed: "فشل نشر الطلب: ",
+  toast_job_removed: "تم حذف الطلب",
+  toast_dh_sent: "تم إرسال طلب التوظيف المباشر!",
+  toast_dh_failed: "فشل إرسال الطلب: ",
+  toast_avail_on: "أنت الآن ظاهر كمتاح",
+  toast_avail_off: "تم وضع علامة غير متاح",
+  toast_invalid_days: "أدخل عددًا صالحًا من الأيام",
+  toast_trial_added: "تمت إضافة {days} يوم/أيام تجريبية",
+  toast_user_blocked: "تم حظر المستخدم",
+  toast_user_unblocked: "تم إلغاء حظر المستخدم",
+  toast_user_deleted: "تم حذف المستخدم",
+  toast_job_deleted: "تم حذف الطلب",
+  toast_request_accepted: "تم قبول الطلب!",
+  toast_request_refused: "تم رفض الطلب",
+  toast_rating_stars_required: "يرجى اختيار نجمة واحدة على الأقل، أو اضغط تخطي",
+  toast_rating_submitted: "شكرًا لمراجعتك!",
+  toast_rating_failed: "فشل إرسال المراجعة: ",
+  toast_completion_locked: "تم بالفعل تحديد حالة هذه المهمة ولا يمكن تغييرها",
+  toast_marked_fulfilled: "تم التحديد كمنجز",
+  toast_marked_unfulfilled: "تم التحديد كغير منجز",
+  status_pending: "قيد الانتظار",
+  status_accepted: "مقبول",
+  status_refused: "مرفوض",
+  status_active: "نشط",
+  status_blocked_label: "محظور",
+  status_trial_expired: "انتهت التجربة",
+  mark_completion_prompt: "حدد حالة هذه المهمة:",
+  btn_fulfilled: "✅ تم إنجاز المهمة",
+  btn_unfulfilled: "❌ لم تُنجز المهمة",
+  locked_label: "🔒 مقفل",
+  rate_handyman_btn: "⭐ قيّم الحرفي",
+  already_reviewed: "لقد قمت بتقييم هذه المهمة بالفعل",
+  confirmed_both: "✔ تم التأكيد من الطرفين",
+  confirmed_both_added: "✔ تم التأكيد من الطرفين — أُضيفت إلى أعمالك المنجزة",
+  call_btn: "📞 اتصال",
+  profile_btn: "👤 الملف الشخصي",
+  hire_btn: "توظيف",
+  accept_btn: "قبول",
+  refuse_btn: "رفض",
+  call_client_btn: "📞 اتصل بالعميل",
+  urgent_badge: "عاجل",
+  available_badge: "● متاح",
+  fulfilled_badge: "منجزة",
+  no_reviews_yet: "لا توجد مراجعات بعد",
+  to_label: "إلى:",
+  from_label: "من:",
+  by_label: "بواسطة",
+  empty_no_jobs_title: "لا توجد طلبات منشورة بعد",
+  empty_no_jobs_sub: "استخدم النموذج لنشر طلبك الأول.",
+  empty_no_handymen_title: "لم يتم العثور على حرفيين",
+  empty_no_handymen_sub: "حاول تعديل بحثك أو عوامل التصفية، أو عد لاحقًا.",
+  empty_no_requests_title: "لم يتم إرسال أي طلبات بعد",
+  empty_no_requests_sub: "استكشف الحرفيين وأرسل طلب توظيف مباشر.",
+  empty_no_feed_title: "لا توجد طلبات مطابقة حاليًا",
+  empty_no_feed_sub: "ستظهر هنا تلقائيًا الطلبات الجديدة في تخصصك.",
+  empty_no_direct_title: "لا توجد طلبات مباشرة بعد",
+  empty_no_direct_sub: "سيظهر هنا العملاء الذين يوظفونك مباشرة.",
+  empty_no_fulfilled_title: "لا توجد أعمال منجزة بعد",
+  empty_no_fulfilled_sub: "ستظهر هنا الأعمال المؤكدة من طرفك ومن طرف العميل.",
+  empty_no_users_title: "لم يتم العثور على مستخدمين",
+  empty_no_users_sub: "جرّب بحثًا أو تصفية مختلفة.",
+  empty_no_jobposts_title: "لا توجد منشورات",
+  empty_no_jobposts_sub: "ستظهر هنا طلبات العملاء للمراجعة.",
+  delete_btn: "حذف",
+  block_btn: "حظر",
+  unblock_btn: "إلغاء الحظر",
+  add_trial_btn: "➕ تجربة",
+  confirm_delete_user: "هل تريد حذف حساب {name} نهائيًا؟ لا يمكن التراجع عن هذا الإجراء.",
+  confirm_delete_job: "هل تريد حذف هذا الطلب نهائيًا؟",
+  cat_plumber: "سباك",
+  cat_electrician: "كهربائي",
+  cat_cctv: "كاميرات مراقبة",
+  cat_hvac: "تكييف الهواء",
+  cat_painter: "دهّان",
+  cat_carpenter: "نجار",
+  cat_mason: "بنّاء",
+  cat_general: "إصلاحات عامة"
+}
+};
+
+let currentLang = localStorage.getItem(LANG_KEY) || 'en';
+
+function t(key, vars) {
+  let str = (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key] !== undefined) ? TRANSLATIONS[currentLang][key] : (TRANSLATIONS.en[key] !== undefined ? TRANSLATIONS.en[key] : key);
+  if (vars) {
+    Object.keys(vars).forEach(k => { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]); });
+  }
+  return str;
+}
+
+function catLabel(cat) {
+  const key = CATEGORY_KEY_MAP[cat];
+  return key ? t(key) : cat;
+}
+
+function roleLabel(role) {
+  if (role === 'client') return t('role_client');
+  if (role === 'handyman') return t('role_handyman');
+  return role;
+}
+
+function statusLabel(status) {
+  const map = { pending: 'status_pending', accepted: 'status_accepted', refused: 'status_refused' };
+  return map[status] ? t(map[status]) : status;
+}
+
+function updateLangSwitcherUI() {
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    const active = b.dataset.lang === currentLang;
+    b.className = 'lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition ' + (active ? 'bg-terracotta text-white' : 'text-ink/50 hover:bg-sand');
+  });
+}
+
+function updateLangSwitcherPosition() {
+  const el = document.getElementById('lang-switcher');
+  if (!el) return;
+  if (document.documentElement.dir === 'rtl') { el.style.right = 'auto'; el.style.left = '0.75rem'; }
+  else { el.style.left = 'auto'; el.style.right = '0.75rem'; }
+}
+
+function applyStaticTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+}
+
+function populateSelect(selectEl, options, placeholder, labelFn) {
+  const prevVal = selectEl.value;
+  const getLabel = labelFn || (o => o);
+  selectEl.innerHTML = `<option value="" disabled selected>${escapeHtml(placeholder)}</option>` +
+    options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(getLabel(o))}</option>`).join('');
+  if (prevVal && options.includes(prevVal)) selectEl.value = prevVal;
+}
+
+function populateCategoryFilter() {
+  const sel = document.getElementById('handyman-category-filter');
+  if (!sel) return;
+  const prevVal = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+  CATEGORIES.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = catLabel(c);
+    sel.appendChild(opt);
+  });
+  if (prevVal && CATEGORIES.includes(prevVal)) sel.value = prevVal;
+}
+
+function refreshLocalizedSelects() {
+  populateSelect(document.getElementById('reg-wilaya'), WILAYAS, t('reg_wilaya_ph'));
+  populateSelect(document.getElementById('reg-category'), CATEGORIES, t('reg_category_ph'), catLabel);
+  populateSelect(document.getElementById('job-category'), CATEGORIES, t('job_category_ph'), catLabel);
+  document.getElementById('job-category').firstElementChild.removeAttribute('disabled');
+  populateCategoryFilter();
+}
+
+function refreshDynamicViews() {
+  if (!currentUser) return;
+  if (currentUser.role === 'client') {
+    if (!document.getElementById('client-tab-post-job').classList.contains('hidden-force')) renderMyPostedJobs();
+    if (!document.getElementById('client-tab-explore').classList.contains('hidden-force')) renderHandymenList();
+    if (!document.getElementById('client-tab-requests').classList.contains('hidden-force')) renderMyRequests();
+  } else if (currentUser.role === 'handyman') {
+    document.getElementById('specialty-badge').textContent = `${CATEGORY_ICONS[currentUser.category] || ''} ${catLabel(currentUser.category)}`;
+    if (!document.getElementById('handyman-tab-feed').classList.contains('hidden-force')) renderJobFeed();
+    renderDirectRequests();
+    if (!document.getElementById('handyman-tab-fulfilled').classList.contains('hidden-force')) renderFulfilledJobs();
+  } else if (currentUser.role === 'admin') {
+    if (!document.getElementById('admin-tab-users').classList.contains('hidden-force')) renderUsersTable();
+    if (!document.getElementById('admin-tab-jobs').classList.contains('hidden-force')) renderJobsAdmin();
+  }
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem(LANG_KEY, lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  updateLangSwitcherUI();
+  updateLangSwitcherPosition();
+  applyStaticTranslations();
+  refreshLocalizedSelects();
+  refreshDynamicViews();
+}
 
 // ---------- Global State ----------
 let currentUser = null;      // full user object incl. id + role
@@ -536,27 +1227,12 @@ function openModal(id) {
   document.getElementById(id).classList.add('flex');
 }
 
-function populateSelect(selectEl, options, placeholder) {
-  selectEl.innerHTML = `<option value="" disabled selected>${placeholder}</option>` +
-    options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
-}
-
 // ============================================================
 // INITIAL PAGE LOAD
 // ============================================================
 window.addEventListener('DOMContentLoaded', () => {
-  // populate static dropdowns
-  populateSelect(document.getElementById('reg-wilaya'), WILAYAS, 'Select your Wilaya');
-  populateSelect(document.getElementById('reg-category'), CATEGORIES, 'Select your Specialty');
-  populateSelect(document.getElementById('job-category'), CATEGORIES, 'Select Category');
-  document.getElementById('job-category').firstElementChild.removeAttribute('disabled');
-
-  const catFilter = document.getElementById('handyman-category-filter');
-  CATEGORIES.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    catFilter.appendChild(opt);
-  });
+  // language init (also populates category/wilaya-placeholder selects)
+  setLanguage(currentLang);
 
   const handymanWilayaFilter = document.getElementById('handyman-wilaya-filter');
   const jobFeedWilayaFilter = document.getElementById('job-feed-wilaya-filter');
@@ -630,10 +1306,9 @@ function checkUserGuard(userData) {
 function selectRole(role) {
   selectedRoleForAuth = role;
   const icon = role === 'client' ? '🧑‍💼' : '🔧';
-  const label = role === 'client' ? 'Client' : 'Handyman';
   document.getElementById('auth-role-icon').textContent = icon;
-  document.getElementById('auth-title').textContent = `${label} Access`;
-  document.getElementById('auth-subtitle').textContent = 'Log in or create your account';
+  document.getElementById('auth-title').textContent = t('role_access', { role: roleLabel(role) });
+  document.getElementById('auth-subtitle').textContent = t('auth_subtitle');
   document.getElementById('reg-category-wrap').classList.toggle('hidden-force', role !== 'handyman');
   document.getElementById('reg-category').required = (role === 'handyman');
   switchAuthMode('login');
@@ -674,21 +1349,21 @@ function handleRegister(e) {
   const category = document.getElementById('reg-category').value;
 
   if (!isValidAlgerianPhone(phone)) {
-    showToast('Please enter a valid Algerian phone number (e.g. 0555123456)', 'error');
+    showToast(t('toast_invalid_phone'), 'error');
     return;
   }
   if (selectedRoleForAuth === 'handyman' && !category) {
-    showToast('Please select your specialty category', 'error');
+    showToast(t('toast_select_specialty'), 'error');
     return;
   }
   if (password.length < 4) {
-    showToast('Password must be at least 4 characters', 'error');
+    showToast(t('toast_password_short'), 'error');
     return;
   }
 
   db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
     if (snap.exists()) {
-      showToast('This username is already taken', 'error');
+      showToast(t('toast_username_taken'), 'error');
       return;
     }
     const newUserRef = db.ref('users').push();
@@ -707,10 +1382,10 @@ function handleRegister(e) {
     newUserRef.set(userData).then(() => {
       currentUser = { id: newUserRef.key, ...userData };
       localStorage.setItem(SESSION_KEY, JSON.stringify({ id: newUserRef.key, role: selectedRoleForAuth }));
-      showToast('Account created! Welcome to Brico-Match 🎉', 'success');
+      showToast(t('toast_account_created'), 'success');
       if (selectedRoleForAuth === 'client') initClientDashboard();
       else initHandymanDashboard();
-    }).catch(err => showToast('Registration failed: ' + err.message, 'error'));
+    }).catch(err => showToast(t('toast_registration_failed') + err.message, 'error'));
   });
 }
 
@@ -722,27 +1397,27 @@ function handleLogin(e) {
 
   db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
     if (!snap.exists()) {
-      showToast('No account found with that username', 'error');
+      showToast(t('toast_no_account'), 'error');
       return;
     }
     let foundId = null, foundData = null;
     snap.forEach(child => { foundId = child.key; foundData = child.val(); });
 
     if (foundData.password !== password) {
-      showToast('Incorrect password', 'error');
+      showToast(t('toast_incorrect_password'), 'error');
       return;
     }
     if (foundData.role !== selectedRoleForAuth) {
-      showToast(`This account is registered as a ${foundData.role}, not a ${selectedRoleForAuth}`, 'error');
+      showToast(t('toast_wrong_role', { actual: roleLabel(foundData.role), attempted: roleLabel(selectedRoleForAuth) }), 'error');
       return;
     }
     currentUser = { id: foundId, ...foundData };
     localStorage.setItem(SESSION_KEY, JSON.stringify({ id: foundId, role: foundData.role }));
     if (!checkUserGuard(currentUser)) return;
-    showToast(`Welcome back, ${foundData.fullName.split(' ')[0]}!`, 'success');
+    showToast(t('toast_welcome_back', { name: foundData.fullName.split(' ')[0] }), 'success');
     if (foundData.role === 'client') initClientDashboard();
     else initHandymanDashboard();
-  }).catch(err => showToast('Login failed: ' + err.message, 'error'));
+  }).catch(err => showToast(t('toast_login_failed') + err.message, 'error'));
 }
 
 // ---------- Admin Login ----------
@@ -753,10 +1428,10 @@ function handleAdminLogin(e) {
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     currentUser = { id: 'admin', role: 'admin', fullName: 'Administrator' };
     localStorage.setItem(SESSION_KEY, JSON.stringify({ id: 'admin', role: 'admin' }));
-    showToast('Welcome, Administrator', 'success');
+    showToast(t('toast_welcome_admin'), 'success');
     initAdminDashboard();
   } else {
-    showToast('Invalid admin credentials', 'error');
+    showToast(t('toast_invalid_admin'), 'error');
   }
 }
 
@@ -800,7 +1475,7 @@ function handlePostJob(e) {
   const details = document.getElementById('job-details').value.trim();
   const category = document.getElementById('job-category').value;
   const urgent = document.getElementById('job-urgent').checked;
-  if (!category) { showToast('Please select a category', 'error'); return; }
+  if (!category) { showToast(t('toast_select_category'), 'error'); return; }
 
   const jobRef = db.ref('jobs').push();
   jobRef.set({
@@ -813,12 +1488,12 @@ function handlePostJob(e) {
     status: 'open',
     createdAt: Date.now()
   }).then(() => {
-    showToast('Job posted successfully!', 'success');
+    showToast(t('toast_job_posted'), 'success');
     document.getElementById('job-title').value = '';
     document.getElementById('job-details').value = '';
     document.getElementById('job-category').value = '';
     document.getElementById('job-urgent').checked = false;
-  }).catch(err => showToast('Failed to post job: ' + err.message, 'error'));
+  }).catch(err => showToast(t('toast_job_post_failed') + err.message, 'error'));
 }
 
 function renderMyPostedJobs() {
@@ -828,7 +1503,7 @@ function renderMyPostedJobs() {
     .sort((a,b) => b[1].createdAt - a[1].createdAt);
 
   if (myJobs.length === 0) {
-    container.innerHTML = emptyState('📭', 'No jobs posted yet', 'Use the form to post your first job request.');
+    container.innerHTML = emptyState('📭', t('empty_no_jobs_title'), t('empty_no_jobs_sub'));
     return;
   }
   container.innerHTML = myJobs.map(([id, j]) => `
@@ -836,11 +1511,11 @@ function renderMyPostedJobs() {
       <div class="min-w-0">
         <div class="flex items-center gap-2 flex-wrap mb-1">
           <h4 class="font-semibold font-display truncate">${escapeHtml(j.title)}</h4>
-          ${j.urgent ? '<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold">URGENT</span>' : ''}
+          ${j.urgent ? `<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold">${escapeHtml(t('urgent_badge'))}</span>` : ''}
         </div>
         <p class="text-sm text-ink/60 mb-2 line-clamp-2">${escapeHtml(j.details)}</p>
         <div class="flex items-center gap-2 text-xs text-ink/40">
-          <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
+          <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(catLabel(j.category))}</span>
           <span>${timeAgo(j.createdAt)}</span>
         </div>
       </div>
@@ -850,7 +1525,7 @@ function renderMyPostedJobs() {
 }
 
 function deleteOwnJob(jobId) {
-  db.ref('jobs/' + jobId).remove().then(() => showToast('Job removed', 'info'));
+  db.ref('jobs/' + jobId).remove().then(() => showToast(t('toast_job_removed'), 'info'));
 }
 
 function getHandymanRatingStats(handymanId) {
@@ -895,7 +1570,7 @@ function renderHandymenList() {
   }
 
   if (handymen.length === 0) {
-    container.innerHTML = `<div class="sm:col-span-2">${emptyState('🔍', 'No handymen found', 'Try adjusting your search or filters, or check back later.')}</div>`;
+    container.innerHTML = `<div class="sm:col-span-2">${emptyState('🔍', t('empty_no_handymen_title'), t('empty_no_handymen_sub'))}</div>`;
     return;
   }
 
@@ -903,7 +1578,7 @@ function renderHandymenList() {
     const stats = getHandymanRatingStats(id);
     const ratingLine = stats.count > 0
       ? `<span class="text-amber-500 text-sm">${starDisplay(stats.avg)}</span> <span class="text-xs text-ink/40">(${stats.count})</span>`
-      : `<span class="text-xs text-ink/30">No reviews yet</span>`;
+      : `<span class="text-xs text-ink/30">${escapeHtml(t('no_reviews_yet'))}</span>`;
     return `
     <div class="bg-white rounded-2xl shadow-soft p-5">
       <div class="flex items-start justify-between mb-2">
@@ -914,14 +1589,14 @@ function renderHandymenList() {
             <p class="text-xs text-ink/50">${escapeHtml(u.wilaya || '')}</p>
           </div>
         </div>
-        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">● Available</span>
+        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">${escapeHtml(t('available_badge'))}</span>
       </div>
       <div class="mb-3">${ratingLine}</div>
-      <span class="inline-block text-xs bg-sand px-2.5 py-1 rounded-full font-medium mb-3">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(u.category)}</span>
+      <span class="inline-block text-xs bg-sand px-2.5 py-1 rounded-full font-medium mb-3">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(catLabel(u.category))}</span>
       <div class="grid grid-cols-3 gap-2">
-        <a href="tel:${escapeHtml(u.phone)}" class="text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">📞 Call</a>
-        <button onclick="openHandymanProfile('${id}')" class="text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">👤 Profile</button>
-        <button onclick="openDirectHireModal('${id}')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2 font-semibold transition">Hire</button>
+        <a href="tel:${escapeHtml(u.phone)}" class="text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
+        <button onclick="openHandymanProfile('${id}')" class="text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">${escapeHtml(t('profile_btn'))}</button>
+        <button onclick="openDirectHireModal('${id}')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2 font-semibold transition">${escapeHtml(t('hire_btn'))}</button>
       </div>
     </div>
   `;
@@ -939,7 +1614,7 @@ function openHandymanProfile(handymanId) {
     <div class="w-14 h-14 rounded-full bg-sand flex items-center justify-center text-2xl font-bold text-terracotta flex-shrink-0">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
     <div>
       <h3 class="text-lg font-bold font-display">${escapeHtml(u.fullName)}</h3>
-      <p class="text-sm text-ink/50">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(u.category)} · ${escapeHtml(u.wilaya || '')}</p>
+      <p class="text-sm text-ink/50">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(catLabel(u.category))} · ${escapeHtml(u.wilaya || '')}</p>
     </div>
   `;
 
@@ -948,18 +1623,18 @@ function openHandymanProfile(handymanId) {
       <div class="text-center">
         <p class="text-2xl font-bold font-display text-terracotta">${stats.count > 0 ? stats.avg.toFixed(1) : '—'}</p>
         <p class="text-amber-500 text-sm">${stats.count > 0 ? starDisplay(stats.avg) : '☆☆☆☆☆'}</p>
-        <p class="text-[11px] text-ink/40">${stats.count} review${stats.count === 1 ? '' : 's'}</p>
+        <p class="text-[11px] text-ink/40">${escapeHtml(t('profile_review_count', { count: stats.count }))}</p>
       </div>
       <div class="w-px h-10 bg-stone"></div>
       <div class="text-center flex-1">
         <p class="text-2xl font-bold font-display text-terracotta">${fulfilled.length}</p>
-        <p class="text-[11px] text-ink/40">Jobs Fulfilled</p>
+        <p class="text-[11px] text-ink/40">${escapeHtml(t('profile_jobs_fulfilled'))}</p>
       </div>
     </div>
 
-    <h4 class="font-semibold font-display text-sm mb-2">Reviews</h4>
+    <h4 class="font-semibold font-display text-sm mb-2">${escapeHtml(t('profile_reviews'))}</h4>
     <div class="space-y-2 mb-5">
-      ${reviews.length === 0 ? '<p class="text-sm text-ink/40">No reviews yet.</p>' : reviews.map(r => `
+      ${reviews.length === 0 ? `<p class="text-sm text-ink/40">${escapeHtml(t('profile_no_reviews'))}</p>` : reviews.map(r => `
         <div class="bg-white rounded-xl p-3 border border-stone-light">
           <div class="flex items-center justify-between mb-1">
             <span class="text-amber-500 text-sm">${starDisplay(r.stars)}</span>
@@ -970,12 +1645,12 @@ function openHandymanProfile(handymanId) {
       `).join('')}
     </div>
 
-    <h4 class="font-semibold font-display text-sm mb-2">Fulfilled Jobs</h4>
+    <h4 class="font-semibold font-display text-sm mb-2">${escapeHtml(t('profile_fulfilled_jobs'))}</h4>
     <div class="space-y-2">
-      ${fulfilled.length === 0 ? '<p class="text-sm text-ink/40">No fulfilled jobs yet.</p>' : fulfilled.map(([id, j]) => `
+      ${fulfilled.length === 0 ? `<p class="text-sm text-ink/40">${escapeHtml(t('profile_no_fulfilled'))}</p>` : fulfilled.map(([id, j]) => `
         <div class="bg-white rounded-xl p-3 border border-stone-light">
           <p class="font-medium text-sm">${escapeHtml(j.title)}</p>
-          <p class="text-xs text-ink/40">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)} · ${formatDate(j.createdAt)}</p>
+          <p class="text-xs text-ink/40">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(catLabel(j.category))} · ${formatDate(j.createdAt)}</p>
         </div>
       `).join('')}
     </div>
@@ -1012,8 +1687,8 @@ function submitDirectHire(e) {
     createdAt: Date.now()
   }).then(() => {
     closeModal('modal-direct-hire');
-    showToast('Direct hire request sent!', 'success');
-  }).catch(err => showToast('Failed to send request: ' + err.message, 'error'));
+    showToast(t('toast_dh_sent'), 'success');
+  }).catch(err => showToast(t('toast_dh_failed') + err.message, 'error'));
 }
 
 function renderMyRequests() {
@@ -1023,7 +1698,7 @@ function renderMyRequests() {
     .sort((a,b) => b[1].createdAt - a[1].createdAt);
 
   if (myReqs.length === 0) {
-    container.innerHTML = emptyState('📋', 'No requests sent yet', 'Explore handymen and send a direct hire request.');
+    container.innerHTML = emptyState('📋', t('empty_no_requests_title'), t('empty_no_requests_sub'));
     return;
   }
 
@@ -1040,13 +1715,13 @@ function renderMyRequests() {
     if (r.status === 'accepted') {
       completionBlock = `
         <div class="mt-3 pt-3 border-t border-stone">
-          <p class="text-[11px] text-ink/40 mb-1.5">Mark this job as:</p>
+          <p class="text-[11px] text-ink/40 mb-1.5">${escapeHtml(t('mark_completion_prompt'))}</p>
           <div class="flex items-center gap-2 flex-wrap">
             ${renderCompletionButtons(id, 'client', r.clientCompletionMark)}
-            ${bothFulfilled && !hasRated ? `<button onclick="openRateModal('${id}','${r.handymanId}','${escapeHtml(r.handymanName).replace(/'/g,"\\'")}','${escapeHtml(r.title).replace(/'/g,"\\'")}')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition bg-amber-100 text-amber-700 hover:bg-amber-200">⭐ Rate Handyman</button>` : ''}
-            ${hasRated ? `<span class="text-xs text-ink/40 italic">You already reviewed this job</span>` : ''}
+            ${bothFulfilled && !hasRated ? `<button onclick="openRateModal('${id}','${r.handymanId}','${escapeHtml(r.handymanName).replace(/'/g,"\\'")}','${escapeHtml(r.title).replace(/'/g,"\\'")}')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition bg-amber-100 text-amber-700 hover:bg-amber-200">${escapeHtml(t('rate_handyman_btn'))}</button>` : ''}
+            ${hasRated ? `<span class="text-xs text-ink/40 italic">${escapeHtml(t('already_reviewed'))}</span>` : ''}
           </div>
-          ${bothFulfilled ? '<p class="text-[11px] text-green-700 mt-1.5">✔ Confirmed complete by both sides</p>' : ''}
+          ${bothFulfilled ? `<p class="text-[11px] text-green-700 mt-1.5">${escapeHtml(t('confirmed_both'))}</p>` : ''}
         </div>
       `;
     }
@@ -1056,9 +1731,9 @@ function renderMyRequests() {
         <div class="min-w-0">
           <div class="flex items-center gap-2 flex-wrap mb-1">
             <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
-            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(r.status)}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(statusLabel(r.status))}</span>
           </div>
-          <p class="text-sm text-ink/60 mb-2">To: <span class="font-medium">${escapeHtml(r.handymanName)}</span> · ${escapeHtml(r.category)}</p>
+          <p class="text-sm text-ink/60 mb-2">${escapeHtml(t('to_label'))} <span class="font-medium">${escapeHtml(r.handymanName)}</span> · ${escapeHtml(catLabel(r.category))}</p>
           <p class="text-xs text-ink/40">${timeAgo(r.createdAt)}</p>
         </div>
       </div>
@@ -1074,7 +1749,7 @@ function renderMyRequests() {
 function initHandymanDashboard() {
   showScreen('screen-handyman');
   document.getElementById('availability-toggle').checked = currentUser.available !== false;
-  document.getElementById('specialty-badge').textContent = `${CATEGORY_ICONS[currentUser.category]||''} ${currentUser.category}`;
+  document.getElementById('specialty-badge').textContent = `${CATEGORY_ICONS[currentUser.category]||''} ${catLabel(currentUser.category)}`;
   switchHandymanTab('feed');
   attachUsersListener();
   attachJobsListener();
@@ -1099,7 +1774,7 @@ function toggleAvailability() {
   const val = document.getElementById('availability-toggle').checked;
   db.ref('users/' + currentUser.id + '/available').set(val).then(() => {
     currentUser.available = val;
-    showToast(val ? "You're now visible as available" : "You're now marked unavailable", 'info');
+    showToast(val ? t('toast_avail_on') : t('toast_avail_off'), 'info');
   });
 }
 
@@ -1116,7 +1791,7 @@ function renderJobFeed() {
   jobs.sort((a,b) => (b[1].urgent - a[1].urgent) || (b[1].createdAt - a[1].createdAt));
 
   if (jobs.length === 0) {
-    container.innerHTML = `<div class="sm:col-span-2">${emptyState('💼', 'No matching jobs right now', 'New jobs in your specialty will appear here automatically.')}</div>`;
+    container.innerHTML = `<div class="sm:col-span-2">${emptyState('💼', t('empty_no_feed_title'), t('empty_no_feed_sub'))}</div>`;
     return;
   }
 
@@ -1124,11 +1799,11 @@ function renderJobFeed() {
     <div class="bg-white rounded-2xl shadow-soft p-5 ${j.urgent ? 'ring-2 ring-terracotta' : ''}">
       <div class="flex items-center gap-2 flex-wrap mb-2">
         <h4 class="font-semibold font-display">${escapeHtml(j.title)}</h4>
-        ${j.urgent ? '<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold animate-pulse">🚨 URGENT</span>' : ''}
+        ${j.urgent ? `<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold animate-pulse">🚨 ${escapeHtml(t('urgent_badge'))}</span>` : ''}
       </div>
       <p class="text-sm text-ink/60 mb-3 line-clamp-3">${escapeHtml(j.details)}</p>
       <div class="flex items-center justify-between text-xs text-ink/40 mb-3">
-        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
+        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(catLabel(j.category))}</span>
         <span>${timeAgo(j.createdAt)}</span>
       </div>
       ${(j.clientAddress || j.clientWilaya) ? `<p class="text-xs text-ink/50 mb-3">📍 ${escapeHtml(j.clientAddress || '')}${j.clientAddress && j.clientWilaya ? ', ' : ''}${escapeHtml(j.clientWilaya || '')}</p>` : ''}
@@ -1136,7 +1811,7 @@ function renderJobFeed() {
         <div>
           <p class="text-sm font-medium">${escapeHtml(j.clientName)}</p>
         </div>
-        <a href="tel:${escapeHtml(j.clientPhone)}" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition">📞 Call Client</a>
+        <a href="tel:${escapeHtml(j.clientPhone)}" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition">${escapeHtml(t('call_client_btn'))}</a>
       </div>
     </div>
   `).join('');
@@ -1154,7 +1829,7 @@ function renderDirectRequests() {
   else badge.classList.add('hidden-force');
 
   if (reqs.length === 0) {
-    container.innerHTML = emptyState('📥', 'No direct requests yet', 'Clients who hire you directly will appear here.');
+    container.innerHTML = emptyState('📥', t('empty_no_direct_title'), t('empty_no_direct_sub'));
     return;
   }
 
@@ -1172,26 +1847,26 @@ function renderDirectRequests() {
         <div class="min-w-0">
           <div class="flex items-center gap-2 flex-wrap mb-1">
             <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
-            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(r.status)}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(statusLabel(r.status))}</span>
           </div>
           <p class="text-sm text-ink/60 mb-1">${escapeHtml(r.details)}</p>
-          <p class="text-xs text-ink/40">From: <span class="font-medium text-ink/60">${escapeHtml(r.clientName)}</span> · ${timeAgo(r.createdAt)}</p>
+          <p class="text-xs text-ink/40">${escapeHtml(t('from_label'))} <span class="font-medium text-ink/60">${escapeHtml(r.clientName)}</span> · ${timeAgo(r.createdAt)}</p>
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3 pt-3 border-t border-stone flex-wrap">
-        <a href="tel:${escapeHtml(r.clientPhone)}" class="text-sm border border-stone rounded-xl px-3 py-1.5 font-medium hover:bg-sand transition">📞 Call</a>
+        <a href="tel:${escapeHtml(r.clientPhone)}" class="text-sm border border-stone rounded-xl px-3 py-1.5 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
         ${r.status === 'pending' ? `
-          <button onclick="respondToRequest('${id}','accepted')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">Accept</button>
-          <button onclick="respondToRequest('${id}','refused')" class="text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 py-1.5 font-semibold transition">Refuse</button>
+          <button onclick="respondToRequest('${id}','accepted')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('accept_btn'))}</button>
+          <button onclick="respondToRequest('${id}','refused')" class="text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('refuse_btn'))}</button>
         ` : ''}
       </div>
       ${r.status === 'accepted' ? `
         <div class="mt-3 pt-3 border-t border-stone">
-          <p class="text-[11px] text-ink/40 mb-1.5">Mark this job as:</p>
+          <p class="text-[11px] text-ink/40 mb-1.5">${escapeHtml(t('mark_completion_prompt'))}</p>
           <div class="flex items-center gap-2 flex-wrap">
             ${renderCompletionButtons(id, 'handyman', r.handymanCompletionMark)}
           </div>
-          ${bothFulfilled ? '<p class="text-[11px] text-green-700 mt-1.5">✔ Confirmed complete by both sides — added to your Fulfilled Jobs</p>' : ''}
+          ${bothFulfilled ? `<p class="text-[11px] text-green-700 mt-1.5">${escapeHtml(t('confirmed_both_added'))}</p>` : ''}
         </div>
       ` : ''}
     </div>
@@ -1211,8 +1886,8 @@ function renderCompletionButtons(reqId, side, currentMark) {
     else stateClasses = 'border border-stone hover:bg-sand';
     return `<button type="button" ${onclickAttr} ${disabledAttr} class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${stateClasses}">${label}</button>`;
   };
-  let html = build('fulfilled', '✅ Job Fulfilled', 'bg-green-600 text-white') + build('unfulfilled', '❌ Job Unfulfilled', 'bg-red-500 text-white');
-  if (locked) html += `<span class="text-[11px] text-ink/40 italic">🔒 locked</span>`;
+  let html = build('fulfilled', escapeHtml(t('btn_fulfilled')), 'bg-green-600 text-white') + build('unfulfilled', escapeHtml(t('btn_unfulfilled')), 'bg-red-500 text-white');
+  if (locked) html += `<span class="text-[11px] text-ink/40 italic">${escapeHtml(t('locked_label'))}</span>`;
   return html;
 }
 
@@ -1220,11 +1895,11 @@ function markCompletion(reqId, side, mark) {
   const req = directRequestsCacheData[reqId];
   const field = side === 'client' ? 'clientCompletionMark' : 'handymanCompletionMark';
   if (req && req[field]) {
-    showToast('This job status was already set and cannot be changed', 'error');
+    showToast(t('toast_completion_locked'), 'error');
     return;
   }
   db.ref('directRequests/' + reqId + '/' + field).set(mark).then(() => {
-    showToast(mark === 'fulfilled' ? 'Marked as fulfilled' : 'Marked as unfulfilled', mark === 'fulfilled' ? 'success' : 'info');
+    showToast(mark === 'fulfilled' ? t('toast_marked_fulfilled') : t('toast_marked_unfulfilled'), mark === 'fulfilled' ? 'success' : 'info');
   });
 }
 
@@ -1233,7 +1908,7 @@ function renderFulfilledJobs() {
   const fulfilled = getFulfilledJobsForHandyman(currentUser.id);
 
   if (fulfilled.length === 0) {
-    container.innerHTML = emptyState('✅', 'No fulfilled jobs yet', 'Jobs confirmed complete by you and the client will show up here.');
+    container.innerHTML = emptyState('✅', t('empty_no_fulfilled_title'), t('empty_no_fulfilled_sub'));
     return;
   }
 
@@ -1243,11 +1918,11 @@ function renderFulfilledJobs() {
     <div class="bg-white rounded-xl shadow-soft p-4">
       <div class="flex items-center gap-2 flex-wrap mb-1">
         <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
-        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">FULFILLED</span>
+        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">${escapeHtml(t('fulfilled_badge'))}</span>
       </div>
       <p class="text-sm text-ink/60 mb-2">${escapeHtml(r.details || '')}</p>
       <div class="flex items-center justify-between text-xs text-ink/40">
-        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[r.category]||''} ${escapeHtml(r.category)}</span>
+        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[r.category]||''} ${escapeHtml(catLabel(r.category))}</span>
         <span>${formatDate(r.createdAt)}</span>
       </div>
       ${rating ? `<div class="mt-2 pt-2 border-t border-stone-light"><span class="text-amber-500 text-sm">${starDisplay(rating.stars)}</span>${rating.comment ? ` <span class="text-sm text-ink/60">"${escapeHtml(rating.comment)}"</span>` : ''}</div>` : ''}
@@ -1285,7 +1960,7 @@ function setRatingStars(n) {
 function submitRating() {
   if (!rateModalContext) return;
   if (currentRatingStars === 0) {
-    showToast('Please select at least 1 star, or tap Skip', 'error');
+    showToast(t('toast_rating_stars_required'), 'error');
     return;
   }
   const comment = document.getElementById('rate-comment').value.trim();
@@ -1298,14 +1973,14 @@ function submitRating() {
     createdAt: Date.now()
   }).then(() => {
     closeModal('modal-rate-handyman');
-    showToast('Thanks for your review!', 'success');
+    showToast(t('toast_rating_submitted'), 'success');
     rateModalContext = null;
-  }).catch(err => showToast('Failed to submit review: ' + err.message, 'error'));
+  }).catch(err => showToast(t('toast_rating_failed') + err.message, 'error'));
 }
 
 function respondToRequest(reqId, status) {
   db.ref('directRequests/' + reqId + '/status').set(status).then(() => {
-    showToast(status === 'accepted' ? 'Request accepted!' : 'Request refused', status === 'accepted' ? 'success' : 'info');
+    showToast(status === 'accepted' ? t('toast_request_accepted') : t('toast_request_refused'), status === 'accepted' ? 'success' : 'info');
   });
 }
 
@@ -1349,7 +2024,7 @@ function renderUsersTable() {
   if (users.length === 0) {
     tbody.innerHTML = '';
     emptyEl.className = '';
-    emptyEl.innerHTML = emptyState('👥', 'No users found', 'Try a different search or filter.');
+    emptyEl.innerHTML = emptyState('👥', t('empty_no_users_title'), t('empty_no_users_sub'));
     return;
   }
   emptyEl.className = 'hidden-force';
@@ -1359,9 +2034,9 @@ function renderUsersTable() {
     const expired = u.trialEndDate && now > u.trialEndDate;
     const blocked = u.status === 'blocked';
     let statusBadge;
-    if (blocked) statusBadge = '<span class="text-[11px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">Blocked</span>';
-    else if (expired) statusBadge = '<span class="text-[11px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">Trial Expired</span>';
-    else statusBadge = '<span class="text-[11px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Active</span>';
+    if (blocked) statusBadge = `<span class="text-[11px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">${escapeHtml(t('status_blocked_label'))}</span>`;
+    else if (expired) statusBadge = `<span class="text-[11px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">${escapeHtml(t('status_trial_expired'))}</span>`;
+    else statusBadge = `<span class="text-[11px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">${escapeHtml(t('status_active'))}</span>`;
 
     return `
     <tr class="border-b border-stone-light hover:bg-sand/40">
@@ -1370,16 +2045,16 @@ function renderUsersTable() {
         <p class="text-xs text-ink/40">@${escapeHtml(u.username)}</p>
       </td>
       <td class="px-4 py-3">
-        <span class="text-xs bg-sand px-2 py-1 rounded-full capitalize">${escapeHtml(u.role)}${u.role==='handyman' ? ' · '+escapeHtml(u.category||'') : ''}</span>
+        <span class="text-xs bg-sand px-2 py-1 rounded-full capitalize">${escapeHtml(roleLabel(u.role))}${u.role==='handyman' ? ' · '+escapeHtml(catLabel(u.category||'')) : ''}</span>
       </td>
       <td class="px-4 py-3 text-ink/70">${escapeHtml(u.phone)}</td>
       <td class="px-4 py-3">${statusBadge}</td>
       <td class="px-4 py-3 text-ink/60 text-xs">${formatDate(u.trialEndDate)}</td>
       <td class="px-4 py-3">
         <div class="flex items-center justify-end gap-1.5 flex-wrap">
-          <button onclick="openTrialModal('${id}','${escapeHtml(u.username)}')" class="text-xs bg-sand hover:bg-stone px-2.5 py-1.5 rounded-lg font-medium transition" title="Add trial days">➕ Trial</button>
-          <button onclick="toggleBlock('${id}', ${blocked})" class="text-xs ${blocked ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'} px-2.5 py-1.5 rounded-lg font-medium transition">${blocked ? 'Unblock' : 'Block'}</button>
-          <button onclick="deleteUser('${id}','${escapeHtml(u.fullName)}')" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1.5 rounded-lg font-medium transition">Delete</button>
+          <button onclick="openTrialModal('${id}','${escapeHtml(u.username)}')" class="text-xs bg-sand hover:bg-stone px-2.5 py-1.5 rounded-lg font-medium transition" title="Add trial days">${escapeHtml(t('add_trial_btn'))}</button>
+          <button onclick="toggleBlock('${id}', ${blocked})" class="text-xs ${blocked ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'} px-2.5 py-1.5 rounded-lg font-medium transition">${blocked ? escapeHtml(t('unblock_btn')) : escapeHtml(t('block_btn'))}</button>
+          <button onclick="deleteUser('${id}','${escapeHtml(u.fullName).replace(/'/g,"\\'")}')" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1.5 rounded-lg font-medium transition">${escapeHtml(t('delete_btn'))}</button>
         </div>
       </td>
     </tr>`;
@@ -1396,26 +2071,26 @@ function openTrialModal(userId, username) {
 
 function confirmAddTrialDays() {
   const days = parseInt(document.getElementById('trial-days-input').value, 10);
-  if (!days || days < 1) { showToast('Enter a valid number of days', 'error'); return; }
+  if (!days || days < 1) { showToast(t('toast_invalid_days'), 'error'); return; }
   const user = usersCacheData[trialTargetUserId];
   const base = (user.trialEndDate && user.trialEndDate > Date.now()) ? user.trialEndDate : Date.now();
   const newDate = base + (days * 24 * 60 * 60 * 1000);
   db.ref('users/' + trialTargetUserId + '/trialEndDate').set(newDate).then(() => {
     closeModal('modal-trial');
-    showToast(`Added ${days} trial day(s)`, 'success');
+    showToast(t('toast_trial_added', { days }), 'success');
   });
 }
 
 function toggleBlock(userId, currentlyBlocked) {
   const newStatus = currentlyBlocked ? 'active' : 'blocked';
   db.ref('users/' + userId + '/status').set(newStatus).then(() => {
-    showToast(currentlyBlocked ? 'User unblocked' : 'User blocked', 'info');
+    showToast(currentlyBlocked ? t('toast_user_unblocked') : t('toast_user_blocked'), 'info');
   });
 }
 
 function deleteUser(userId, name) {
-  if (!confirm(`Permanently delete ${name}'s account? This cannot be undone.`)) return;
-  db.ref('users/' + userId).remove().then(() => showToast('User deleted', 'info'));
+  if (!confirm(t('confirm_delete_user', { name }))) return;
+  db.ref('users/' + userId).remove().then(() => showToast(t('toast_user_deleted'), 'info'));
 }
 
 function renderJobsAdmin() {
@@ -1425,7 +2100,7 @@ function renderJobsAdmin() {
   if (search) jobs = jobs.filter(([id, j]) => j.title.toLowerCase().includes(search));
 
   if (jobs.length === 0) {
-    container.innerHTML = `<div class="sm:col-span-2">${emptyState('📋', 'No job posts', 'Client job posts will appear here for moderation.')}</div>`;
+    container.innerHTML = `<div class="sm:col-span-2">${emptyState('📋', t('empty_no_jobposts_title'), t('empty_no_jobposts_sub'))}</div>`;
     return;
   }
 
@@ -1433,24 +2108,24 @@ function renderJobsAdmin() {
     <div class="bg-white rounded-2xl shadow-soft p-5">
       <div class="flex items-center gap-2 flex-wrap mb-2">
         <h4 class="font-semibold font-display">${escapeHtml(j.title)}</h4>
-        ${j.urgent ? '<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold">URGENT</span>' : ''}
+        ${j.urgent ? `<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold">${escapeHtml(t('urgent_badge'))}</span>` : ''}
       </div>
       <p class="text-sm text-ink/60 mb-3 line-clamp-2">${escapeHtml(j.details)}</p>
       <div class="flex items-center justify-between text-xs text-ink/40 mb-3">
-        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
+        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(catLabel(j.category))}</span>
         <span>${timeAgo(j.createdAt)}</span>
       </div>
       <div class="flex items-center justify-between border-t border-stone pt-3">
-        <p class="text-sm text-ink/60">By ${escapeHtml(j.clientName)}</p>
-        <button onclick="deleteJobAdmin('${id}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-1.5 font-semibold transition">Delete</button>
+        <p class="text-sm text-ink/60">${escapeHtml(t('by_label'))} ${escapeHtml(j.clientName)}</p>
+        <button onclick="deleteJobAdmin('${id}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('delete_btn'))}</button>
       </div>
     </div>
   `).join('');
 }
 
 function deleteJobAdmin(jobId) {
-  if (!confirm('Delete this job post permanently?')) return;
-  db.ref('jobs/' + jobId).remove().then(() => showToast('Job post deleted', 'info'));
+  if (!confirm(t('confirm_delete_job'))) return;
+  db.ref('jobs/' + jobId).remove().then(() => showToast(t('toast_job_deleted'), 'info'));
 }
 
 // ============================================================
