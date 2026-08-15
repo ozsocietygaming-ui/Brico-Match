@@ -31,16 +31,16 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
 
   <!-- Header / Navbar -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3 cursor-pointer" id="navLogo">
         <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-xl">BM</div>
         <span class="text-xl font-bold tracking-tight text-white">Brico-<span class="text-emerald-500">Match</span></span>
       </div>
 
-      <div id="userInfoNav" class="hidden flex items-center gap-4">
-        <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-slate-800 text-slate-300 border border-slate-700">Guest</span>
-        <span id="userEmailNav" class="text-sm font-medium text-slate-300"></span>
+      <div id="userInfoNav" class="hidden flex items-center gap-3">
+        <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-slate-800 text-emerald-400 border border-emerald-500/30">Guest</span>
+        <span id="userEmailNav" class="text-sm font-medium text-slate-300 hidden sm:inline"></span>
         <button id="logoutBtn" class="text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition">Déconnexion</button>
       </div>
     </div>
@@ -82,6 +82,11 @@
           </div>
 
           <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Numéro de Téléphone</label>
+            <input type="tel" id="regPhone" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="0550 00 00 00">
+          </div>
+
+          <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Rôle</label>
             <select id="regRole" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
               <option value="client">Client (Je cherche un artisan)</option>
@@ -90,7 +95,7 @@
           </div>
 
           <div id="artisanSpecialtyGroup" class="hidden">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Spécialité</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Spécialité Principale</label>
             <select id="regSpecialty" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
               <option value="Plomberie">Plomberie</option>
               <option value="Électricité">Électricité</option>
@@ -131,9 +136,9 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
         <div>
           <h1 class="text-2xl font-bold text-white">Espace Client</h1>
-          <p class="text-sm text-slate-400">Publiez des demandes de travaux et gérez vos demandes en cours.</p>
+          <p class="text-sm text-slate-400">Publiez des demandes de travaux et consultez les offres reçues des artisans.</p>
         </div>
-        <button id="btnOpenNewJobModal" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition flex items-center gap-2">
+        <button id="btnOpenNewJobModal" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition flex items-center justify-center gap-2">
           <span>+ Publier une demande</span>
         </button>
       </div>
@@ -149,9 +154,23 @@
 
     <!-- VIEW 3: ARTISAN DASHBOARD -->
     <section id="viewArtisan" class="hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-        <h1 class="text-2xl font-bold text-white">Espace Artisan / Bricoleur</h1>
-        <p class="text-sm text-slate-400">Parcourez les offres de travaux disponibles et postulez directement.</p>
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+        <div>
+          <h1 class="text-2xl font-bold text-white">Espace Artisan / Bricoleur</h1>
+          <p class="text-sm text-slate-400">Parcourez les offres de travaux disponibles et envoyez vos propositions directement.</p>
+        </div>
+
+        <!-- Specialty Filter Bar -->
+        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800">
+          <span class="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider">Filtrer par spécialité :</span>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold border border-emerald-500" data-category="ALL">Toutes</button>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Plomberie">Plomberie</button>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Électricité">Électricité</button>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Peinture">Peinture</button>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Menuiserie">Menuiserie</button>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Climatisation">Climatisation</button>
+          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Autre">Autre</button>
+        </div>
       </div>
 
       <!-- Available Jobs List -->
@@ -165,7 +184,7 @@
 
   </main>
 
-  <!-- MODAL: NEW JOB POST -->
+  <!-- MODAL 1: NEW JOB POST (CLIENT) -->
   <div id="modalJob" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative">
       <h3 class="text-xl font-bold text-white mb-4">Nouvelle Demande de Service</h3>
@@ -190,7 +209,7 @@
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Wilaya / Ville</label>
-          <input type="text" id="jobLocation" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Bordj Bou Arreridj / Alger">
+          <input type="text" id="jobLocation" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Jijel / Alger / Oran">
         </div>
 
         <div>
@@ -203,6 +222,51 @@
           <button type="submit" id="btnSubmitJob" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition">Publier</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: APPLY FOR JOB (ARTISAN) -->
+  <div id="modalApply" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative space-y-4">
+      <h3 class="text-xl font-bold text-white">Postuler à l'offre</h3>
+      <p id="applyJobTitle" class="text-sm font-semibold text-emerald-400 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20"></p>
+
+      <form id="formApply" class="space-y-4">
+        <input type="hidden" id="applyJobId">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Prix proposé (DZD)</label>
+          <input type="number" id="applyPrice" required min="100" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: 3500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Disponibilité</label>
+          <input type="text" id="applyAvailability" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Demain matin / Ce weekend">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Message au client</label>
+          <textarea id="applyMessage" rows="3" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Présentez votre proposition et votre expérience..."></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" id="btnCloseApplyModal" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition">Annuler</button>
+          <button type="submit" id="btnSubmitApply" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition">Envoyer la proposition</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: VIEW APPLICATIONS (CLIENT) -->
+  <div id="modalViewApps" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-xl font-bold text-white">Propositions des Artisans</h3>
+        <button id="btnCloseAppsModal" class="text-slate-400 hover:text-white font-bold text-xl px-2">&times;</button>
+      </div>
+
+      <div id="appsContainer" class="overflow-y-auto space-y-3 flex-1 pr-1">
+        <!-- Injected Dynamically -->
+      </div>
     </div>
   </div>
 
@@ -225,7 +289,7 @@
       onValue 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // Your Exact Firebase Configuration
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBTlrCFNqiMBAgemAVPmbIQ87mAoTDibSs",
       authDomain: "brico-match.firebaseapp.com",
@@ -236,10 +300,10 @@
       measurementId: "G-QYEVVXHCSL"
     };
 
-    // Explicit Database URL targeting Europe-West1 Regional Node
+    // Regional Realtime Database Endpoint
     const RTDB_URL = "https://brico-match-default-rtdb.europe-west1.firebasedatabase.app";
 
-    // Initialize Firebase Services
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const database = getDatabase(app, RTDB_URL);
@@ -247,6 +311,9 @@
     // App State
     let currentUser = null;
     let currentUserProfile = null;
+    let currentSelectedCategory = "ALL";
+    let allJobsCache = {};
+    let allApplicationsCache = {};
 
     // DOM Elements
     const globalAlert = document.getElementById("globalAlert");
@@ -258,7 +325,7 @@
     const userEmailNav = document.getElementById("userEmailNav");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // Auth Form Elements
+    // Auth Forms & Tabs
     const tabRegister = document.getElementById("tabRegister");
     const tabLogin = document.getElementById("tabLogin");
     const formRegister = document.getElementById("formRegister");
@@ -266,13 +333,21 @@
     const regRole = document.getElementById("regRole");
     const artisanSpecialtyGroup = document.getElementById("artisanSpecialtyGroup");
 
-    // Modal Elements
+    // Modals
     const modalJob = document.getElementById("modalJob");
     const btnOpenNewJobModal = document.getElementById("btnOpenNewJobModal");
     const btnCloseJobModal = document.getElementById("btnCloseJobModal");
     const formNewJob = document.getElementById("formNewJob");
 
-    // UI Helper Functions
+    const modalApply = document.getElementById("modalApply");
+    const btnCloseApplyModal = document.getElementById("btnCloseApplyModal");
+    const formApply = document.getElementById("formApply");
+
+    const modalViewApps = document.getElementById("modalViewApps");
+    const btnCloseAppsModal = document.getElementById("btnCloseAppsModal");
+    const appsContainer = document.getElementById("appsContainer");
+
+    // Helper Functions
     function showAlert(msg, type = "error") {
       globalAlert.textContent = msg;
       globalAlert.className = `p-4 rounded-xl text-sm font-medium border shadow-lg transition-all block ${
@@ -293,7 +368,7 @@
       if (viewName === "artisan") viewArtisan.classList.remove("hidden");
     }
 
-    // Toggle Role-Specific Specialty Input
+    // Role Selection Listener
     regRole.addEventListener("change", (e) => {
       if (e.target.value === "artisan") {
         artisanSpecialtyGroup.classList.remove("hidden");
@@ -302,7 +377,7 @@
       }
     });
 
-    // Toggle Auth Tabs
+    // Auth Tabs Switcher
     tabRegister.addEventListener("click", () => {
       tabRegister.className = "flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400";
       tabLogin.className = "flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200";
@@ -317,7 +392,7 @@
       formRegister.classList.add("hidden");
     });
 
-    // Auth State Listener
+    // Auth State Observer
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
@@ -326,25 +401,30 @@
           if (snapshot.exists()) {
             currentUserProfile = snapshot.val();
             
-            // Update Header Nav
             userInfoNav.classList.remove("hidden");
             userEmailNav.textContent = currentUserProfile.fullName || user.email;
-            userBadge.textContent = currentUserProfile.role.toUpperCase();
+            userBadge.textContent = currentUserProfile.role === "artisan" 
+              ? `ARTISAN (${currentUserProfile.specialty || 'Général'})` 
+              : "CLIENT";
 
-            // Redirect based on role
             if (currentUserProfile.role === "client") {
               switchView("client");
-              listenToClientJobs();
+              listenToJobsAndApplications();
             } else {
               switchView("artisan");
-              listenToAllJobs();
+              // Default specialty filter to artisan's registered trade
+              if (currentUserProfile.specialty) {
+                currentSelectedCategory = currentUserProfile.specialty;
+                updateFilterButtonsUI(currentSelectedCategory);
+              }
+              listenToJobsAndApplications();
             }
           } else {
-            showAlert("Profil utilisateur introuvable dans la base de données.", "error");
+            showAlert("Profil introuvable dans la base de données.", "error");
           }
         } catch (err) {
-          console.error("User Profile Error:", err);
-          showAlert("Erreur lors de la récupération du profil: " + err.message, "error");
+          console.error("Profile Error:", err);
+          showAlert("Erreur lors de la récupération du profil.", "error");
         }
       } else {
         currentUser = null;
@@ -354,7 +434,7 @@
       }
     });
 
-    // Handle Registration
+    // Registration Handler
     formRegister.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("btnRegisterSubmit");
@@ -364,6 +444,7 @@
       const fullName = document.getElementById("regFullName").value.trim();
       const email = document.getElementById("regEmail").value.trim();
       const password = document.getElementById("regPassword").value;
+      const phone = document.getElementById("regPhone").value.trim();
       const role = regRole.value;
       const specialty = role === "artisan" ? document.getElementById("regSpecialty").value : "";
 
@@ -371,11 +452,11 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
 
-        // Write profile to Realtime Database
         await set(ref(database, `users/${uid}`), {
           uid,
           fullName,
           email,
+          phone,
           role,
           specialty,
           createdAt: new Date().toISOString()
@@ -391,12 +472,12 @@
       }
     });
 
-    // Handle Login
+    // Login Handler
     formLogin.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("btnLoginSubmit");
       btn.disabled = true;
-      btn.textContent = "Connexion en cours...";
+      btn.textContent = "Connexion...";
 
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
@@ -413,14 +494,14 @@
       }
     });
 
-    // Logout
+    // Logout Handler
     logoutBtn.addEventListener("click", () => signOut(auth));
 
-    // Modal Operations
+    // Client Job Modal Controls
     btnOpenNewJobModal.addEventListener("click", () => modalJob.classList.remove("hidden"));
     btnCloseJobModal.addEventListener("click", () => modalJob.classList.add("hidden"));
 
-    // Handle Posting New Job (Client)
+    // Post Job Handler (Client)
     formNewJob.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("btnSubmitJob");
@@ -437,6 +518,7 @@
           id: newJobRef.key,
           clientId: currentUser.uid,
           clientName: currentUserProfile.fullName || currentUser.email,
+          clientPhone: currentUserProfile.phone || "",
           title,
           category,
           location,
@@ -456,75 +538,204 @@
       }
     });
 
-    // Listeners for Realtime Database Updates
-    function listenToClientJobs() {
-      const clientJobsList = document.getElementById("clientJobsList");
-      onValue(ref(database, 'jobs'), (snapshot) => {
-        clientJobsList.innerHTML = "";
-        if (!snapshot.exists()) {
-          clientJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Aucune demande publiée pour le moment.</p>`;
-          return;
-        }
+    // Artisan Apply Modal Controls
+    btnCloseApplyModal.addEventListener("click", () => modalApply.classList.add("hidden"));
 
-        const jobs = snapshot.val();
-        let myJobsCount = 0;
+    window.openApplyModal = (jobId, jobTitle) => {
+      document.getElementById("applyJobId").value = jobId;
+      document.getElementById("applyJobTitle").textContent = jobTitle;
+      modalApply.classList.remove("hidden");
+    };
 
-        Object.values(jobs).forEach(job => {
-          if (job.clientId === currentUser.uid) {
-            myJobsCount++;
-            const card = document.createElement("div");
-            card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
-            card.innerHTML = `
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
-                  <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
-                </div>
-                <h3 class="font-bold text-white mb-1">${job.title}</h3>
-                <p class="text-xs text-slate-400 mb-3">${job.location}</p>
-                <p class="text-sm text-slate-300 line-clamp-3">${job.description}</p>
-              </div>
-            `;
-            clientJobsList.appendChild(card);
-          }
+    // Apply Handler (Artisan)
+    formApply.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btnSubmitApply");
+      btn.disabled = true;
+
+      const jobId = document.getElementById("applyJobId").value;
+      const price = document.getElementById("applyPrice").value;
+      const availability = document.getElementById("applyAvailability").value.trim();
+      const message = document.getElementById("applyMessage").value.trim();
+
+      try {
+        const appRef = ref(database, `applications/${jobId}/${currentUser.uid}`);
+        await set(appRef, {
+          artisanUid: currentUser.uid,
+          artisanName: currentUserProfile.fullName || currentUser.email,
+          artisanPhone: currentUserProfile.phone || "",
+          specialty: currentUserProfile.specialty || "Général",
+          price,
+          availability,
+          message,
+          appliedAt: new Date().toISOString()
         });
 
-        if (myJobsCount === 0) {
-          clientJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Vous n'avez pas encore publié de demande.</p>`;
+        showAlert("Proposition envoyée au client avec succès!", "success");
+        formApply.reset();
+        modalApply.classList.add("hidden");
+      } catch (err) {
+        console.error("Apply Error:", err);
+        showAlert("Erreur lors de l'envoi de la proposition: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // Client Applications Viewer Controls
+    btnCloseAppsModal.addEventListener("click", () => modalViewApps.classList.add("hidden"));
+
+    window.openViewAppsModal = (jobId) => {
+      appsContainer.innerHTML = "";
+      const jobApps = allApplicationsCache[jobId] || {};
+      const appList = Object.values(jobApps);
+
+      if (appList.length === 0) {
+        appsContainer.innerHTML = `<p class="text-slate-500 text-sm py-4 text-center">Aucune offre reçue pour le moment.</p>`;
+      } else {
+        appList.forEach(app => {
+          const item = document.createElement("div");
+          item.className = "bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2";
+          item.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white">${app.artisanName} (${app.specialty})</span>
+              <span class="text-emerald-400 font-extrabold text-lg">${app.price} DZD</span>
+            </div>
+            <p class="text-xs text-slate-400">📅 Disponibilité: <span class="text-slate-200 font-medium">${app.availability}</span></p>
+            <p class="text-sm text-slate-300 bg-slate-900 p-3 rounded-lg border border-slate-800/80">${app.message}</p>
+            <div class="pt-1 flex items-center justify-between text-xs text-slate-400">
+              <span>📞 Tél: <strong class="text-emerald-400">${app.artisanPhone || 'Non renseigné'}</strong></span>
+              <span>${new Date(app.appliedAt).toLocaleDateString('fr-FR')}</span>
+            </div>
+          `;
+          appsContainer.appendChild(item);
+        });
+      }
+
+      modalViewApps.classList.remove("hidden");
+    };
+
+    // Specialty Filter Buttons Listener
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        currentSelectedCategory = e.target.dataset.category;
+        updateFilterButtonsUI(currentSelectedCategory);
+        renderArtisanJobs();
+      });
+    });
+
+    function updateFilterButtonsUI(activeCategory) {
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        if (btn.dataset.category === activeCategory) {
+          btn.className = "filter-btn text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold border border-emerald-500";
+        } else {
+          btn.className = "filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500";
         }
       });
     }
 
-    function listenToAllJobs() {
-      const artisanJobsList = document.getElementById("artisanJobsList");
-      onValue(ref(database, 'jobs'), (snapshot) => {
-        artisanJobsList.innerHTML = "";
-        if (!snapshot.exists()) {
-          artisanJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Aucune offre de travail disponible.</p>`;
-          return;
-        }
+    // Unified Realtime Database Observer
+    function listenToJobsAndApplications() {
+      // Listen to applications first
+      onValue(ref(database, 'applications'), (appsSnapshot) => {
+        allApplicationsCache = appsSnapshot.exists() ? appsSnapshot.val() : {};
 
-        const jobs = snapshot.val();
-        Object.values(jobs).forEach(job => {
+        // Listen to jobs
+        onValue(ref(database, 'jobs'), (jobsSnapshot) => {
+          allJobsCache = jobsSnapshot.exists() ? jobsSnapshot.val() : {};
+
+          if (currentUserProfile?.role === "client") {
+            renderClientJobs();
+          } else if (currentUserProfile?.role === "artisan") {
+            renderArtisanJobs();
+          }
+        });
+      });
+    }
+
+    // Render Client Dashboard
+    function renderClientJobs() {
+      const clientJobsList = document.getElementById("clientJobsList");
+      clientJobsList.innerHTML = "";
+
+      let myJobsCount = 0;
+      Object.values(allJobsCache).forEach(job => {
+        if (job.clientId === currentUser.uid) {
+          myJobsCount++;
+          const jobApps = allApplicationsCache[job.id] || {};
+          const appsCount = Object.keys(jobApps).length;
+
           const card = document.createElement("div");
           card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
           card.innerHTML = `
-            <div>
+            <div class="mb-4">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
                 <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
               </div>
-              <h3 class="font-bold text-white mb-1">${job.title}</h3>
-              <p class="text-xs text-slate-400 mb-2">📍 ${job.location} • Client: ${job.clientName}</p>
-              <p class="text-sm text-slate-300 mb-4">${job.description}</p>
+              <h3 class="font-bold text-white text-base mb-1">${job.title}</h3>
+              <p class="text-xs text-slate-400 mb-2">📍 ${job.location}</p>
+              <p class="text-sm text-slate-300 line-clamp-3">${job.description}</p>
             </div>
-            <button onclick="alert('Demande de contact envoyée au client!')" class="w-full py-2 bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-emerald-400 font-bold rounded-xl transition text-sm">
-              Postuler à cette offre
+            
+            <button onclick="openViewAppsModal('${job.id}')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition text-xs flex items-center justify-center gap-2 border border-slate-700">
+              <span>Propositions reçues</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-xs font-black">${appsCount}</span>
             </button>
           `;
-          artisanJobsList.appendChild(card);
-        });
+          clientJobsList.appendChild(card);
+        }
       });
+
+      if (myJobsCount === 0) {
+        clientJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Vous n'avez pas encore publié de demande.</p>`;
+      }
+    }
+
+    // Render Artisan Dashboard
+    function renderArtisanJobs() {
+      const artisanJobsList = document.getElementById("artisanJobsList");
+      artisanJobsList.innerHTML = "";
+
+      let matchingJobsCount = 0;
+
+      Object.values(allJobsCache).forEach(job => {
+        // Specialty Filter
+        if (currentSelectedCategory !== "ALL" && job.category !== currentSelectedCategory) {
+          return;
+        }
+
+        matchingJobsCount++;
+        const jobApps = allApplicationsCache[job.id] || {};
+        const hasApplied = !!jobApps[currentUser.uid];
+
+        const card = document.createElement("div");
+        card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
+        card.innerHTML = `
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
+              <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
+            </div>
+            <h3 class="font-bold text-white text-base mb-1">${job.title}</h3>
+            <p class="text-xs text-slate-400 mb-2">📍 ${job.location} • Client: ${job.clientName}</p>
+            <p class="text-sm text-slate-300">${job.description}</p>
+          </div>
+
+          ${
+            hasApplied 
+              ? `<div class="w-full py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold rounded-xl text-center text-xs">✓ Proposition Déjà Envoyée</div>`
+              : `<button onclick="openApplyModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition text-xs shadow-lg shadow-emerald-950/40">
+                  Postuler à cette offre
+                 </button>`
+          }
+        `;
+        artisanJobsList.appendChild(card);
+      });
+
+      if (matchingJobsCount === 0) {
+        artisanJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full py-4">Aucune offre de travail disponible pour cette catégorie.</p>`;
+      }
     }
   </script>
 </body>
