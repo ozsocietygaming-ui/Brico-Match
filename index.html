@@ -1042,8 +1042,7 @@ function renderMyRequests() {
         <div class="mt-3 pt-3 border-t border-stone">
           <p class="text-[11px] text-ink/40 mb-1.5">Mark this job as:</p>
           <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="markCompletion('${id}','client','fulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.clientCompletionMark === 'fulfilled' ? 'bg-green-600 text-white' : 'border border-stone hover:bg-sand'}">✅ Job Fulfilled</button>
-            <button onclick="markCompletion('${id}','client','unfulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.clientCompletionMark === 'unfulfilled' ? 'bg-red-500 text-white' : 'border border-stone hover:bg-sand'}">❌ Job Unfulfilled</button>
+            ${renderCompletionButtons(id, 'client', r.clientCompletionMark)}
             ${bothFulfilled && !hasRated ? `<button onclick="openRateModal('${id}','${r.handymanId}','${escapeHtml(r.handymanName).replace(/'/g,"\\'")}','${escapeHtml(r.title).replace(/'/g,"\\'")}')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition bg-amber-100 text-amber-700 hover:bg-amber-200">⭐ Rate Handyman</button>` : ''}
             ${hasRated ? `<span class="text-xs text-ink/40 italic">You already reviewed this job</span>` : ''}
           </div>
@@ -1190,8 +1189,7 @@ function renderDirectRequests() {
         <div class="mt-3 pt-3 border-t border-stone">
           <p class="text-[11px] text-ink/40 mb-1.5">Mark this job as:</p>
           <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="markCompletion('${id}','handyman','fulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.handymanCompletionMark === 'fulfilled' ? 'bg-green-600 text-white' : 'border border-stone hover:bg-sand'}">✅ Job Fulfilled</button>
-            <button onclick="markCompletion('${id}','handyman','unfulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.handymanCompletionMark === 'unfulfilled' ? 'bg-red-500 text-white' : 'border border-stone hover:bg-sand'}">❌ Job Unfulfilled</button>
+            ${renderCompletionButtons(id, 'handyman', r.handymanCompletionMark)}
           </div>
           ${bothFulfilled ? '<p class="text-[11px] text-green-700 mt-1.5">✔ Confirmed complete by both sides — added to your Fulfilled Jobs</p>' : ''}
         </div>
@@ -1201,8 +1199,30 @@ function renderDirectRequests() {
   }).join('');
 }
 
+function renderCompletionButtons(reqId, side, currentMark) {
+  const locked = !!currentMark;
+  const build = (mark, label, activeClass) => {
+    const isActive = currentMark === mark;
+    const onclickAttr = locked ? '' : `onclick="markCompletion('${reqId}','${side}','${mark}')"`;
+    const disabledAttr = locked ? 'disabled' : '';
+    let stateClasses;
+    if (isActive) stateClasses = activeClass + ' cursor-default';
+    else if (locked) stateClasses = 'border border-stone opacity-40 cursor-not-allowed';
+    else stateClasses = 'border border-stone hover:bg-sand';
+    return `<button type="button" ${onclickAttr} ${disabledAttr} class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${stateClasses}">${label}</button>`;
+  };
+  let html = build('fulfilled', '✅ Job Fulfilled', 'bg-green-600 text-white') + build('unfulfilled', '❌ Job Unfulfilled', 'bg-red-500 text-white');
+  if (locked) html += `<span class="text-[11px] text-ink/40 italic">🔒 locked</span>`;
+  return html;
+}
+
 function markCompletion(reqId, side, mark) {
+  const req = directRequestsCacheData[reqId];
   const field = side === 'client' ? 'clientCompletionMark' : 'handymanCompletionMark';
+  if (req && req[field]) {
+    showToast('This job status was already set and cannot be changed', 'error');
+    return;
+  }
   db.ref('directRequests/' + reqId + '/' + field).set(mark).then(() => {
     showToast(mark === 'fulfilled' ? 'Marked as fulfilled' : 'Marked as unfulfilled', mark === 'fulfilled' ? 'success' : 'info');
   });
