@@ -1,742 +1,1203 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brico-Match - Plateforme Bricolage & Artisans</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#f0fdf4',
-              500: '#22c55e',
-              600: '#16a34a',
-              700: '#15803d',
-            }
-          }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brico-Match | Handyman &amp; Client Service Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          sand: '#F5F2EB',
+          cream: '#FBFAF7',
+          stone: {
+            light: '#EDE7DA',
+            DEFAULT: '#DDD3BF',
+            dark: '#A89A82'
+          },
+          terracotta: {
+            light: '#E39274',
+            DEFAULT: '#C1694F',
+            dark: '#9C4E38'
+          },
+          slateaccent: '#5B6B6B',
+          ink: '#3A3530'
+        },
+        fontFamily: {
+          display: ['"Plus Jakarta Sans"', 'sans-serif'],
+          body: ['Inter', 'sans-serif']
+        },
+        boxShadow: {
+          soft: '0 2px 14px rgba(58, 53, 48, 0.07)',
+          card: '0 4px 20px rgba(58, 53, 48, 0.08)'
         }
       }
     }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; }
-  </style>
+  }
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #F5F2EB; }
+  h1, h2, h3, h4, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .hidden-force { display: none !important; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-thumb { background: #DDD3BF; border-radius: 10px; }
+  .tab-scroll::-webkit-scrollbar { display: none; }
+  .tab-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  .toast-enter { animation: toastIn 0.25s ease-out; }
+  @keyframes toastIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  input[type="checkbox"].switch { appearance: none; width: 44px; height: 24px; background: #DDD3BF; border-radius: 999px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink:0; }
+  input[type="checkbox"].switch:checked { background: #C1694F; }
+  input[type="checkbox"].switch::before { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; background:white; border-radius:50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  input[type="checkbox"].switch:checked::before { transform: translateX(20px); }
+</style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+<body class="text-ink antialiased">
 
-  <!-- Header / Navbar -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3 cursor-pointer" id="navLogo">
-        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-slate-950 font-black text-xl">BM</div>
-        <span class="text-xl font-bold tracking-tight text-white">Brico-<span class="text-emerald-500">Match</span></span>
+<!-- TOAST CONTAINER -->
+<div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto flex flex-col gap-2 z-[100] items-end"></div>
+
+<!-- BLOCKED / TRIAL EXPIRED MODAL (UN-DISMISSABLE) -->
+<div id="modal-blocked" class="hidden-force fixed inset-0 bg-ink/70 z-[90] items-center justify-center p-4">
+  <div class="bg-cream rounded-2xl shadow-card max-w-sm w-full p-8 text-center fade-in">
+    <div class="w-16 h-16 rounded-full bg-terracotta/10 text-terracotta text-3xl flex items-center justify-center mx-auto mb-4">⛔</div>
+    <h2 class="text-xl font-bold font-display mb-2">Access Restricted</h2>
+    <p class="text-ink/70 text-sm leading-relaxed mb-6">Your trial period has ended or your account is restricted. Please contact the administrator.</p>
+    <a href="tel:0662558982" class="block w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">📞 Call Administrator: 0662 55 89 82</a>
+    <button onclick="logout()" class="mt-3 text-sm text-ink/50 hover:text-ink/80 underline">Log out</button>
+  </div>
+</div>
+
+<!-- DIRECT HIRE MODAL -->
+<div id="modal-direct-hire" class="hidden-force fixed inset-0 bg-ink/60 z-[80] items-center justify-center p-4">
+  <div class="bg-cream rounded-2xl shadow-card max-w-md w-full p-6 fade-in max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <h3 class="text-lg font-bold font-display">Direct Hire Request</h3>
+        <p class="text-sm text-ink/60">Sending a request to <span id="dh-handyman-name" class="font-semibold text-terracotta"></span></p>
+      </div>
+      <button onclick="closeModal('modal-direct-hire')" class="text-ink/40 hover:text-ink text-xl leading-none">✕</button>
+    </div>
+    <form id="form-direct-hire" onsubmit="submitDirectHire(event)" class="space-y-3">
+      <div>
+        <label class="text-xs font-semibold text-ink/60 mb-1 block">Job Title</label>
+        <input required id="dh-title" type="text" placeholder="e.g. Fix leaking kitchen pipe" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-ink/60 mb-1 block">Details</label>
+        <textarea required id="dh-details" rows="3" placeholder="Describe the job..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
+      </div>
+      <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Send Request</button>
+    </form>
+  </div>
+</div>
+
+<!-- ADD TRIAL DAYS MODAL -->
+<div id="modal-trial" class="hidden-force fixed inset-0 bg-ink/60 z-[80] items-center justify-center p-4">
+  <div class="bg-cream rounded-2xl shadow-card max-w-xs w-full p-6 fade-in">
+    <h3 class="text-lg font-bold font-display mb-1">Add Trial Days</h3>
+    <p class="text-sm text-ink/60 mb-4">User: <span id="trial-username" class="font-semibold"></span></p>
+    <input id="trial-days-input" type="number" min="1" value="7" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white mb-4 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+    <div class="flex gap-2">
+      <button onclick="closeModal('modal-trial')" class="flex-1 py-2.5 rounded-xl border border-stone text-ink/70 font-medium hover:bg-stone-light">Cancel</button>
+      <button onclick="confirmAddTrialDays()" class="flex-1 py-2.5 rounded-xl bg-terracotta text-white font-semibold hover:bg-terracotta-dark">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ROLE SELECT SCREEN ===================== -->
+<div id="screen-role-select" class="min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-lg w-full fade-in">
+    <div class="text-center mb-10">
+      <div class="w-16 h-16 rounded-2xl bg-terracotta text-white text-3xl flex items-center justify-center mx-auto mb-4 shadow-soft">🛠️</div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold font-display text-ink mb-2">Brico-Match</h1>
+      <p class="text-ink/60">Connecting Clients &amp; Handymen across Algeria</p>
+    </div>
+    <div class="grid gap-4">
+      <button onclick="selectRole('client')" class="group bg-white hover:border-terracotta border-2 border-transparent rounded-2xl p-5 shadow-soft flex items-center gap-4 transition text-left">
+        <div class="w-12 h-12 rounded-xl bg-sand flex items-center justify-center text-2xl group-hover:bg-terracotta/10">🧑‍💼</div>
+        <div class="flex-1">
+          <h3 class="font-bold font-display text-ink">I'm a Client</h3>
+          <p class="text-sm text-ink/60">Post jobs and hire trusted handymen</p>
+        </div>
+        <span class="text-ink/30 group-hover:text-terracotta transition">→</span>
+      </button>
+      <button onclick="selectRole('handyman')" class="group bg-white hover:border-terracotta border-2 border-transparent rounded-2xl p-5 shadow-soft flex items-center gap-4 transition text-left">
+        <div class="w-12 h-12 rounded-xl bg-sand flex items-center justify-center text-2xl group-hover:bg-terracotta/10">🔧</div>
+        <div class="flex-1">
+          <h3 class="font-bold font-display text-ink">I'm a Handyman</h3>
+          <p class="text-sm text-ink/60">Find jobs and grow your business</p>
+        </div>
+        <span class="text-ink/30 group-hover:text-terracotta transition">→</span>
+      </button>
+      <button onclick="showAdminLogin()" class="text-sm text-ink/50 hover:text-terracotta underline text-center mt-2">Admin Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== AUTH SCREEN (Client / Handyman) ===================== -->
+<div id="screen-auth" class="hidden-force min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-md w-full fade-in">
+    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1">← Back</button>
+    <div class="bg-white rounded-2xl shadow-card p-6 sm:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div id="auth-role-icon" class="w-11 h-11 rounded-xl bg-sand flex items-center justify-center text-xl"></div>
+        <div>
+          <h2 id="auth-title" class="text-xl font-bold font-display"></h2>
+          <p id="auth-subtitle" class="text-sm text-ink/50"></p>
+        </div>
       </div>
 
-      <div id="userInfoNav" class="hidden flex items-center gap-3">
-        <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-slate-800 text-emerald-400 border border-emerald-500/30">Guest</span>
-        <span id="userEmailNav" class="text-sm font-medium text-slate-300 hidden sm:inline"></span>
-        <button id="logoutBtn" class="text-xs px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg transition">Déconnexion</button>
+      <div class="flex bg-sand rounded-xl p-1 mb-6">
+        <button id="tab-login-btn" onclick="switchAuthMode('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition">Login</button>
+        <button id="tab-register-btn" onclick="switchAuthMode('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition">Register</button>
       </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" onsubmit="handleLogin(event)" class="space-y-3">
+        <input required id="login-username" type="text" placeholder="Username" autocomplete="username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="login-password" type="password" placeholder="Password" autocomplete="current-password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Log In</button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-register" class="hidden-force space-y-3" onsubmit="handleRegister(event)">
+        <input required id="reg-fullname" type="text" placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-username" type="text" placeholder="Choose a Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-password" type="password" placeholder="Choose a Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <input required id="reg-phone" type="tel" placeholder="Phone Number (05/06/07XXXXXXXX)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <select required id="reg-wilaya" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
+          <option value="" disabled selected>Select your Wilaya</option>
+        </select>
+        <input required id="reg-address" type="text" placeholder="Address (street, commune)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <div id="reg-category-wrap" class="hidden-force">
+          <select id="reg-category" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
+            <option value="" disabled selected>Select your Specialty</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Create Account</button>
+        <p class="text-xs text-center text-ink/40">You'll get a 7-day free trial upon registration.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN LOGIN SCREEN ===================== -->
+<div id="screen-admin-login" class="hidden-force min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-sm w-full fade-in">
+    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1">← Back</button>
+    <div class="bg-white rounded-2xl shadow-card p-8 text-center">
+      <div class="w-12 h-12 rounded-xl bg-slateaccent/10 text-slateaccent flex items-center justify-center mx-auto mb-4 text-xl">🔐</div>
+      <h2 class="text-xl font-bold font-display mb-1">Admin Login</h2>
+      <p class="text-sm text-ink/50 mb-6">Master control access</p>
+      <form onsubmit="handleAdminLogin(event)" class="space-y-3 text-left">
+        <input required id="admin-username" type="text" placeholder="Admin Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+        <input required id="admin-password" type="password" placeholder="Admin Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+        <button type="submit" class="w-full bg-slateaccent hover:bg-ink text-white font-semibold py-3 rounded-xl transition">Enter Dashboard</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CLIENT DASHBOARD ===================== -->
+<div id="screen-client" class="hidden-force min-h-screen pb-10">
+  <header class="bg-white border-b border-stone sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">🛠️</div>
+        <div>
+          <h1 class="font-display font-extrabold leading-none">Brico-Match</h1>
+          <p class="text-[11px] text-ink/40 leading-none mt-0.5">Client Space</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="client-name-display" class="text-sm font-medium hidden sm:inline"></span>
+        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition">Log out</button>
+      </div>
+    </div>
+    <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
+      <button data-tab="post-job" onclick="switchClientTab('post-job')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📝 Post a Job</button>
+      <button data-tab="explore" onclick="switchClientTab('explore')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">🔍 Explore Handymen</button>
+      <button data-tab="requests" onclick="switchClientTab('requests')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📋 My Requests</button>
     </div>
   </header>
 
-  <!-- Global Alert Box -->
-  <div class="max-w-7xl mx-auto px-4 mt-4 w-full">
-    <div id="globalAlert" class="hidden p-4 rounded-xl text-sm font-medium border shadow-lg transition-all"></div>
-  </div>
+  <main class="max-w-5xl mx-auto px-4 mt-6">
 
-  <!-- Main Content Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-
-    <!-- VIEW 1: AUTHENTICATION (Login / Register) -->
-    <section id="viewAuth" class="max-w-md mx-auto my-8">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl">
-        
-        <!-- Auth Tabs -->
-        <div class="flex border-b border-slate-800 mb-6">
-          <button id="tabRegister" class="flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400">Inscription</button>
-          <button id="tabLogin" class="flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Connexion</button>
+    <!-- POST JOB TAB -->
+    <section id="client-tab-post-job" class="client-tab-panel">
+      <div class="grid md:grid-cols-5 gap-6">
+        <div class="md:col-span-2 bg-white rounded-2xl shadow-soft p-6 h-fit">
+          <h2 class="font-display font-bold text-lg mb-4">Post a New Job</h2>
+          <form onsubmit="handlePostJob(event)" class="space-y-3">
+            <input required id="job-title" type="text" placeholder="Job Title" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            <textarea required id="job-details" rows="4" placeholder="Describe what you need done..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
+            <select required id="job-category" class="w-full px-4 py-2.5 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80"></select>
+            <label class="flex items-center justify-between px-4 py-2.5 rounded-xl border border-stone bg-cream cursor-pointer">
+              <span class="text-sm font-medium">🚨 Mark as Urgent</span>
+              <input type="checkbox" id="job-urgent" class="switch">
+            </label>
+            <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition">Post Job</button>
+          </form>
         </div>
-
-        <!-- Register Form -->
-        <form id="formRegister" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nom Complet</label>
-            <input type="text" id="regFullName" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Karim Benali">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
-            <input type="email" id="regEmail" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="exemple@mail.com">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Mot de passe</label>
-            <input type="password" id="regPassword" required minlength="6" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="••••••••">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Numéro de Téléphone</label>
-            <input type="tel" id="regPhone" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="0550 00 00 00">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Rôle</label>
-            <select id="regRole" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
-              <option value="client">Client (Je cherche un artisan)</option>
-              <option value="artisan">Artisan / Bricoleur (Je propose mes services)</option>
-            </select>
-          </div>
-
-          <div id="artisanSpecialtyGroup" class="hidden">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Spécialité Principale</label>
-            <select id="regSpecialty" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
-              <option value="Plomberie">Plomberie</option>
-              <option value="Électricité">Électricité</option>
-              <option value="Peinture">Peinture</option>
-              <option value="Menuiserie">Menuiserie</option>
-              <option value="Climatisation">Climatisation / HVAC</option>
-              <option value="Autre">Autre Service</option>
-            </select>
-          </div>
-
-          <button type="submit" id="btnRegisterSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-950/50 mt-2">
-            Créer un compte
-          </button>
-        </form>
-
-        <!-- Login Form -->
-        <form id="formLogin" class="space-y-4 hidden">
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
-            <input type="email" id="loginEmail" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="exemple@mail.com">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Mot de passe</label>
-            <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="••••••••">
-          </div>
-
-          <button type="submit" id="btnLoginSubmit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-950/50 mt-2">
-            Se Connecter
-          </button>
-        </form>
-
-      </div>
-    </section>
-
-    <!-- VIEW 2: CLIENT DASHBOARD -->
-    <section id="viewClient" class="hidden space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-        <div>
-          <h1 class="text-2xl font-bold text-white">Espace Client</h1>
-          <p class="text-sm text-slate-400">Publiez des demandes de travaux et consultez les offres reçues des artisans.</p>
-        </div>
-        <button id="btnOpenNewJobModal" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition flex items-center justify-center gap-2">
-          <span>+ Publier une demande</span>
-        </button>
-      </div>
-
-      <!-- Posted Jobs List -->
-      <div class="space-y-4">
-        <h2 class="text-lg font-bold text-slate-200">Mes Demandes Publiées</h2>
-        <div id="clientJobsList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <!-- Dynamically Injected -->
+        <div class="md:col-span-3">
+          <h2 class="font-display font-bold text-lg mb-4">My Posted Jobs</h2>
+          <div id="my-posted-jobs-list" class="space-y-3"></div>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 3: ARTISAN DASHBOARD -->
-    <section id="viewArtisan" class="hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-        <div>
-          <h1 class="text-2xl font-bold text-white">Espace Artisan / Bricoleur</h1>
-          <p class="text-sm text-slate-400">Parcourez les offres de travaux disponibles et envoyez vos propositions directement.</p>
-        </div>
-
-        <!-- Specialty Filter Bar -->
-        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800">
-          <span class="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider">Filtrer par spécialité :</span>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold border border-emerald-500" data-category="ALL">Toutes</button>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Plomberie">Plomberie</button>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Électricité">Électricité</button>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Peinture">Peinture</button>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Menuiserie">Menuiserie</button>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Climatisation">Climatisation</button>
-          <button class="filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500" data-category="Autre">Autre</button>
-        </div>
+    <!-- EXPLORE HANDYMEN TAB -->
+    <section id="client-tab-explore" class="client-tab-panel hidden-force">
+      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+        <input id="handyman-search" oninput="renderHandymenList()" type="text" placeholder="Search by name..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <select id="handyman-category-filter" onchange="renderHandymenList()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
+          <option value="">All Categories</option>
+        </select>
       </div>
+      <div id="handymen-list" class="grid sm:grid-cols-2 gap-4"></div>
+    </section>
 
-      <!-- Available Jobs List -->
-      <div class="space-y-4">
-        <h2 class="text-lg font-bold text-slate-200">Offres de Travaux Disponibles</h2>
-        <div id="artisanJobsList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <!-- Dynamically Injected -->
-        </div>
-      </div>
+    <!-- MY REQUESTS TAB -->
+    <section id="client-tab-requests" class="client-tab-panel hidden-force">
+      <h2 class="font-display font-bold text-lg mb-4">My Direct Hire Requests</h2>
+      <div id="my-requests-list" class="space-y-3"></div>
     </section>
 
   </main>
+</div>
 
-  <!-- MODAL 1: NEW JOB POST (CLIENT) -->
-  <div id="modalJob" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative">
-      <h3 class="text-xl font-bold text-white mb-4">Nouvelle Demande de Service</h3>
-      
-      <form id="formNewJob" class="space-y-4">
+<!-- ===================== HANDYMAN DASHBOARD ===================== -->
+<div id="screen-handyman" class="hidden-force min-h-screen pb-10">
+  <header class="bg-white border-b border-stone sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-y-2">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">🛠️</div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Titre de la demande</label>
-          <input type="text" id="jobTitle" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Réparation fuite d'eau cuisine">
+          <h1 class="font-display font-extrabold leading-none">Brico-Match</h1>
+          <p class="text-[11px] text-ink/40 leading-none mt-0.5">Handyman Space</p>
         </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Catégorie</label>
-          <select id="jobCategory" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100">
-            <option value="Plomberie">Plomberie</option>
-            <option value="Électricité">Électricité</option>
-            <option value="Peinture">Peinture</option>
-            <option value="Menuiserie">Menuiserie</option>
-            <option value="Climatisation">Climatisation / HVAC</option>
-            <option value="Autre">Autre Service</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Wilaya / Ville</label>
-          <input type="text" id="jobLocation" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Jijel / Alger / Oran">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Description détaillée</label>
-          <textarea id="jobDescription" rows="3" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Décrivez clairement le travail demandé..."></textarea>
-        </div>
-
-        <div class="flex gap-3 pt-2">
-          <button type="button" id="btnCloseJobModal" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition">Annuler</button>
-          <button type="submit" id="btnSubmitJob" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition">Publier</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL 2: APPLY FOR JOB (ARTISAN) -->
-  <div id="modalApply" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative space-y-4">
-      <h3 class="text-xl font-bold text-white">Postuler à l'offre</h3>
-      <p id="applyJobTitle" class="text-sm font-semibold text-emerald-400 bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20"></p>
-
-      <form id="formApply" class="space-y-4">
-        <input type="hidden" id="applyJobId">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Prix proposé (DZD)</label>
-          <input type="number" id="applyPrice" required min="100" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: 3500">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Disponibilité</label>
-          <input type="text" id="applyAvailability" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Ex: Demain matin / Ce weekend">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Message au client</label>
-          <textarea id="applyMessage" rows="3" required class="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-emerald-500 focus:outline-none text-slate-100" placeholder="Présentez votre proposition et votre expérience..."></textarea>
-        </div>
-
-        <div class="flex gap-3 pt-2">
-          <button type="button" id="btnCloseApplyModal" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition">Annuler</button>
-          <button type="submit" id="btnSubmitApply" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition">Envoyer la proposition</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL 3: VIEW APPLICATIONS (CLIENT) -->
-  <div id="modalViewApps" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative space-y-4 max-h-[85vh] flex flex-col">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-xl font-bold text-white">Propositions des Artisans</h3>
-        <button id="btnCloseAppsModal" class="text-slate-400 hover:text-white font-bold text-xl px-2">&times;</button>
       </div>
-
-      <div id="appsContainer" class="overflow-y-auto space-y-3 flex-1 pr-1">
-        <!-- Injected Dynamically -->
+      <div class="flex items-center gap-3">
+        <label class="flex items-center gap-2 bg-sand px-3 py-1.5 rounded-full cursor-pointer">
+          <span class="text-xs font-semibold">Available for Work</span>
+          <input type="checkbox" id="availability-toggle" class="switch" onchange="toggleAvailability()">
+        </label>
+        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition">Log out</button>
       </div>
     </div>
-  </div>
+    <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
+      <button data-tab="feed" onclick="switchHandymanTab('feed')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">💼 Job Opportunities</button>
+      <button data-tab="direct" onclick="switchHandymanTab('direct')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📥 Direct Requests <span id="direct-req-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
+    </div>
+  </header>
 
-  <!-- Firebase Scripts (Modular v10) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword, 
-      signOut, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getDatabase, 
-      ref, 
-      set, 
-      get, 
-      push, 
-      onValue 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  <main class="max-w-5xl mx-auto px-4 mt-6">
+    <section id="handyman-tab-feed" class="handyman-tab-panel">
+      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+        <input id="job-feed-search" oninput="renderJobFeed()" type="text" placeholder="Search jobs by title..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        <span id="specialty-badge" class="px-4 py-2.5 rounded-xl bg-sand text-sm font-semibold whitespace-nowrap"></span>
+      </div>
+      <div id="job-feed-list" class="grid sm:grid-cols-2 gap-4"></div>
+    </section>
 
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBTlrCFNqiMBAgemAVPmbIQ87mAoTDibSs",
-      authDomain: "brico-match.firebaseapp.com",
-      projectId: "brico-match",
-      storageBucket: "brico-match.firebasestorage.app",
-      messagingSenderId: "576015588951",
-      appId: "1:576015588951:web:695db99916c5c42df80d12",
-      measurementId: "G-QYEVVXHCSL"
+    <section id="handyman-tab-direct" class="handyman-tab-panel hidden-force">
+      <h2 class="font-display font-bold text-lg mb-4">Direct Requests From Clients</h2>
+      <div id="direct-requests-list" class="space-y-3"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ===================== ADMIN DASHBOARD ===================== -->
+<div id="screen-admin" class="hidden-force min-h-screen pb-10">
+  <header class="bg-ink border-b border-stone sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">⚙️</div>
+        <div>
+          <h1 class="font-display font-extrabold leading-none text-cream">Brico-Match</h1>
+          <p class="text-[11px] text-cream/50 leading-none mt-0.5">Master Control</p>
+        </div>
+      </div>
+      <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-1.5 rounded-lg font-medium transition">Log out</button>
+    </div>
+    <div class="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
+      <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">👥 Users</button>
+      <button data-tab="jobs" onclick="switchAdminTab('jobs')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📋 Job Posts</button>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 mt-6">
+    <section id="admin-tab-users" class="admin-tab-panel">
+      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+        <input id="admin-user-search" oninput="renderUsersTable()" type="text" placeholder="Search by name, username or phone..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+        <select id="admin-role-filter" onchange="renderUsersTable()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40 text-ink/80">
+          <option value="">All Roles</option>
+          <option value="client">Clients</option>
+          <option value="handyman">Handymen</option>
+        </select>
+      </div>
+      <div class="bg-white rounded-2xl shadow-soft overflow-x-auto">
+        <table class="w-full text-sm min-w-[720px]">
+          <thead>
+            <tr class="text-left text-ink/50 border-b border-stone">
+              <th class="px-4 py-3 font-semibold">Name / Username</th>
+              <th class="px-4 py-3 font-semibold">Role</th>
+              <th class="px-4 py-3 font-semibold">Phone</th>
+              <th class="px-4 py-3 font-semibold">Status</th>
+              <th class="px-4 py-3 font-semibold">Trial Ends</th>
+              <th class="px-4 py-3 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-users-tbody"></tbody>
+        </table>
+      </div>
+      <div id="admin-users-empty" class="hidden-force"></div>
+    </section>
+
+    <section id="admin-tab-jobs" class="admin-tab-panel hidden-force">
+      <input id="admin-job-search" oninput="renderJobsAdmin()" type="text" placeholder="Search job posts..." class="w-full mb-5 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
+      <div id="admin-jobs-list" class="grid sm:grid-cols-2 gap-4"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   BRICO-MATCH — CORE APPLICATION SCRIPT
+   ============================================================ */
+
+// ---------- Firebase Init ----------
+const firebaseConfig = {
+  apiKey: "AIzaSyBTlrCFNqiMBAgemAVPmbIQ87mAoTDibSs",
+  authDomain: "brico-match.firebaseapp.com",
+  projectId: "brico-match",
+  storageBucket: "brico-match.firebasestorage.app",
+  messagingSenderId: "576015588951",
+  appId: "1:576015588951:web:695db99916c5c42df80d12",
+  measurementId: "G-QYEVVXHCSL",
+  databaseURL: "https://brico-match-default-rtdb.europe-west1.firebasedatabase.app"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ---------- Constants ----------
+const CATEGORIES = ["Plumber","Electrician","CCTV","HVAC","Painter","Carpenter","Mason","General Repair"];
+const CATEGORY_ICONS = { "Plumber":"🚰","Electrician":"⚡","CCTV":"📹","HVAC":"❄️","Painter":"🎨","Carpenter":"🪚","Mason":"🧱","General Repair":"🔩" };
+const WILAYAS = [
+  "01 - Adrar","02 - Chlef","03 - Laghouat","04 - Oum El Bouaghi","05 - Batna","06 - Béjaïa","07 - Biskra",
+  "08 - Béchar","09 - Blida","10 - Bouira","11 - Tamanrasset","12 - Tébessa","13 - Tlemcen","14 - Tiaret",
+  "15 - Tizi Ouzou","16 - Alger","17 - Djelfa","18 - Jijel","19 - Sétif","20 - Saïda","21 - Skikda",
+  "22 - Sidi Bel Abbès","23 - Annaba","24 - Guelma","25 - Constantine","26 - Médéa","27 - Mostaganem",
+  "28 - M'Sila","29 - Mascara","30 - Ouargla","31 - Oran","32 - El Bayadh","33 - Illizi","34 - Bordj Bou Arréridj",
+  "35 - Boumerdès","36 - El Tarf","37 - Tindouf","38 - Tissemsilt","39 - El Oued","40 - Khenchela",
+  "41 - Souk Ahras","42 - Tipaza","43 - Mila","44 - Aïn Defla","45 - Naâma","46 - Aïn Témouchent",
+  "47 - Ghardaïa","48 - Relizane","49 - Timimoun","50 - Bordj Badji Mokhtar","51 - Ouled Djellal",
+  "52 - Béni Abbès","53 - In Salah","54 - In Guezzam","55 - Touggourt","56 - Djanet","57 - El M'Ghair","58 - El Meniaa"
+];
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "adminmaster123";
+const ADMIN_PHONE = "0662558982";
+const TRIAL_DAYS = 7;
+const SESSION_KEY = "bricomatch_session";
+
+// ---------- Global State ----------
+let currentUser = null;      // full user object incl. id + role
+let selectedRoleForAuth = null;
+let usersCacheData = {};
+let jobsCacheData = {};
+let directRequestsCacheData = {};
+let listenersAttached = { users:false, jobs:false, requests:false };
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('#screen-role-select,#screen-auth,#screen-admin-login,#screen-client,#screen-handyman,#screen-admin')
+    .forEach(el => el.classList.add('hidden-force'));
+  document.getElementById(id).classList.remove('hidden-force');
+}
+
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const colors = {
+    success: 'bg-ink text-cream',
+    error: 'bg-terracotta-dark text-cream',
+    info: 'bg-slateaccent text-cream'
+  };
+  const icons = { success:'✅', error:'⚠️', info:'ℹ️' };
+  const toast = document.createElement('div');
+  toast.className = `toast-enter ${colors[type]} px-4 py-3 rounded-xl shadow-card text-sm font-medium flex items-center gap-2 max-w-xs`;
+  toast.innerHTML = `<span>${icons[type]}</span><span>${escapeHtml(message)}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s, transform 0.3s';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function escapeHtml(str) {
+  if (str === undefined || str === null) return '';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function timeAgo(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function isValidAlgerianPhone(phone) {
+  return /^0[5-7][0-9]{8}$/.test(phone.trim());
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden-force');
+}
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden-force');
+  document.getElementById(id).classList.add('flex');
+}
+
+function populateSelect(selectEl, options, placeholder) {
+  selectEl.innerHTML = `<option value="" disabled selected>${placeholder}</option>` +
+    options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+}
+
+// ============================================================
+// INITIAL PAGE LOAD
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  // populate static dropdowns
+  populateSelect(document.getElementById('reg-wilaya'), WILAYAS, 'Select your Wilaya');
+  populateSelect(document.getElementById('reg-category'), CATEGORIES, 'Select your Specialty');
+  populateSelect(document.getElementById('job-category'), CATEGORIES, 'Select Category');
+  document.getElementById('job-category').firstElementChild.removeAttribute('disabled');
+
+  const catFilter = document.getElementById('handyman-category-filter');
+  CATEGORIES.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    catFilter.appendChild(opt);
+  });
+
+  restoreSession();
+});
+
+function restoreSession() {
+  const raw = localStorage.getItem(SESSION_KEY);
+  if (!raw) { showScreen('screen-role-select'); return; }
+  let session;
+  try { session = JSON.parse(raw); } catch(e) { showScreen('screen-role-select'); return; }
+
+  if (session.role === 'admin') {
+    currentUser = { id: 'admin', role: 'admin', fullName: 'Administrator' };
+    initAdminDashboard();
+    return;
+  }
+
+  db.ref('users/' + session.id).once('value').then(snap => {
+    const userData = snap.val();
+    if (!userData) { logout(); return; }
+    currentUser = { id: session.id, ...userData };
+    if (!checkUserGuard(currentUser)) return;
+    if (currentUser.role === 'client') initClientDashboard();
+    else if (currentUser.role === 'handyman') initHandymanDashboard();
+  }).catch(() => showScreen('screen-role-select'));
+}
+
+// ============================================================
+// GLOBAL GUARD — TRIAL / BLOCK CHECK
+// ============================================================
+function checkUserGuard(userData) {
+  const now = Date.now();
+  const expired = userData.trialEndDate && now > userData.trialEndDate;
+  const blocked = userData.status === 'blocked';
+  if (expired || blocked) {
+    document.getElementById('modal-blocked').classList.remove('hidden-force');
+    document.getElementById('modal-blocked').classList.add('flex');
+    return false;
+  }
+  return true;
+}
+
+// ============================================================
+// ROLE SELECTION & AUTH SCREEN
+// ============================================================
+function selectRole(role) {
+  selectedRoleForAuth = role;
+  const icon = role === 'client' ? '🧑‍💼' : '🔧';
+  const label = role === 'client' ? 'Client' : 'Handyman';
+  document.getElementById('auth-role-icon').textContent = icon;
+  document.getElementById('auth-title').textContent = `${label} Access`;
+  document.getElementById('auth-subtitle').textContent = 'Log in or create your account';
+  document.getElementById('reg-category-wrap').classList.toggle('hidden-force', role !== 'handyman');
+  document.getElementById('reg-category').required = (role === 'handyman');
+  switchAuthMode('login');
+  showScreen('screen-auth');
+}
+
+function showAdminLogin() {
+  showScreen('screen-admin-login');
+}
+
+function switchAuthMode(mode) {
+  const loginBtn = document.getElementById('tab-login-btn');
+  const registerBtn = document.getElementById('tab-register-btn');
+  const loginForm = document.getElementById('form-login');
+  const registerForm = document.getElementById('form-register');
+  if (mode === 'login') {
+    loginForm.classList.remove('hidden-force');
+    registerForm.classList.add('hidden-force');
+    loginBtn.className = 'flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow-sm text-terracotta';
+    registerBtn.className = 'flex-1 py-2 rounded-lg text-sm font-semibold transition text-ink/50';
+  } else {
+    loginForm.classList.add('hidden-force');
+    registerForm.classList.remove('hidden-force');
+    registerBtn.className = 'flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow-sm text-terracotta';
+    loginBtn.className = 'flex-1 py-2 rounded-lg text-sm font-semibold transition text-ink/50';
+  }
+}
+
+// ---------- Register ----------
+function handleRegister(e) {
+  e.preventDefault();
+  const fullName = document.getElementById('reg-fullname').value.trim();
+  const username = document.getElementById('reg-username').value.trim().toLowerCase();
+  const password = document.getElementById('reg-password').value;
+  const phone = document.getElementById('reg-phone').value.trim();
+  const wilaya = document.getElementById('reg-wilaya').value;
+  const address = document.getElementById('reg-address').value.trim();
+  const category = document.getElementById('reg-category').value;
+
+  if (!isValidAlgerianPhone(phone)) {
+    showToast('Please enter a valid Algerian phone number (e.g. 0555123456)', 'error');
+    return;
+  }
+  if (selectedRoleForAuth === 'handyman' && !category) {
+    showToast('Please select your specialty category', 'error');
+    return;
+  }
+  if (password.length < 4) {
+    showToast('Password must be at least 4 characters', 'error');
+    return;
+  }
+
+  db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
+    if (snap.exists()) {
+      showToast('This username is already taken', 'error');
+      return;
+    }
+    const newUserRef = db.ref('users').push();
+    const now = Date.now();
+    const userData = {
+      username, password, fullName, phone, wilaya, address,
+      role: selectedRoleForAuth,
+      status: 'active',
+      trialEndDate: now + (TRIAL_DAYS * 24 * 60 * 60 * 1000),
+      createdAt: now
     };
-
-    // Regional Realtime Database Endpoint
-    const RTDB_URL = "https://brico-match-default-rtdb.europe-west1.firebasedatabase.app";
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app, RTDB_URL);
-
-    // App State
-    let currentUser = null;
-    let currentUserProfile = null;
-    let currentSelectedCategory = "ALL";
-    let allJobsCache = {};
-    let allApplicationsCache = {};
-
-    // DOM Elements
-    const globalAlert = document.getElementById("globalAlert");
-    const viewAuth = document.getElementById("viewAuth");
-    const viewClient = document.getElementById("viewClient");
-    const viewArtisan = document.getElementById("viewArtisan");
-    const userInfoNav = document.getElementById("userInfoNav");
-    const userBadge = document.getElementById("userBadge");
-    const userEmailNav = document.getElementById("userEmailNav");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    // Auth Forms & Tabs
-    const tabRegister = document.getElementById("tabRegister");
-    const tabLogin = document.getElementById("tabLogin");
-    const formRegister = document.getElementById("formRegister");
-    const formLogin = document.getElementById("formLogin");
-    const regRole = document.getElementById("regRole");
-    const artisanSpecialtyGroup = document.getElementById("artisanSpecialtyGroup");
-
-    // Modals
-    const modalJob = document.getElementById("modalJob");
-    const btnOpenNewJobModal = document.getElementById("btnOpenNewJobModal");
-    const btnCloseJobModal = document.getElementById("btnCloseJobModal");
-    const formNewJob = document.getElementById("formNewJob");
-
-    const modalApply = document.getElementById("modalApply");
-    const btnCloseApplyModal = document.getElementById("btnCloseApplyModal");
-    const formApply = document.getElementById("formApply");
-
-    const modalViewApps = document.getElementById("modalViewApps");
-    const btnCloseAppsModal = document.getElementById("btnCloseAppsModal");
-    const appsContainer = document.getElementById("appsContainer");
-
-    // Helper Functions
-    function showAlert(msg, type = "error") {
-      globalAlert.textContent = msg;
-      globalAlert.className = `p-4 rounded-xl text-sm font-medium border shadow-lg transition-all block ${
-        type === "error" 
-          ? "bg-red-500/10 text-red-400 border-red-500/30" 
-          : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-      }`;
-      setTimeout(() => { globalAlert.classList.add("hidden"); }, 5000);
+    if (selectedRoleForAuth === 'handyman') {
+      userData.category = category;
+      userData.available = true;
     }
+    newUserRef.set(userData).then(() => {
+      currentUser = { id: newUserRef.key, ...userData };
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ id: newUserRef.key, role: selectedRoleForAuth }));
+      showToast('Account created! Welcome to Brico-Match 🎉', 'success');
+      if (selectedRoleForAuth === 'client') initClientDashboard();
+      else initHandymanDashboard();
+    }).catch(err => showToast('Registration failed: ' + err.message, 'error'));
+  });
+}
 
-    function switchView(viewName) {
-      viewAuth.classList.add("hidden");
-      viewClient.classList.add("hidden");
-      viewArtisan.classList.add("hidden");
+// ---------- Login ----------
+function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
 
-      if (viewName === "auth") viewAuth.classList.remove("hidden");
-      if (viewName === "client") viewClient.classList.remove("hidden");
-      if (viewName === "artisan") viewArtisan.classList.remove("hidden");
+  db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
+    if (!snap.exists()) {
+      showToast('No account found with that username', 'error');
+      return;
     }
+    let foundId = null, foundData = null;
+    snap.forEach(child => { foundId = child.key; foundData = child.val(); });
 
-    // Role Selection Listener
-    regRole.addEventListener("change", (e) => {
-      if (e.target.value === "artisan") {
-        artisanSpecialtyGroup.classList.remove("hidden");
-      } else {
-        artisanSpecialtyGroup.classList.add("hidden");
-      }
-    });
-
-    // Auth Tabs Switcher
-    tabRegister.addEventListener("click", () => {
-      tabRegister.className = "flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400";
-      tabLogin.className = "flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200";
-      formRegister.classList.remove("hidden");
-      formLogin.classList.add("hidden");
-    });
-
-    tabLogin.addEventListener("click", () => {
-      tabLogin.className = "flex-1 pb-3 text-center font-bold border-b-2 border-emerald-500 text-emerald-400";
-      tabRegister.className = "flex-1 pb-3 text-center font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200";
-      formLogin.classList.remove("hidden");
-      formRegister.classList.add("hidden");
-    });
-
-    // Auth State Observer
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        try {
-          const snapshot = await get(ref(database, `users/${user.uid}`));
-          if (snapshot.exists()) {
-            currentUserProfile = snapshot.val();
-            
-            userInfoNav.classList.remove("hidden");
-            userEmailNav.textContent = currentUserProfile.fullName || user.email;
-            userBadge.textContent = currentUserProfile.role === "artisan" 
-              ? `ARTISAN (${currentUserProfile.specialty || 'Général'})` 
-              : "CLIENT";
-
-            if (currentUserProfile.role === "client") {
-              switchView("client");
-              listenToJobsAndApplications();
-            } else {
-              switchView("artisan");
-              // Default specialty filter to artisan's registered trade
-              if (currentUserProfile.specialty) {
-                currentSelectedCategory = currentUserProfile.specialty;
-                updateFilterButtonsUI(currentSelectedCategory);
-              }
-              listenToJobsAndApplications();
-            }
-          } else {
-            showAlert("Profil introuvable dans la base de données.", "error");
-          }
-        } catch (err) {
-          console.error("Profile Error:", err);
-          showAlert("Erreur lors de la récupération du profil.", "error");
-        }
-      } else {
-        currentUser = null;
-        currentUserProfile = null;
-        userInfoNav.classList.add("hidden");
-        switchView("auth");
-      }
-    });
-
-    // Registration Handler
-    formRegister.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("btnRegisterSubmit");
-      btn.disabled = true;
-      btn.textContent = "Création en cours...";
-
-      const fullName = document.getElementById("regFullName").value.trim();
-      const email = document.getElementById("regEmail").value.trim();
-      const password = document.getElementById("regPassword").value;
-      const phone = document.getElementById("regPhone").value.trim();
-      const role = regRole.value;
-      const specialty = role === "artisan" ? document.getElementById("regSpecialty").value : "";
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
-
-        await set(ref(database, `users/${uid}`), {
-          uid,
-          fullName,
-          email,
-          phone,
-          role,
-          specialty,
-          createdAt: new Date().toISOString()
-        });
-
-        showAlert("Compte créé avec succès!", "success");
-      } catch (err) {
-        console.error("Registration Error:", err);
-        showAlert(err.message || "Erreur lors de l'inscription.", "error");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Créer un compte";
-      }
-    });
-
-    // Login Handler
-    formLogin.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("btnLoginSubmit");
-      btn.disabled = true;
-      btn.textContent = "Connexion...";
-
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        showAlert("Connexion réussie!", "success");
-      } catch (err) {
-        console.error("Login Error:", err);
-        showAlert("Échec de connexion: " + err.message, "error");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Se Connecter";
-      }
-    });
-
-    // Logout Handler
-    logoutBtn.addEventListener("click", () => signOut(auth));
-
-    // Client Job Modal Controls
-    btnOpenNewJobModal.addEventListener("click", () => modalJob.classList.remove("hidden"));
-    btnCloseJobModal.addEventListener("click", () => modalJob.classList.add("hidden"));
-
-    // Post Job Handler (Client)
-    formNewJob.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("btnSubmitJob");
-      btn.disabled = true;
-
-      const title = document.getElementById("jobTitle").value.trim();
-      const category = document.getElementById("jobCategory").value;
-      const location = document.getElementById("jobLocation").value.trim();
-      const description = document.getElementById("jobDescription").value.trim();
-
-      try {
-        const newJobRef = push(ref(database, 'jobs'));
-        await set(newJobRef, {
-          id: newJobRef.key,
-          clientId: currentUser.uid,
-          clientName: currentUserProfile.fullName || currentUser.email,
-          clientPhone: currentUserProfile.phone || "",
-          title,
-          category,
-          location,
-          description,
-          status: 'open',
-          createdAt: new Date().toISOString()
-        });
-
-        showAlert("Demande publiée avec succès!", "success");
-        formNewJob.reset();
-        modalJob.classList.add("hidden");
-      } catch (err) {
-        console.error("Job Post Error:", err);
-        showAlert("Erreur de publication: " + err.message, "error");
-      } finally {
-        btn.disabled = false;
-      }
-    });
-
-    // Artisan Apply Modal Controls
-    btnCloseApplyModal.addEventListener("click", () => modalApply.classList.add("hidden"));
-
-    window.openApplyModal = (jobId, jobTitle) => {
-      document.getElementById("applyJobId").value = jobId;
-      document.getElementById("applyJobTitle").textContent = jobTitle;
-      modalApply.classList.remove("hidden");
-    };
-
-    // Apply Handler (Artisan)
-    formApply.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("btnSubmitApply");
-      btn.disabled = true;
-
-      const jobId = document.getElementById("applyJobId").value;
-      const price = document.getElementById("applyPrice").value;
-      const availability = document.getElementById("applyAvailability").value.trim();
-      const message = document.getElementById("applyMessage").value.trim();
-
-      try {
-        const appRef = ref(database, `applications/${jobId}/${currentUser.uid}`);
-        await set(appRef, {
-          artisanUid: currentUser.uid,
-          artisanName: currentUserProfile.fullName || currentUser.email,
-          artisanPhone: currentUserProfile.phone || "",
-          specialty: currentUserProfile.specialty || "Général",
-          price,
-          availability,
-          message,
-          appliedAt: new Date().toISOString()
-        });
-
-        showAlert("Proposition envoyée au client avec succès!", "success");
-        formApply.reset();
-        modalApply.classList.add("hidden");
-      } catch (err) {
-        console.error("Apply Error:", err);
-        showAlert("Erreur lors de l'envoi de la proposition: " + err.message, "error");
-      } finally {
-        btn.disabled = false;
-      }
-    });
-
-    // Client Applications Viewer Controls
-    btnCloseAppsModal.addEventListener("click", () => modalViewApps.classList.add("hidden"));
-
-    window.openViewAppsModal = (jobId) => {
-      appsContainer.innerHTML = "";
-      const jobApps = allApplicationsCache[jobId] || {};
-      const appList = Object.values(jobApps);
-
-      if (appList.length === 0) {
-        appsContainer.innerHTML = `<p class="text-slate-500 text-sm py-4 text-center">Aucune offre reçue pour le moment.</p>`;
-      } else {
-        appList.forEach(app => {
-          const item = document.createElement("div");
-          item.className = "bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2";
-          item.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-white">${app.artisanName} (${app.specialty})</span>
-              <span class="text-emerald-400 font-extrabold text-lg">${app.price} DZD</span>
-            </div>
-            <p class="text-xs text-slate-400">📅 Disponibilité: <span class="text-slate-200 font-medium">${app.availability}</span></p>
-            <p class="text-sm text-slate-300 bg-slate-900 p-3 rounded-lg border border-slate-800/80">${app.message}</p>
-            <div class="pt-1 flex items-center justify-between text-xs text-slate-400">
-              <span>📞 Tél: <strong class="text-emerald-400">${app.artisanPhone || 'Non renseigné'}</strong></span>
-              <span>${new Date(app.appliedAt).toLocaleDateString('fr-FR')}</span>
-            </div>
-          `;
-          appsContainer.appendChild(item);
-        });
-      }
-
-      modalViewApps.classList.remove("hidden");
-    };
-
-    // Specialty Filter Buttons Listener
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        currentSelectedCategory = e.target.dataset.category;
-        updateFilterButtonsUI(currentSelectedCategory);
-        renderArtisanJobs();
-      });
-    });
-
-    function updateFilterButtonsUI(activeCategory) {
-      document.querySelectorAll(".filter-btn").forEach(btn => {
-        if (btn.dataset.category === activeCategory) {
-          btn.className = "filter-btn text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold border border-emerald-500";
-        } else {
-          btn.className = "filter-btn text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-semibold border border-slate-700 hover:border-slate-500";
-        }
-      });
+    if (foundData.password !== password) {
+      showToast('Incorrect password', 'error');
+      return;
     }
-
-    // Unified Realtime Database Observer
-    function listenToJobsAndApplications() {
-      // Listen to applications first
-      onValue(ref(database, 'applications'), (appsSnapshot) => {
-        allApplicationsCache = appsSnapshot.exists() ? appsSnapshot.val() : {};
-
-        // Listen to jobs
-        onValue(ref(database, 'jobs'), (jobsSnapshot) => {
-          allJobsCache = jobsSnapshot.exists() ? jobsSnapshot.val() : {};
-
-          if (currentUserProfile?.role === "client") {
-            renderClientJobs();
-          } else if (currentUserProfile?.role === "artisan") {
-            renderArtisanJobs();
-          }
-        });
-      });
+    if (foundData.role !== selectedRoleForAuth) {
+      showToast(`This account is registered as a ${foundData.role}, not a ${selectedRoleForAuth}`, 'error');
+      return;
     }
+    currentUser = { id: foundId, ...foundData };
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: foundId, role: foundData.role }));
+    if (!checkUserGuard(currentUser)) return;
+    showToast(`Welcome back, ${foundData.fullName.split(' ')[0]}!`, 'success');
+    if (foundData.role === 'client') initClientDashboard();
+    else initHandymanDashboard();
+  }).catch(err => showToast('Login failed: ' + err.message, 'error'));
+}
 
-    // Render Client Dashboard
-    function renderClientJobs() {
-      const clientJobsList = document.getElementById("clientJobsList");
-      clientJobsList.innerHTML = "";
+// ---------- Admin Login ----------
+function handleAdminLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('admin-username').value.trim();
+  const password = document.getElementById('admin-password').value;
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    currentUser = { id: 'admin', role: 'admin', fullName: 'Administrator' };
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: 'admin', role: 'admin' }));
+    showToast('Welcome, Administrator', 'success');
+    initAdminDashboard();
+  } else {
+    showToast('Invalid admin credentials', 'error');
+  }
+}
 
-      let myJobsCount = 0;
-      Object.values(allJobsCache).forEach(job => {
-        if (job.clientId === currentUser.uid) {
-          myJobsCount++;
-          const jobApps = allApplicationsCache[job.id] || {};
-          const appsCount = Object.keys(jobApps).length;
+function logout() {
+  localStorage.removeItem(SESSION_KEY);
+  currentUser = null;
+  document.getElementById('modal-blocked').classList.add('hidden-force');
+  document.getElementById('modal-blocked').classList.remove('flex');
+  showScreen('screen-role-select');
+}
 
-          const card = document.createElement("div");
-          card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
-          card.innerHTML = `
-            <div class="mb-4">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
-                <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
-              </div>
-              <h3 class="font-bold text-white text-base mb-1">${job.title}</h3>
-              <p class="text-xs text-slate-400 mb-2">📍 ${job.location}</p>
-              <p class="text-sm text-slate-300 line-clamp-3">${job.description}</p>
-            </div>
-            
-            <button onclick="openViewAppsModal('${job.id}')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition text-xs flex items-center justify-center gap-2 border border-slate-700">
-              <span>Propositions reçues</span>
-              <span class="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-xs font-black">${appsCount}</span>
-            </button>
-          `;
-          clientJobsList.appendChild(card);
-        }
-      });
+// ============================================================
+// CLIENT DASHBOARD
+// ============================================================
+function initClientDashboard() {
+  showScreen('screen-client');
+  document.getElementById('client-name-display').textContent = currentUser.fullName;
+  switchClientTab('post-job');
+  attachUsersListener();
+  attachJobsListener();
+  attachRequestsListener();
+}
 
-      if (myJobsCount === 0) {
-        clientJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full">Vous n'avez pas encore publié de demande.</p>`;
-      }
-    }
+function switchClientTab(tab) {
+  document.querySelectorAll('.client-tab-panel').forEach(p => p.classList.add('hidden-force'));
+  document.getElementById('client-tab-' + tab).classList.remove('hidden-force');
+  document.querySelectorAll('.client-tab-btn').forEach(b => {
+    const active = b.dataset.tab === tab;
+    b.className = 'client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition ' +
+      (active ? 'bg-terracotta text-white' : 'bg-white text-ink/60 hover:bg-sand');
+  });
+  if (tab === 'explore') renderHandymenList();
+  if (tab === 'requests') renderMyRequests();
+  if (tab === 'post-job') renderMyPostedJobs();
+}
 
-    // Render Artisan Dashboard
-    function renderArtisanJobs() {
-      const artisanJobsList = document.getElementById("artisanJobsList");
-      artisanJobsList.innerHTML = "";
+function handlePostJob(e) {
+  e.preventDefault();
+  const title = document.getElementById('job-title').value.trim();
+  const details = document.getElementById('job-details').value.trim();
+  const category = document.getElementById('job-category').value;
+  const urgent = document.getElementById('job-urgent').checked;
+  if (!category) { showToast('Please select a category', 'error'); return; }
 
-      let matchingJobsCount = 0;
+  const jobRef = db.ref('jobs').push();
+  jobRef.set({
+    clientId: currentUser.id,
+    clientName: currentUser.fullName,
+    clientPhone: currentUser.phone,
+    title, details, category, urgent,
+    status: 'open',
+    createdAt: Date.now()
+  }).then(() => {
+    showToast('Job posted successfully!', 'success');
+    document.getElementById('job-title').value = '';
+    document.getElementById('job-details').value = '';
+    document.getElementById('job-category').value = '';
+    document.getElementById('job-urgent').checked = false;
+  }).catch(err => showToast('Failed to post job: ' + err.message, 'error'));
+}
 
-      Object.values(allJobsCache).forEach(job => {
-        // Specialty Filter
-        if (currentSelectedCategory !== "ALL" && job.category !== currentSelectedCategory) {
-          return;
-        }
+function renderMyPostedJobs() {
+  const container = document.getElementById('my-posted-jobs-list');
+  const myJobs = Object.entries(jobsCacheData)
+    .filter(([id, j]) => j.clientId === currentUser.id)
+    .sort((a,b) => b[1].createdAt - a[1].createdAt);
 
-        matchingJobsCount++;
-        const jobApps = allApplicationsCache[job.id] || {};
-        const hasApplied = !!jobApps[currentUser.uid];
+  if (myJobs.length === 0) {
+    container.innerHTML = emptyState('📭', 'No jobs posted yet', 'Use the form to post your first job request.');
+    return;
+  }
+  container.innerHTML = myJobs.map(([id, j]) => `
+    <div class="bg-white rounded-xl shadow-soft p-4 flex justify-between items-start gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 flex-wrap mb-1">
+          <h4 class="font-semibold font-display truncate">${escapeHtml(j.title)}</h4>
+          ${j.urgent ? '<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold">URGENT</span>' : ''}
+        </div>
+        <p class="text-sm text-ink/60 mb-2 line-clamp-2">${escapeHtml(j.details)}</p>
+        <div class="flex items-center gap-2 text-xs text-ink/40">
+          <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
+          <span>${timeAgo(j.createdAt)}</span>
+        </div>
+      </div>
+      <button onclick="deleteOwnJob('${id}')" class="text-ink/30 hover:text-terracotta-dark text-lg flex-shrink-0" title="Delete job">🗑️</button>
+    </div>
+  `).join('');
+}
 
-        const card = document.createElement("div");
-        card.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between";
-        card.innerHTML = `
-          <div class="mb-4">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg">${job.category}</span>
-              <span class="text-xs text-slate-500">${new Date(job.createdAt).toLocaleDateString('fr-FR')}</span>
-            </div>
-            <h3 class="font-bold text-white text-base mb-1">${job.title}</h3>
-            <p class="text-xs text-slate-400 mb-2">📍 ${job.location} • Client: ${job.clientName}</p>
-            <p class="text-sm text-slate-300">${job.description}</p>
+function deleteOwnJob(jobId) {
+  db.ref('jobs/' + jobId).remove().then(() => showToast('Job removed', 'info'));
+}
+
+function renderHandymenList() {
+  const search = document.getElementById('handyman-search').value.trim().toLowerCase();
+  const categoryFilter = document.getElementById('handyman-category-filter').value;
+  const container = document.getElementById('handymen-list');
+
+  let handymen = Object.entries(usersCacheData).filter(([id, u]) =>
+    u.role === 'handyman' && u.available === true && u.status !== 'blocked'
+  );
+  if (categoryFilter) handymen = handymen.filter(([id, u]) => u.category === categoryFilter);
+  if (search) handymen = handymen.filter(([id, u]) => u.fullName.toLowerCase().includes(search));
+
+  if (handymen.length === 0) {
+    container.innerHTML = `<div class="sm:col-span-2">${emptyState('🔍', 'No handymen found', 'Try adjusting your search or filters, or check back later.')}</div>`;
+    return;
+  }
+
+  container.innerHTML = handymen.map(([id, u]) => `
+    <div class="bg-white rounded-2xl shadow-soft p-5">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-sand flex items-center justify-center text-lg font-bold text-terracotta">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
+          <div>
+            <h4 class="font-semibold font-display">${escapeHtml(u.fullName)}</h4>
+            <p class="text-xs text-ink/50">${escapeHtml(u.wilaya || '')}</p>
           </div>
+        </div>
+        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">● Available</span>
+      </div>
+      <span class="inline-block text-xs bg-sand px-2.5 py-1 rounded-full font-medium mb-3">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(u.category)}</span>
+      <div class="flex gap-2">
+        <a href="tel:${escapeHtml(u.phone)}" class="flex-1 text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">📞 Call</a>
+        <button onclick="openDirectHireModal('${id}')" class="flex-1 text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2 font-semibold transition">Hire Directly</button>
+      </div>
+    </div>
+  `).join('');
+}
 
-          ${
-            hasApplied 
-              ? `<div class="w-full py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold rounded-xl text-center text-xs">✓ Proposition Déjà Envoyée</div>`
-              : `<button onclick="openApplyModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl transition text-xs shadow-lg shadow-emerald-950/40">
-                  Postuler à cette offre
-                 </button>`
-          }
-        `;
-        artisanJobsList.appendChild(card);
-      });
+let dhTargetHandymanId = null;
+function openDirectHireModal(handymanId) {
+  dhTargetHandymanId = handymanId;
+  const h = usersCacheData[handymanId];
+  document.getElementById('dh-handyman-name').textContent = h.fullName;
+  document.getElementById('dh-title').value = '';
+  document.getElementById('dh-details').value = '';
+  openModal('modal-direct-hire');
+}
 
-      if (matchingJobsCount === 0) {
-        artisanJobsList.innerHTML = `<p class="text-slate-500 text-sm col-span-full py-4">Aucune offre de travail disponible pour cette catégorie.</p>`;
-      }
+function submitDirectHire(e) {
+  e.preventDefault();
+  const h = usersCacheData[dhTargetHandymanId];
+  const title = document.getElementById('dh-title').value.trim();
+  const details = document.getElementById('dh-details').value.trim();
+
+  db.ref('directRequests').push().set({
+    clientId: currentUser.id,
+    clientName: currentUser.fullName,
+    clientPhone: currentUser.phone,
+    handymanId: dhTargetHandymanId,
+    handymanName: h.fullName,
+    category: h.category,
+    title, details,
+    status: 'pending',
+    createdAt: Date.now()
+  }).then(() => {
+    closeModal('modal-direct-hire');
+    showToast('Direct hire request sent!', 'success');
+  }).catch(err => showToast('Failed to send request: ' + err.message, 'error'));
+}
+
+function renderMyRequests() {
+  const container = document.getElementById('my-requests-list');
+  const myReqs = Object.entries(directRequestsCacheData)
+    .filter(([id, r]) => r.clientId === currentUser.id)
+    .sort((a,b) => b[1].createdAt - a[1].createdAt);
+
+  if (myReqs.length === 0) {
+    container.innerHTML = emptyState('📋', 'No requests sent yet', 'Explore handymen and send a direct hire request.');
+    return;
+  }
+
+  const statusStyle = {
+    pending: 'bg-yellow-100 text-yellow-700',
+    accepted: 'bg-green-100 text-green-700',
+    refused: 'bg-red-100 text-red-700'
+  };
+
+  container.innerHTML = myReqs.map(([id, r]) => `
+    <div class="bg-white rounded-xl shadow-soft p-4 flex justify-between items-start gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 flex-wrap mb-1">
+          <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(r.status)}</span>
+        </div>
+        <p class="text-sm text-ink/60 mb-2">To: <span class="font-medium">${escapeHtml(r.handymanName)}</span> · ${escapeHtml(r.category)}</p>
+        <p class="text-xs text-ink/40">${timeAgo(r.createdAt)}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// HANDYMAN DASHBOARD
+// ============================================================
+function initHandymanDashboard() {
+  showScreen('screen-handyman');
+  document.getElementById('availability-toggle').checked = currentUser.available !== false;
+  document.getElementById('specialty-badge').textContent = `${CATEGORY_ICONS[currentUser.category]||''} ${currentUser.category}`;
+  switchHandymanTab('feed');
+  attachUsersListener();
+  attachJobsListener();
+  attachRequestsListener();
+}
+
+function switchHandymanTab(tab) {
+  document.querySelectorAll('.handyman-tab-panel').forEach(p => p.classList.add('hidden-force'));
+  document.getElementById('handyman-tab-' + tab).classList.remove('hidden-force');
+  document.querySelectorAll('.handyman-tab-btn').forEach(b => {
+    const active = b.dataset.tab === tab;
+    b.className = 'handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition ' +
+      (active ? 'bg-terracotta text-white' : 'bg-white text-ink/60 hover:bg-sand');
+  });
+  if (tab === 'feed') renderJobFeed();
+  if (tab === 'direct') renderDirectRequests();
+}
+
+function toggleAvailability() {
+  const val = document.getElementById('availability-toggle').checked;
+  db.ref('users/' + currentUser.id + '/available').set(val).then(() => {
+    currentUser.available = val;
+    showToast(val ? "You're now visible as available" : "You're now marked unavailable", 'info');
+  });
+}
+
+function renderJobFeed() {
+  const search = document.getElementById('job-feed-search').value.trim().toLowerCase();
+  const container = document.getElementById('job-feed-list');
+
+  let jobs = Object.entries(jobsCacheData).filter(([id, j]) =>
+    j.status === 'open' && j.category === currentUser.category
+  );
+  if (search) jobs = jobs.filter(([id, j]) => j.title.toLowerCase().includes(search));
+  jobs.sort((a,b) => (b[1].urgent - a[1].urgent) || (b[1].createdAt - a[1].createdAt));
+
+  if (jobs.length === 0) {
+    container.innerHTML = `<div class="sm:col-span-2">${emptyState('💼', 'No matching jobs right now', 'New jobs in your specialty will appear here automatically.')}</div>`;
+    return;
+  }
+
+  container.innerHTML = jobs.map(([id, j]) => `
+    <div class="bg-white rounded-2xl shadow-soft p-5 ${j.urgent ? 'ring-2 ring-terracotta' : ''}">
+      <div class="flex items-center gap-2 flex-wrap mb-2">
+        <h4 class="font-semibold font-display">${escapeHtml(j.title)}</h4>
+        ${j.urgent ? '<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold animate-pulse">🚨 URGENT</span>' : ''}
+      </div>
+      <p class="text-sm text-ink/60 mb-3 line-clamp-3">${escapeHtml(j.details)}</p>
+      <div class="flex items-center justify-between text-xs text-ink/40 mb-3">
+        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
+        <span>${timeAgo(j.createdAt)}</span>
+      </div>
+      <div class="flex items-center justify-between border-t border-stone pt-3">
+        <div>
+          <p class="text-sm font-medium">${escapeHtml(j.clientName)}</p>
+        </div>
+        <a href="tel:${escapeHtml(j.clientPhone)}" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition">📞 Call Client</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDirectRequests() {
+  const container = document.getElementById('direct-requests-list');
+  let reqs = Object.entries(directRequestsCacheData)
+    .filter(([id, r]) => r.handymanId === currentUser.id)
+    .sort((a,b) => b[1].createdAt - a[1].createdAt);
+
+  const pendingCount = reqs.filter(([id,r]) => r.status === 'pending').length;
+  const badge = document.getElementById('direct-req-badge');
+  if (pendingCount > 0) { badge.textContent = pendingCount; badge.classList.remove('hidden-force'); }
+  else badge.classList.add('hidden-force');
+
+  if (reqs.length === 0) {
+    container.innerHTML = emptyState('📥', 'No direct requests yet', 'Clients who hire you directly will appear here.');
+    return;
+  }
+
+  const statusStyle = {
+    pending: 'bg-yellow-100 text-yellow-700',
+    accepted: 'bg-green-100 text-green-700',
+    refused: 'bg-red-100 text-red-700'
+  };
+
+  container.innerHTML = reqs.map(([id, r]) => `
+    <div class="bg-white rounded-xl shadow-soft p-4">
+      <div class="flex justify-between items-start gap-3 mb-2">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap mb-1">
+            <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(r.status)}</span>
+          </div>
+          <p class="text-sm text-ink/60 mb-1">${escapeHtml(r.details)}</p>
+          <p class="text-xs text-ink/40">From: <span class="font-medium text-ink/60">${escapeHtml(r.clientName)}</span> · ${timeAgo(r.createdAt)}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-stone">
+        <a href="tel:${escapeHtml(r.clientPhone)}" class="text-sm border border-stone rounded-xl px-3 py-1.5 font-medium hover:bg-sand transition">📞 Call</a>
+        ${r.status === 'pending' ? `
+          <button onclick="respondToRequest('${id}','accepted')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">Accept</button>
+          <button onclick="respondToRequest('${id}','refused')" class="text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 py-1.5 font-semibold transition">Refuse</button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function respondToRequest(reqId, status) {
+  db.ref('directRequests/' + reqId + '/status').set(status).then(() => {
+    showToast(status === 'accepted' ? 'Request accepted!' : 'Request refused', status === 'accepted' ? 'success' : 'info');
+  });
+}
+
+// ============================================================
+// ADMIN DASHBOARD
+// ============================================================
+function initAdminDashboard() {
+  showScreen('screen-admin');
+  switchAdminTab('users');
+  attachUsersListener();
+  attachJobsListener();
+}
+
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab-panel').forEach(p => p.classList.add('hidden-force'));
+  document.getElementById('admin-tab-' + tab).classList.remove('hidden-force');
+  document.querySelectorAll('.admin-tab-btn').forEach(b => {
+    const active = b.dataset.tab === tab;
+    b.className = 'admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition ' +
+      (active ? 'bg-terracotta text-white' : 'bg-cream/10 text-cream/70 hover:bg-cream/20');
+  });
+  if (tab === 'users') renderUsersTable();
+  if (tab === 'jobs') renderJobsAdmin();
+}
+
+function renderUsersTable() {
+  const search = document.getElementById('admin-user-search').value.trim().toLowerCase();
+  const roleFilter = document.getElementById('admin-role-filter').value;
+  const tbody = document.getElementById('admin-users-tbody');
+  const emptyEl = document.getElementById('admin-users-empty');
+
+  let users = Object.entries(usersCacheData);
+  if (roleFilter) users = users.filter(([id, u]) => u.role === roleFilter);
+  if (search) users = users.filter(([id, u]) =>
+    u.fullName.toLowerCase().includes(search) ||
+    u.username.toLowerCase().includes(search) ||
+    (u.phone || '').includes(search)
+  );
+  users.sort((a,b) => b[1].createdAt - a[1].createdAt);
+
+  if (users.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.className = '';
+    emptyEl.innerHTML = emptyState('👥', 'No users found', 'Try a different search or filter.');
+    return;
+  }
+  emptyEl.className = 'hidden-force';
+
+  const now = Date.now();
+  tbody.innerHTML = users.map(([id, u]) => {
+    const expired = u.trialEndDate && now > u.trialEndDate;
+    const blocked = u.status === 'blocked';
+    let statusBadge;
+    if (blocked) statusBadge = '<span class="text-[11px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-semibold">Blocked</span>';
+    else if (expired) statusBadge = '<span class="text-[11px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">Trial Expired</span>';
+    else statusBadge = '<span class="text-[11px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Active</span>';
+
+    return `
+    <tr class="border-b border-stone-light hover:bg-sand/40">
+      <td class="px-4 py-3">
+        <p class="font-semibold">${escapeHtml(u.fullName)}</p>
+        <p class="text-xs text-ink/40">@${escapeHtml(u.username)}</p>
+      </td>
+      <td class="px-4 py-3">
+        <span class="text-xs bg-sand px-2 py-1 rounded-full capitalize">${escapeHtml(u.role)}${u.role==='handyman' ? ' · '+escapeHtml(u.category||'') : ''}</span>
+      </td>
+      <td class="px-4 py-3 text-ink/70">${escapeHtml(u.phone)}</td>
+      <td class="px-4 py-3">${statusBadge}</td>
+      <td class="px-4 py-3 text-ink/60 text-xs">${formatDate(u.trialEndDate)}</td>
+      <td class="px-4 py-3">
+        <div class="flex items-center justify-end gap-1.5 flex-wrap">
+          <button onclick="openTrialModal('${id}','${escapeHtml(u.username)}')" class="text-xs bg-sand hover:bg-stone px-2.5 py-1.5 rounded-lg font-medium transition" title="Add trial days">➕ Trial</button>
+          <button onclick="toggleBlock('${id}', ${blocked})" class="text-xs ${blocked ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'} px-2.5 py-1.5 rounded-lg font-medium transition">${blocked ? 'Unblock' : 'Block'}</button>
+          <button onclick="deleteUser('${id}','${escapeHtml(u.fullName)}')" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1.5 rounded-lg font-medium transition">Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+let trialTargetUserId = null;
+function openTrialModal(userId, username) {
+  trialTargetUserId = userId;
+  document.getElementById('trial-username').textContent = '@' + username;
+  document.getElementById('trial-days-input').value = 7;
+  openModal('modal-trial');
+}
+
+function confirmAddTrialDays() {
+  const days = parseInt(document.getElementById('trial-days-input').value, 10);
+  if (!days || days < 1) { showToast('Enter a valid number of days', 'error'); return; }
+  const user = usersCacheData[trialTargetUserId];
+  const base = (user.trialEndDate && user.trialEndDate > Date.now()) ? user.trialEndDate : Date.now();
+  const newDate = base + (days * 24 * 60 * 60 * 1000);
+  db.ref('users/' + trialTargetUserId + '/trialEndDate').set(newDate).then(() => {
+    closeModal('modal-trial');
+    showToast(`Added ${days} trial day(s)`, 'success');
+  });
+}
+
+function toggleBlock(userId, currentlyBlocked) {
+  const newStatus = currentlyBlocked ? 'active' : 'blocked';
+  db.ref('users/' + userId + '/status').set(newStatus).then(() => {
+    showToast(currentlyBlocked ? 'User unblocked' : 'User blocked', 'info');
+  });
+}
+
+function deleteUser(userId, name) {
+  if (!confirm(`Permanently delete ${name}'s account? This cannot be undone.`)) return;
+  db.ref('users/' + userId).remove().then(() => showToast('User deleted', 'info'));
+}
+
+function renderJobsAdmin() {
+  const search = document.getElementById('admin-job-search').value.trim().toLowerCase();
+  const container = document.getElementById('admin-jobs-list');
+  let jobs = Object.entries(jobsCacheData).sort((a,b) => b[1].createdAt - a[1].createdAt);
+  if (search) jobs = jobs.filter(([id, j]) => j.title.toLowerCase().includes(search));
+
+  if (jobs.length === 0) {
+    container.innerHTML = `<div class="sm:col-span-2">${emptyState('📋', 'No job posts', 'Client job posts will appear here for moderation.')}</div>`;
+    return;
+  }
+
+  container.innerHTML = jobs.map(([id, j]) => `
+    <div class="bg-white rounded-2xl shadow-soft p-5">
+      <div class="flex items-center gap-2 flex-wrap mb-2">
+        <h4 class="font-semibold font-display">${escapeHtml(j.title)}</h4>
+        ${j.urgent ? '<span class="text-[10px] bg-terracotta text-white px-2 py-0.5 rounded-full font-bold">URGENT</span>' : ''}
+      </div>
+      <p class="text-sm text-ink/60 mb-3 line-clamp-2">${escapeHtml(j.details)}</p>
+      <div class="flex items-center justify-between text-xs text-ink/40 mb-3">
+        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
+        <span>${timeAgo(j.createdAt)}</span>
+      </div>
+      <div class="flex items-center justify-between border-t border-stone pt-3">
+        <p class="text-sm text-ink/60">By ${escapeHtml(j.clientName)}</p>
+        <button onclick="deleteJobAdmin('${id}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-1.5 font-semibold transition">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteJobAdmin(jobId) {
+  if (!confirm('Delete this job post permanently?')) return;
+  db.ref('jobs/' + jobId).remove().then(() => showToast('Job post deleted', 'info'));
+}
+
+// ============================================================
+// REALTIME LISTENERS
+// ============================================================
+function attachUsersListener() {
+  if (listenersAttached.users) return;
+  listenersAttached.users = true;
+  db.ref('users').on('value', snap => {
+    usersCacheData = snap.val() || {};
+    if (currentUser && currentUser.role === 'client') {
+      if (!document.getElementById('client-tab-explore').classList.contains('hidden-force')) renderHandymenList();
     }
-  </script>
+    if (currentUser && currentUser.role === 'admin') {
+      if (!document.getElementById('admin-tab-users').classList.contains('hidden-force')) renderUsersTable();
+    }
+  });
+}
+
+function attachJobsListener() {
+  if (listenersAttached.jobs) return;
+  listenersAttached.jobs = true;
+  db.ref('jobs').on('value', snap => {
+    jobsCacheData = snap.val() || {};
+    if (currentUser && currentUser.role === 'client') {
+      if (!document.getElementById('client-tab-post-job').classList.contains('hidden-force')) renderMyPostedJobs();
+    }
+    if (currentUser && currentUser.role === 'handyman') {
+      if (!document.getElementById('handyman-tab-feed').classList.contains('hidden-force')) renderJobFeed();
+    }
+    if (currentUser && currentUser.role === 'admin') {
+      if (!document.getElementById('admin-tab-jobs').classList.contains('hidden-force')) renderJobsAdmin();
+    }
+  });
+}
+
+function attachRequestsListener() {
+  if (listenersAttached.requests) return;
+  listenersAttached.requests = true;
+  db.ref('directRequests').on('value', snap => {
+    directRequestsCacheData = snap.val() || {};
+    if (currentUser && currentUser.role === 'client') {
+      if (!document.getElementById('client-tab-requests').classList.contains('hidden-force')) renderMyRequests();
+    }
+    if (currentUser && currentUser.role === 'handyman') {
+      renderDirectRequests(); // always update badge count
+    }
+  });
+}
+
+// ============================================================
+// EMPTY STATE HELPER
+// ============================================================
+function emptyState(icon, title, subtitle) {
+  return `
+    <div class="col-span-full text-center py-16 px-4">
+      <div class="text-5xl mb-3 opacity-60">${icon}</div>
+      <h3 class="font-display font-bold text-ink/70 mb-1">${escapeHtml(title)}</h3>
+      <p class="text-sm text-ink/40 max-w-xs mx-auto">${escapeHtml(subtitle)}</p>
+    </div>
+  `;
+}
+</script>
 </body>
 </html>
