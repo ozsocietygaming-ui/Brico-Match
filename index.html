@@ -118,11 +118,36 @@
   </div>
 </div>
 
+<!-- RATE HANDYMAN MODAL -->
+<div id="modal-rate-handyman" class="hidden-force fixed inset-0 bg-ink/60 z-[85] items-center justify-center p-4">
+  <div class="bg-cream rounded-2xl shadow-card max-w-sm w-full p-6 fade-in">
+    <h3 class="text-lg font-bold font-display mb-1">Rate Your Handyman</h3>
+    <p class="text-sm text-ink/60 mb-4">Optional — let others know how it went with <span id="rate-handyman-name" class="font-semibold text-terracotta"></span></p>
+    <div id="rate-stars" class="flex gap-1 justify-center mb-4 text-4xl"></div>
+    <textarea id="rate-comment" rows="3" placeholder="Write a short review (optional)..." class="w-full px-4 py-2.5 rounded-xl border border-stone bg-white mb-4 focus:outline-none focus:ring-2 focus:ring-terracotta/40"></textarea>
+    <div class="flex gap-2">
+      <button onclick="closeModal('modal-rate-handyman')" class="flex-1 py-2.5 rounded-xl border border-stone text-ink/70 font-medium hover:bg-stone-light">Skip</button>
+      <button onclick="submitRating()" class="flex-1 py-2.5 rounded-xl bg-terracotta text-white font-semibold hover:bg-terracotta-dark">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- HANDYMAN PROFILE MODAL -->
+<div id="modal-handyman-profile" class="hidden-force fixed inset-0 bg-ink/60 z-[85] items-center justify-center p-4">
+  <div class="bg-cream rounded-2xl shadow-card max-w-lg w-full p-6 fade-in max-h-[85vh] overflow-y-auto">
+    <div class="flex justify-between items-start mb-4">
+      <div id="profile-header" class="flex items-center gap-3"></div>
+      <button onclick="closeModal('modal-handyman-profile')" class="text-ink/40 hover:text-ink text-xl leading-none flex-shrink-0">✕</button>
+    </div>
+    <div id="profile-body"></div>
+  </div>
+</div>
+
 <!-- ===================== ROLE SELECT SCREEN ===================== -->
 <div id="screen-role-select" class="min-h-screen flex items-center justify-center p-4">
   <div class="max-w-lg w-full fade-in">
     <div class="text-center mb-10">
-      <div class="w-16 h-16 rounded-2xl bg-terracotta text-white text-3xl flex items-center justify-center mx-auto mb-4 shadow-soft">🛠️</div>
+      <div onclick="handleLogoSecretClick()" class="w-16 h-16 rounded-2xl bg-terracotta text-white text-3xl flex items-center justify-center mx-auto mb-4 shadow-soft cursor-default select-none">🛠️</div>
       <h1 class="text-3xl sm:text-4xl font-extrabold font-display text-ink mb-2">Brico-Match</h1>
       <p class="text-ink/60">Connecting Clients &amp; Handymen across Algeria</p>
     </div>
@@ -143,7 +168,6 @@
         </div>
         <span class="text-ink/30 group-hover:text-terracotta transition">→</span>
       </button>
-      <button onclick="showAdminLogin()" class="text-sm text-ink/50 hover:text-terracotta underline text-center mt-2">Admin Login</button>
     </div>
   </div>
 </div>
@@ -262,10 +286,19 @@
 
     <!-- EXPLORE HANDYMEN TAB -->
     <section id="client-tab-explore" class="client-tab-panel hidden-force">
-      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+      <div class="flex flex-col sm:flex-row gap-3 mb-3">
         <input id="handyman-search" oninput="renderHandymenList()" type="text" placeholder="Search by name..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <select id="handyman-category-filter" onchange="renderHandymenList()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
           <option value="">All Categories</option>
+        </select>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+        <select id="handyman-wilaya-filter" onchange="renderHandymenList()" class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
+          <option value="">All Wilayas (Address)</option>
+        </select>
+        <select id="handyman-sort" onchange="renderHandymenList()" class="px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
+          <option value="">Sort: Default</option>
+          <option value="rating">Sort: Highest Rated</option>
         </select>
       </div>
       <div id="handymen-list" class="grid sm:grid-cols-2 gap-4"></div>
@@ -302,14 +335,20 @@
     <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
       <button data-tab="feed" onclick="switchHandymanTab('feed')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">💼 Job Opportunities</button>
       <button data-tab="direct" onclick="switchHandymanTab('direct')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">📥 Direct Requests <span id="direct-req-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
+      <button data-tab="fulfilled" onclick="switchHandymanTab('fulfilled')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition">✅ Fulfilled Jobs</button>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-4 mt-6">
     <section id="handyman-tab-feed" class="handyman-tab-panel">
-      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+      <div class="flex flex-col sm:flex-row gap-3 mb-3">
         <input id="job-feed-search" oninput="renderJobFeed()" type="text" placeholder="Search jobs by title..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <span id="specialty-badge" class="px-4 py-2.5 rounded-xl bg-sand text-sm font-semibold whitespace-nowrap"></span>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 mb-5">
+        <select id="job-feed-wilaya-filter" onchange="renderJobFeed()" class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
+          <option value="">All Wilayas (Client Address)</option>
+        </select>
       </div>
       <div id="job-feed-list" class="grid sm:grid-cols-2 gap-4"></div>
     </section>
@@ -317,6 +356,12 @@
     <section id="handyman-tab-direct" class="handyman-tab-panel hidden-force">
       <h2 class="font-display font-bold text-lg mb-4">Direct Requests From Clients</h2>
       <div id="direct-requests-list" class="space-y-3"></div>
+    </section>
+
+    <section id="handyman-tab-fulfilled" class="handyman-tab-panel hidden-force">
+      <h2 class="font-display font-bold text-lg mb-4">Fulfilled Jobs</h2>
+      <p class="text-sm text-ink/50 mb-4">Jobs confirmed complete by both you and the client. This builds your public track record.</p>
+      <div id="fulfilled-jobs-list" class="space-y-3"></div>
     </section>
   </main>
 </div>
@@ -420,7 +465,12 @@ let selectedRoleForAuth = null;
 let usersCacheData = {};
 let jobsCacheData = {};
 let directRequestsCacheData = {};
-let listenersAttached = { users:false, jobs:false, requests:false };
+let ratingsCacheData = {};
+let listenersAttached = { users:false, jobs:false, requests:false, ratings:false };
+let logoClickCount = 0;
+let logoClickTimer = null;
+let rateModalContext = null; // { reqId, handymanId, handymanName, jobTitle }
+let currentRatingStars = 0;
 
 // ============================================================
 // UTILITIES
@@ -508,8 +558,34 @@ window.addEventListener('DOMContentLoaded', () => {
     catFilter.appendChild(opt);
   });
 
+  const handymanWilayaFilter = document.getElementById('handyman-wilaya-filter');
+  const jobFeedWilayaFilter = document.getElementById('job-feed-wilaya-filter');
+  WILAYAS.forEach(w => {
+    const opt1 = document.createElement('option'); opt1.value = w; opt1.textContent = w;
+    handymanWilayaFilter.appendChild(opt1);
+    const opt2 = document.createElement('option'); opt2.value = w; opt2.textContent = w;
+    jobFeedWilayaFilter.appendChild(opt2);
+  });
+
+  // Secret admin access via URL hash, e.g. index.html#admin-access
+  if (window.location.hash.toLowerCase() === '#admin-access') {
+    showAdminLogin();
+    return;
+  }
+
   restoreSession();
 });
+
+// Secret admin access via 5 rapid clicks on the home logo
+function handleLogoSecretClick() {
+  logoClickCount++;
+  clearTimeout(logoClickTimer);
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+  if (logoClickCount >= 5) {
+    logoClickCount = 0;
+    showAdminLogin();
+  }
+}
 
 function restoreSession() {
   const raw = localStorage.getItem(SESSION_KEY);
@@ -702,6 +778,7 @@ function initClientDashboard() {
   attachUsersListener();
   attachJobsListener();
   attachRequestsListener();
+  attachRatingsListener();
 }
 
 function switchClientTab(tab) {
@@ -730,6 +807,8 @@ function handlePostJob(e) {
     clientId: currentUser.id,
     clientName: currentUser.fullName,
     clientPhone: currentUser.phone,
+    clientAddress: currentUser.address || '',
+    clientWilaya: currentUser.wilaya || '',
     title, details, category, urgent,
     status: 'open',
     createdAt: Date.now()
@@ -774,25 +853,60 @@ function deleteOwnJob(jobId) {
   db.ref('jobs/' + jobId).remove().then(() => showToast('Job removed', 'info'));
 }
 
+function getHandymanRatingStats(handymanId) {
+  const ratings = ratingsCacheData[handymanId];
+  if (!ratings) return { avg: 0, count: 0 };
+  const values = Object.values(ratings);
+  const count = values.length;
+  if (count === 0) return { avg: 0, count: 0 };
+  const sum = values.reduce((acc, r) => acc + (r.stars || 0), 0);
+  return { avg: sum / count, count };
+}
+
+function starDisplay(avg) {
+  const rounded = Math.round(avg);
+  let out = '';
+  for (let i = 1; i <= 5; i++) out += i <= rounded ? '★' : '☆';
+  return out;
+}
+
+function getFulfilledJobsForHandyman(handymanId) {
+  return Object.entries(directRequestsCacheData)
+    .filter(([id, r]) => r.handymanId === handymanId && r.clientCompletionMark === 'fulfilled' && r.handymanCompletionMark === 'fulfilled')
+    .sort((a,b) => b[1].createdAt - a[1].createdAt);
+}
+
 function renderHandymenList() {
   const search = document.getElementById('handyman-search').value.trim().toLowerCase();
   const categoryFilter = document.getElementById('handyman-category-filter').value;
+  const wilayaFilter = document.getElementById('handyman-wilaya-filter').value;
+  const sortBy = document.getElementById('handyman-sort').value;
   const container = document.getElementById('handymen-list');
 
   let handymen = Object.entries(usersCacheData).filter(([id, u]) =>
     u.role === 'handyman' && u.available === true && u.status !== 'blocked'
   );
   if (categoryFilter) handymen = handymen.filter(([id, u]) => u.category === categoryFilter);
+  if (wilayaFilter) handymen = handymen.filter(([id, u]) => u.wilaya === wilayaFilter);
   if (search) handymen = handymen.filter(([id, u]) => u.fullName.toLowerCase().includes(search));
+
+  if (sortBy === 'rating') {
+    handymen.sort((a, b) => getHandymanRatingStats(b[0]).avg - getHandymanRatingStats(a[0]).avg);
+  }
 
   if (handymen.length === 0) {
     container.innerHTML = `<div class="sm:col-span-2">${emptyState('🔍', 'No handymen found', 'Try adjusting your search or filters, or check back later.')}</div>`;
     return;
   }
 
-  container.innerHTML = handymen.map(([id, u]) => `
+  container.innerHTML = handymen.map(([id, u]) => {
+    const stats = getHandymanRatingStats(id);
+    const ratingLine = stats.count > 0
+      ? `<span class="text-amber-500 text-sm">${starDisplay(stats.avg)}</span> <span class="text-xs text-ink/40">(${stats.count})</span>`
+      : `<span class="text-xs text-ink/30">No reviews yet</span>`;
+    return `
     <div class="bg-white rounded-2xl shadow-soft p-5">
-      <div class="flex items-start justify-between mb-3">
+      <div class="flex items-start justify-between mb-2">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-full bg-sand flex items-center justify-center text-lg font-bold text-terracotta">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
           <div>
@@ -802,13 +916,72 @@ function renderHandymenList() {
         </div>
         <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">● Available</span>
       </div>
+      <div class="mb-3">${ratingLine}</div>
       <span class="inline-block text-xs bg-sand px-2.5 py-1 rounded-full font-medium mb-3">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(u.category)}</span>
-      <div class="flex gap-2">
-        <a href="tel:${escapeHtml(u.phone)}" class="flex-1 text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">📞 Call</a>
-        <button onclick="openDirectHireModal('${id}')" class="flex-1 text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2 font-semibold transition">Hire Directly</button>
+      <div class="grid grid-cols-3 gap-2">
+        <a href="tel:${escapeHtml(u.phone)}" class="text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">📞 Call</a>
+        <button onclick="openHandymanProfile('${id}')" class="text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">👤 Profile</button>
+        <button onclick="openDirectHireModal('${id}')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2 font-semibold transition">Hire</button>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+
+function openHandymanProfile(handymanId) {
+  const u = usersCacheData[handymanId];
+  if (!u) return;
+  const stats = getHandymanRatingStats(handymanId);
+  const fulfilled = getFulfilledJobsForHandyman(handymanId);
+  const reviews = ratingsCacheData[handymanId] ? Object.values(ratingsCacheData[handymanId]).sort((a,b) => b.createdAt - a.createdAt) : [];
+
+  document.getElementById('profile-header').innerHTML = `
+    <div class="w-14 h-14 rounded-full bg-sand flex items-center justify-center text-2xl font-bold text-terracotta flex-shrink-0">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
+    <div>
+      <h3 class="text-lg font-bold font-display">${escapeHtml(u.fullName)}</h3>
+      <p class="text-sm text-ink/50">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(u.category)} · ${escapeHtml(u.wilaya || '')}</p>
+    </div>
+  `;
+
+  document.getElementById('profile-body').innerHTML = `
+    <div class="flex items-center gap-4 bg-sand rounded-xl p-4 mb-5">
+      <div class="text-center">
+        <p class="text-2xl font-bold font-display text-terracotta">${stats.count > 0 ? stats.avg.toFixed(1) : '—'}</p>
+        <p class="text-amber-500 text-sm">${stats.count > 0 ? starDisplay(stats.avg) : '☆☆☆☆☆'}</p>
+        <p class="text-[11px] text-ink/40">${stats.count} review${stats.count === 1 ? '' : 's'}</p>
+      </div>
+      <div class="w-px h-10 bg-stone"></div>
+      <div class="text-center flex-1">
+        <p class="text-2xl font-bold font-display text-terracotta">${fulfilled.length}</p>
+        <p class="text-[11px] text-ink/40">Jobs Fulfilled</p>
+      </div>
+    </div>
+
+    <h4 class="font-semibold font-display text-sm mb-2">Reviews</h4>
+    <div class="space-y-2 mb-5">
+      ${reviews.length === 0 ? '<p class="text-sm text-ink/40">No reviews yet.</p>' : reviews.map(r => `
+        <div class="bg-white rounded-xl p-3 border border-stone-light">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-amber-500 text-sm">${starDisplay(r.stars)}</span>
+            <span class="text-[11px] text-ink/40">${formatDate(r.createdAt)}</span>
+          </div>
+          ${r.comment ? `<p class="text-sm text-ink/70">${escapeHtml(r.comment)}</p>` : ''}
+        </div>
+      `).join('')}
+    </div>
+
+    <h4 class="font-semibold font-display text-sm mb-2">Fulfilled Jobs</h4>
+    <div class="space-y-2">
+      ${fulfilled.length === 0 ? '<p class="text-sm text-ink/40">No fulfilled jobs yet.</p>' : fulfilled.map(([id, j]) => `
+        <div class="bg-white rounded-xl p-3 border border-stone-light">
+          <p class="font-medium text-sm">${escapeHtml(j.title)}</p>
+          <p class="text-xs text-ink/40">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)} · ${formatDate(j.createdAt)}</p>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  openModal('modal-handyman-profile');
 }
 
 let dhTargetHandymanId = null;
@@ -860,18 +1033,40 @@ function renderMyRequests() {
     refused: 'bg-red-100 text-red-700'
   };
 
-  container.innerHTML = myReqs.map(([id, r]) => `
-    <div class="bg-white rounded-xl shadow-soft p-4 flex justify-between items-start gap-3">
-      <div class="min-w-0">
-        <div class="flex items-center gap-2 flex-wrap mb-1">
-          <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
-          <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(r.status)}</span>
+  container.innerHTML = myReqs.map(([id, r]) => {
+    const hasRated = !!(ratingsCacheData[r.handymanId] && ratingsCacheData[r.handymanId][id]);
+    const bothFulfilled = r.clientCompletionMark === 'fulfilled' && r.handymanCompletionMark === 'fulfilled';
+    let completionBlock = '';
+    if (r.status === 'accepted') {
+      completionBlock = `
+        <div class="mt-3 pt-3 border-t border-stone">
+          <p class="text-[11px] text-ink/40 mb-1.5">Mark this job as:</p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="markCompletion('${id}','client','fulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.clientCompletionMark === 'fulfilled' ? 'bg-green-600 text-white' : 'border border-stone hover:bg-sand'}">✅ Job Fulfilled</button>
+            <button onclick="markCompletion('${id}','client','unfulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.clientCompletionMark === 'unfulfilled' ? 'bg-red-500 text-white' : 'border border-stone hover:bg-sand'}">❌ Job Unfulfilled</button>
+            ${bothFulfilled && !hasRated ? `<button onclick="openRateModal('${id}','${r.handymanId}','${escapeHtml(r.handymanName).replace(/'/g,"\\'")}','${escapeHtml(r.title).replace(/'/g,"\\'")}')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition bg-amber-100 text-amber-700 hover:bg-amber-200">⭐ Rate Handyman</button>` : ''}
+            ${hasRated ? `<span class="text-xs text-ink/40 italic">You already reviewed this job</span>` : ''}
+          </div>
+          ${bothFulfilled ? '<p class="text-[11px] text-green-700 mt-1.5">✔ Confirmed complete by both sides</p>' : ''}
         </div>
-        <p class="text-sm text-ink/60 mb-2">To: <span class="font-medium">${escapeHtml(r.handymanName)}</span> · ${escapeHtml(r.category)}</p>
-        <p class="text-xs text-ink/40">${timeAgo(r.createdAt)}</p>
+      `;
+    }
+    return `
+    <div class="bg-white rounded-xl shadow-soft p-4">
+      <div class="flex justify-between items-start gap-3">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap mb-1">
+            <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(r.status)}</span>
+          </div>
+          <p class="text-sm text-ink/60 mb-2">To: <span class="font-medium">${escapeHtml(r.handymanName)}</span> · ${escapeHtml(r.category)}</p>
+          <p class="text-xs text-ink/40">${timeAgo(r.createdAt)}</p>
+        </div>
       </div>
+      ${completionBlock}
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // ============================================================
@@ -885,6 +1080,7 @@ function initHandymanDashboard() {
   attachUsersListener();
   attachJobsListener();
   attachRequestsListener();
+  attachRatingsListener();
 }
 
 function switchHandymanTab(tab) {
@@ -897,6 +1093,7 @@ function switchHandymanTab(tab) {
   });
   if (tab === 'feed') renderJobFeed();
   if (tab === 'direct') renderDirectRequests();
+  if (tab === 'fulfilled') renderFulfilledJobs();
 }
 
 function toggleAvailability() {
@@ -909,11 +1106,13 @@ function toggleAvailability() {
 
 function renderJobFeed() {
   const search = document.getElementById('job-feed-search').value.trim().toLowerCase();
+  const wilayaFilter = document.getElementById('job-feed-wilaya-filter').value;
   const container = document.getElementById('job-feed-list');
 
   let jobs = Object.entries(jobsCacheData).filter(([id, j]) =>
     j.status === 'open' && j.category === currentUser.category
   );
+  if (wilayaFilter) jobs = jobs.filter(([id, j]) => j.clientWilaya === wilayaFilter);
   if (search) jobs = jobs.filter(([id, j]) => j.title.toLowerCase().includes(search));
   jobs.sort((a,b) => (b[1].urgent - a[1].urgent) || (b[1].createdAt - a[1].createdAt));
 
@@ -933,6 +1132,7 @@ function renderJobFeed() {
         <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(j.category)}</span>
         <span>${timeAgo(j.createdAt)}</span>
       </div>
+      ${(j.clientAddress || j.clientWilaya) ? `<p class="text-xs text-ink/50 mb-3">📍 ${escapeHtml(j.clientAddress || '')}${j.clientAddress && j.clientWilaya ? ', ' : ''}${escapeHtml(j.clientWilaya || '')}</p>` : ''}
       <div class="flex items-center justify-between border-t border-stone pt-3">
         <div>
           <p class="text-sm font-medium">${escapeHtml(j.clientName)}</p>
@@ -965,7 +1165,9 @@ function renderDirectRequests() {
     refused: 'bg-red-100 text-red-700'
   };
 
-  container.innerHTML = reqs.map(([id, r]) => `
+  container.innerHTML = reqs.map(([id, r]) => {
+    const bothFulfilled = r.clientCompletionMark === 'fulfilled' && r.handymanCompletionMark === 'fulfilled';
+    return `
     <div class="bg-white rounded-xl shadow-soft p-4">
       <div class="flex justify-between items-start gap-3 mb-2">
         <div class="min-w-0">
@@ -977,15 +1179,108 @@ function renderDirectRequests() {
           <p class="text-xs text-ink/40">From: <span class="font-medium text-ink/60">${escapeHtml(r.clientName)}</span> · ${timeAgo(r.createdAt)}</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-stone">
+      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-stone flex-wrap">
         <a href="tel:${escapeHtml(r.clientPhone)}" class="text-sm border border-stone rounded-xl px-3 py-1.5 font-medium hover:bg-sand transition">📞 Call</a>
         ${r.status === 'pending' ? `
           <button onclick="respondToRequest('${id}','accepted')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">Accept</button>
           <button onclick="respondToRequest('${id}','refused')" class="text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 py-1.5 font-semibold transition">Refuse</button>
         ` : ''}
       </div>
+      ${r.status === 'accepted' ? `
+        <div class="mt-3 pt-3 border-t border-stone">
+          <p class="text-[11px] text-ink/40 mb-1.5">Mark this job as:</p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="markCompletion('${id}','handyman','fulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.handymanCompletionMark === 'fulfilled' ? 'bg-green-600 text-white' : 'border border-stone hover:bg-sand'}">✅ Job Fulfilled</button>
+            <button onclick="markCompletion('${id}','handyman','unfulfilled')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${r.handymanCompletionMark === 'unfulfilled' ? 'bg-red-500 text-white' : 'border border-stone hover:bg-sand'}">❌ Job Unfulfilled</button>
+          </div>
+          ${bothFulfilled ? '<p class="text-[11px] text-green-700 mt-1.5">✔ Confirmed complete by both sides — added to your Fulfilled Jobs</p>' : ''}
+        </div>
+      ` : ''}
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+
+function markCompletion(reqId, side, mark) {
+  const field = side === 'client' ? 'clientCompletionMark' : 'handymanCompletionMark';
+  db.ref('directRequests/' + reqId + '/' + field).set(mark).then(() => {
+    showToast(mark === 'fulfilled' ? 'Marked as fulfilled' : 'Marked as unfulfilled', mark === 'fulfilled' ? 'success' : 'info');
+  });
+}
+
+function renderFulfilledJobs() {
+  const container = document.getElementById('fulfilled-jobs-list');
+  const fulfilled = getFulfilledJobsForHandyman(currentUser.id);
+
+  if (fulfilled.length === 0) {
+    container.innerHTML = emptyState('✅', 'No fulfilled jobs yet', 'Jobs confirmed complete by you and the client will show up here.');
+    return;
+  }
+
+  container.innerHTML = fulfilled.map(([id, r]) => {
+    const rating = ratingsCacheData[currentUser.id] && ratingsCacheData[currentUser.id][id];
+    return `
+    <div class="bg-white rounded-xl shadow-soft p-4">
+      <div class="flex items-center gap-2 flex-wrap mb-1">
+        <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
+        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">FULFILLED</span>
+      </div>
+      <p class="text-sm text-ink/60 mb-2">${escapeHtml(r.details || '')}</p>
+      <div class="flex items-center justify-between text-xs text-ink/40">
+        <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[r.category]||''} ${escapeHtml(r.category)}</span>
+        <span>${formatDate(r.createdAt)}</span>
+      </div>
+      ${rating ? `<div class="mt-2 pt-2 border-t border-stone-light"><span class="text-amber-500 text-sm">${starDisplay(rating.stars)}</span>${rating.comment ? ` <span class="text-sm text-ink/60">"${escapeHtml(rating.comment)}"</span>` : ''}</div>` : ''}
+    </div>
+  `;
+  }).join('');
+}
+
+// ============================================================
+// RATING SYSTEM
+// ============================================================
+function openRateModal(reqId, handymanId, handymanName, jobTitle) {
+  rateModalContext = { reqId, handymanId, handymanName, jobTitle };
+  currentRatingStars = 0;
+  document.getElementById('rate-handyman-name').textContent = handymanName;
+  document.getElementById('rate-comment').value = '';
+  renderRateStars();
+  openModal('modal-rate-handyman');
+}
+
+function renderRateStars() {
+  const container = document.getElementById('rate-stars');
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    html += `<button type="button" onclick="setRatingStars(${i})" class="transition ${i <= currentRatingStars ? 'text-amber-500' : 'text-stone'}">★</button>`;
+  }
+  container.innerHTML = html;
+}
+
+function setRatingStars(n) {
+  currentRatingStars = n;
+  renderRateStars();
+}
+
+function submitRating() {
+  if (!rateModalContext) return;
+  if (currentRatingStars === 0) {
+    showToast('Please select at least 1 star, or tap Skip', 'error');
+    return;
+  }
+  const comment = document.getElementById('rate-comment').value.trim();
+  const { reqId, handymanId, jobTitle } = rateModalContext;
+  db.ref('ratings/' + handymanId + '/' + reqId).set({
+    stars: currentRatingStars,
+    comment,
+    clientName: currentUser.fullName,
+    jobTitle,
+    createdAt: Date.now()
+  }).then(() => {
+    closeModal('modal-rate-handyman');
+    showToast('Thanks for your review!', 'success');
+    rateModalContext = null;
+  }).catch(err => showToast('Failed to submit review: ' + err.message, 'error'));
 }
 
 function respondToRequest(reqId, status) {
@@ -1182,6 +1477,22 @@ function attachRequestsListener() {
     }
     if (currentUser && currentUser.role === 'handyman') {
       renderDirectRequests(); // always update badge count
+      if (!document.getElementById('handyman-tab-fulfilled').classList.contains('hidden-force')) renderFulfilledJobs();
+    }
+  });
+}
+
+function attachRatingsListener() {
+  if (listenersAttached.ratings) return;
+  listenersAttached.ratings = true;
+  db.ref('ratings').on('value', snap => {
+    ratingsCacheData = snap.val() || {};
+    if (currentUser && currentUser.role === 'client') {
+      if (!document.getElementById('client-tab-explore').classList.contains('hidden-force')) renderHandymenList();
+      if (!document.getElementById('client-tab-requests').classList.contains('hidden-force')) renderMyRequests();
+    }
+    if (currentUser && currentUser.role === 'handyman') {
+      if (!document.getElementById('handyman-tab-fulfilled').classList.contains('hidden-force')) renderFulfilledJobs();
     }
   });
 }
