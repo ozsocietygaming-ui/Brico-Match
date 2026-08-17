@@ -436,6 +436,7 @@
     <div class="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
       <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_users">👥 Users</button>
       <button data-tab="jobs" onclick="switchAdminTab('jobs')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_jobs">📋 Job Posts</button>
+      <button data-tab="verifications" onclick="switchAdminTab('verifications')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_verifications">🛡️ Verifications</span> <span id="pending-verify-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
     </div>
   </header>
 
@@ -470,6 +471,11 @@
     <section id="admin-tab-jobs" class="admin-tab-panel hidden-force">
       <input id="admin-job-search" oninput="renderJobsAdmin()" type="text" data-i18n-ph="admin_jobs_search_ph" placeholder="Search job posts..." class="w-full mb-5 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-slateaccent/40">
       <div id="admin-jobs-list" class="grid sm:grid-cols-2 gap-4"></div>
+    </section>
+
+    <section id="admin-tab-verifications" class="admin-tab-panel hidden-force">
+      <p class="text-sm text-ink/50 mb-4" data-i18n="pending_verifications_sub">People who tapped "Verify via WhatsApp" but haven't been auto-confirmed (no webhook set up yet) show up here. Open WhatsApp yourself, confirm the message with this exact code arrived from this exact number, then approve.</p>
+      <div id="admin-pending-verifications-list" class="space-y-3"></div>
     </section>
   </main>
 </div>
@@ -514,7 +520,7 @@ const ADMIN_PHONE = "0662558982";
 const TRIAL_DAYS = 7;
 const SESSION_KEY = "bricomatch_session";
 const LANG_KEY = "bricomatch_lang";
-const VERIFICATION_WA_NUMBER = "213672506576"; // TODO: your WhatsApp Business number, digits only, no + and no leading 0 (country code + local number, e.g. 213555123456)
+const VERIFICATION_WA_NUMBER = "213XXXXXXXXX"; // TODO: your WhatsApp Business number, digits only, no + and no leading 0 (country code + local number, e.g. 213555123456)
 
 // ============================================================
 // TRANSLATIONS (EN / FR / AR)
@@ -728,7 +734,18 @@ en: {
   verify_btn: "✅ Verify",
   unverify_btn: "Unverify",
   toast_user_verified: "User marked as verified",
-  toast_user_unverified: "Verification removed"
+  toast_user_unverified: "Verification removed",
+  tab_verifications: "🛡️ Verifications",
+  pending_verifications_sub: "People who tapped \"Verify via WhatsApp\" but haven't been auto-confirmed (no webhook set up yet) show up here. Open WhatsApp yourself, confirm the message with this exact code arrived from this exact number, then approve.",
+  empty_no_pending_title: "No pending verification requests",
+  empty_no_pending_sub: "Requests appear here the moment someone taps \"Verify via WhatsApp\" during registration.",
+  pv_phone_label: "Number entered",
+  pv_status_pending: "Waiting for approval",
+  pv_status_expired: "Expired (user's browser stopped listening)",
+  approve_verification_btn: "✅ Approve",
+  reject_verification_btn: "Delete",
+  toast_verification_approved: "Verification approved — the user's app will unlock automatically if their tab is still open",
+  toast_verification_deleted: "Verification request removed"
 },
 fr: {
   brand_tagline: "Connecter clients et artisans à travers l'Algérie",
@@ -938,7 +955,18 @@ fr: {
   verify_btn: "✅ Vérifier",
   unverify_btn: "Retirer la vérification",
   toast_user_verified: "Utilisateur marqué comme vérifié",
-  toast_user_unverified: "Vérification retirée"
+  toast_user_unverified: "Vérification retirée",
+  tab_verifications: "🛡️ Vérifications",
+  pending_verifications_sub: "Les personnes ayant appuyé sur « Vérifier via WhatsApp » sans confirmation automatique (webhook non configuré) apparaissent ici. Ouvrez WhatsApp vous-même, confirmez que ce code exact provient bien de ce numéro exact, puis approuvez.",
+  empty_no_pending_title: "Aucune demande de vérification en attente",
+  empty_no_pending_sub: "Les demandes apparaissent ici dès qu'une personne appuie sur « Vérifier via WhatsApp » lors de l'inscription.",
+  pv_phone_label: "Numéro saisi",
+  pv_status_pending: "En attente d'approbation",
+  pv_status_expired: "Expiré (le navigateur de l'utilisateur a arrêté d'écouter)",
+  approve_verification_btn: "✅ Approuver",
+  reject_verification_btn: "Supprimer",
+  toast_verification_approved: "Vérification approuvée — l'application de l'utilisateur se débloquera automatiquement si son onglet est encore ouvert",
+  toast_verification_deleted: "Demande de vérification supprimée"
 },
 ar: {
   brand_tagline: "نربط بين العملاء والحرفيين في جميع أنحاء الجزائر",
@@ -1148,7 +1176,18 @@ ar: {
   verify_btn: "✅ توثيق",
   unverify_btn: "إلغاء التوثيق",
   toast_user_verified: "تم تحديد المستخدم كموثّق",
-  toast_user_unverified: "تمت إزالة التوثيق"
+  toast_user_unverified: "تمت إزالة التوثيق",
+  tab_verifications: "🛡️ التحققات",
+  pending_verifications_sub: "الأشخاص الذين ضغطوا على \"التحقق عبر واتساب\" ولم يتم تأكيدهم تلقائيًا (لا يوجد webhook بعد) يظهرون هنا. افتح واتساب بنفسك، تأكد من وصول هذا الرمز بالضبط من هذا الرقم بالضبط، ثم وافق.",
+  empty_no_pending_title: "لا توجد طلبات تحقق معلّقة",
+  empty_no_pending_sub: "تظهر الطلبات هنا فور ضغط أي شخص على \"التحقق عبر واتساب\" أثناء التسجيل.",
+  pv_phone_label: "الرقم المُدخل",
+  pv_status_pending: "بانتظار الموافقة",
+  pv_status_expired: "منتهي الصلاحية (توقف متصفح المستخدم عن الاستماع)",
+  approve_verification_btn: "✅ موافقة",
+  reject_verification_btn: "حذف",
+  toast_verification_approved: "تمت الموافقة على التحقق — سيُفتح التطبيق تلقائيًا لدى المستخدم إذا كانت علامة التبويب لا تزال مفتوحة",
+  toast_verification_deleted: "تم حذف طلب التحقق"
 }
 };
 
@@ -1249,6 +1288,7 @@ function refreshDynamicViews() {
   } else if (currentUser.role === 'admin') {
     if (!document.getElementById('admin-tab-users').classList.contains('hidden-force')) renderUsersTable();
     if (!document.getElementById('admin-tab-jobs').classList.contains('hidden-force')) renderJobsAdmin();
+    if (!document.getElementById('admin-tab-verifications').classList.contains('hidden-force')) renderPendingVerifications();
   }
 }
 
@@ -1271,7 +1311,8 @@ let usersCacheData = {};
 let jobsCacheData = {};
 let directRequestsCacheData = {};
 let ratingsCacheData = {};
-let listenersAttached = { users:false, jobs:false, requests:false, ratings:false };
+let pendingVerificationsCacheData = {};
+let listenersAttached = { users:false, jobs:false, requests:false, ratings:false, pendingVerifications:false };
 let logoClickCount = 0;
 let logoClickTimer = null;
 let rateModalContext = null; // { reqId, handymanId, handymanName, jobTitle }
@@ -2123,6 +2164,7 @@ function initAdminDashboard() {
   switchAdminTab('users');
   attachUsersListener();
   attachJobsListener();
+  attachPendingVerificationsListener();
 }
 
 function switchAdminTab(tab) {
@@ -2135,6 +2177,7 @@ function switchAdminTab(tab) {
   });
   if (tab === 'users') renderUsersTable();
   if (tab === 'jobs') renderJobsAdmin();
+  if (tab === 'verifications') renderPendingVerifications();
 }
 
 function renderUsersTable() {
@@ -2270,6 +2313,53 @@ function deleteJobAdmin(jobId) {
   db.ref('jobs/' + jobId).remove().then(() => showToast(t('toast_job_deleted'), 'info'));
 }
 
+function renderPendingVerifications() {
+  const container = document.getElementById('admin-pending-verifications-list');
+  const entries = Object.entries(pendingVerificationsCacheData)
+    .filter(([token, v]) => v.status === 'pending')
+    .sort((a, b) => b[1].created_at - a[1].created_at);
+
+  if (entries.length === 0) {
+    container.innerHTML = emptyState('🛡️', t('empty_no_pending_title'), t('empty_no_pending_sub'));
+    return;
+  }
+
+  const now = Date.now();
+  container.innerHTML = entries.map(([token, v]) => {
+    const expired = (v.created_at + 3 * 60 * 1000) <= now;
+    const waLink = `https://wa.me/${(v.input_phone || '').replace('+', '')}`;
+    return `
+    <div class="bg-white rounded-xl shadow-soft p-4">
+      <div class="flex justify-between items-start gap-3 mb-2">
+        <div class="min-w-0">
+          <p class="font-mono font-bold text-terracotta text-lg tracking-wider">${escapeHtml(token)}</p>
+          <p class="text-xs text-ink/50 mt-0.5">${escapeHtml(t('pv_phone_label'))}: <span class="font-medium text-ink/70">${escapeHtml(v.input_phone || '')}</span></p>
+        </div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${expired ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}">${expired ? escapeHtml(t('pv_status_expired')) : escapeHtml(t('pv_status_pending'))}</span>
+      </div>
+      <p class="text-xs text-ink/40 mb-3">${timeAgo(v.created_at)}</p>
+      <div class="flex items-center gap-2 flex-wrap border-t border-stone pt-3">
+        <a href="${waLink}" target="_blank" rel="noopener" class="text-sm border border-[#25D366]/40 text-[#128C4A] rounded-xl px-3 py-1.5 font-medium hover:bg-[#25D366]/10 transition">💬 WhatsApp</a>
+        ${!expired ? `<button onclick="approvePendingVerification('${token}')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('approve_verification_btn'))}</button>` : ''}
+        <button onclick="deletePendingVerification('${token}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('reject_verification_btn'))}</button>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+function approvePendingVerification(token) {
+  db.ref('pending_verifications/' + token + '/status').set('verified').then(() => {
+    showToast(t('toast_verification_approved'), 'success');
+  });
+}
+
+function deletePendingVerification(token) {
+  db.ref('pending_verifications/' + token).remove().then(() => {
+    showToast(t('toast_verification_deleted'), 'info');
+  });
+}
+
 // ============================================================
 // REALTIME LISTENERS
 // ============================================================
@@ -2330,6 +2420,24 @@ function attachRatingsListener() {
     }
     if (currentUser && currentUser.role === 'handyman') {
       if (!document.getElementById('handyman-tab-fulfilled').classList.contains('hidden-force')) renderFulfilledJobs();
+    }
+  });
+}
+
+function attachPendingVerificationsListener() {
+  if (listenersAttached.pendingVerifications) return;
+  listenersAttached.pendingVerifications = true;
+  db.ref('pending_verifications').on('value', snap => {
+    pendingVerificationsCacheData = snap.val() || {};
+    const pendingCount = Object.values(pendingVerificationsCacheData)
+      .filter(v => v.status === 'pending' && (v.created_at + 3 * 60 * 1000) > Date.now()).length;
+    const badge = document.getElementById('pending-verify-badge');
+    if (badge) {
+      if (pendingCount > 0) { badge.textContent = pendingCount; badge.classList.remove('hidden-force'); }
+      else badge.classList.add('hidden-force');
+    }
+    if (currentUser && currentUser.role === 'admin') {
+      if (!document.getElementById('admin-tab-verifications').classList.contains('hidden-force')) renderPendingVerifications();
     }
   });
 }
