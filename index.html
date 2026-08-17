@@ -395,6 +395,7 @@
       <div class="flex flex-col sm:flex-row gap-3 mb-3">
         <input id="job-feed-search" oninput="renderJobFeed()" type="text" data-i18n-ph="job_feed_search_ph" placeholder="Search jobs by title..." class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <span id="specialty-badge" class="px-4 py-2.5 rounded-xl bg-sand text-sm font-semibold whitespace-nowrap"></span>
+        <span id="self-verified-badge"></span>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 mb-5">
         <select id="job-feed-wilaya-filter" onchange="renderJobFeed()" class="flex-1 px-4 py-2.5 rounded-xl border border-stone bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
@@ -718,7 +719,10 @@ en: {
   sms_verify_retry: "Get a new code",
   toast_sms_invalid_phone: "Enter a valid Algerian phone number first",
   toast_sms_start_failed: "Could not start verification: ",
-  toast_sms_verified: "Phone verified!"
+  toast_sms_verified: "Phone verified!",
+  toast_must_verify_phone: "Please verify your phone number via SMS before creating your account",
+  badge_verified: "✅ Verified",
+  badge_unverified: "⚠️ Not Verified"
 },
 fr: {
   brand_tagline: "Connecter clients et artisans à travers l'Algérie",
@@ -921,7 +925,10 @@ fr: {
   sms_verify_retry: "Obtenir un nouveau code",
   toast_sms_invalid_phone: "Saisissez d'abord un numéro de téléphone algérien valide",
   toast_sms_start_failed: "Impossible de démarrer la vérification : ",
-  toast_sms_verified: "Téléphone vérifié !"
+  toast_sms_verified: "Téléphone vérifié !",
+  toast_must_verify_phone: "Veuillez vérifier votre numéro par SMS avant de créer votre compte",
+  badge_verified: "✅ Vérifié",
+  badge_unverified: "⚠️ Non vérifié"
 },
 ar: {
   brand_tagline: "نربط بين العملاء والحرفيين في جميع أنحاء الجزائر",
@@ -1124,7 +1131,10 @@ ar: {
   sms_verify_retry: "احصل على رمز جديد",
   toast_sms_invalid_phone: "أدخل رقم هاتف جزائري صالح أولاً",
   toast_sms_start_failed: "تعذر بدء التحقق: ",
-  toast_sms_verified: "تم التحقق من الهاتف!"
+  toast_sms_verified: "تم التحقق من الهاتف!",
+  toast_must_verify_phone: "يرجى التحقق من رقم هاتفك عبر رسالة نصية قبل إنشاء حسابك",
+  badge_verified: "✅ تم التحقق",
+  badge_unverified: "⚠️ غير متحقق"
 }
 };
 
@@ -1152,6 +1162,13 @@ function roleLabel(role) {
 function statusLabel(status) {
   const map = { pending: 'status_pending', accepted: 'status_accepted', refused: 'status_refused' };
   return map[status] ? t(map[status]) : status;
+}
+
+function verifiedBadge(user) {
+  if (!user) return '';
+  return user.is_verified
+    ? `<span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">${escapeHtml(t('badge_verified'))}</span>`
+    : `<span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold whitespace-nowrap">${escapeHtml(t('badge_unverified'))}</span>`;
 }
 
 function updateLangSwitcherUI() {
@@ -1210,6 +1227,7 @@ function refreshDynamicViews() {
     if (!document.getElementById('client-tab-requests').classList.contains('hidden-force')) renderMyRequests();
   } else if (currentUser.role === 'handyman') {
     document.getElementById('specialty-badge').textContent = `${CATEGORY_ICONS[currentUser.category] || ''} ${catLabel(currentUser.category)}`;
+    document.getElementById('self-verified-badge').innerHTML = verifiedBadge(currentUser);
     if (!document.getElementById('handyman-tab-feed').classList.contains('hidden-force')) renderJobFeed();
     renderDirectRequests();
     if (!document.getElementById('handyman-tab-fulfilled').classList.contains('hidden-force')) renderFulfilledJobs();
@@ -1442,6 +1460,13 @@ function handleRegister(e) {
     return;
   }
 
+  const regE164 = normalizeAlgerianPhone(phone);
+  const isVerified = !!(regE164 && window.verifiedPhoneNumber === regE164);
+  if (!isVerified) {
+    showToast(t('toast_must_verify_phone'), 'error');
+    return;
+  }
+
   db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
     if (snap.exists()) {
       showToast(t('toast_username_taken'), 'error');
@@ -1454,7 +1479,9 @@ function handleRegister(e) {
       role: selectedRoleForAuth,
       status: 'active',
       trialEndDate: now + (TRIAL_DAYS * 24 * 60 * 60 * 1000),
-      createdAt: now
+      createdAt: now,
+      is_verified: true,
+      verified_phone: regE164
     };
     if (selectedRoleForAuth === 'handyman') {
       userData.category = category;
@@ -1463,6 +1490,7 @@ function handleRegister(e) {
     newUserRef.set(userData).then(() => {
       currentUser = { id: newUserRef.key, ...userData };
       localStorage.setItem(SESSION_KEY, JSON.stringify({ id: newUserRef.key, role: selectedRoleForAuth }));
+      window.verifiedPhoneNumber = null; // consumed — don't let it silently verify a future different registration
       showToast(t('toast_account_created'), 'success');
       if (selectedRoleForAuth === 'client') initClientDashboard();
       else initHandymanDashboard();
@@ -1519,6 +1547,7 @@ function handleAdminLogin(e) {
 function logout() {
   localStorage.removeItem(SESSION_KEY);
   currentUser = null;
+  window.verifiedPhoneNumber = null;
   document.getElementById('modal-blocked').classList.add('hidden-force');
   document.getElementById('modal-blocked').classList.remove('flex');
   showScreen('screen-role-select');
@@ -1672,7 +1701,7 @@ function renderHandymenList() {
         </div>
         <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">${escapeHtml(t('available_badge'))}</span>
       </div>
-      <div class="mb-3">${ratingLine}</div>
+      <div class="mb-3 flex items-center gap-2 flex-wrap">${ratingLine} ${verifiedBadge(u)}</div>
       <span class="inline-block text-xs bg-sand px-2.5 py-1 rounded-full font-medium mb-3">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(catLabel(u.category))}</span>
       <div class="grid grid-cols-3 gap-2">
         <a href="tel:${escapeHtml(u.phone)}" class="text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
@@ -1694,7 +1723,10 @@ function openHandymanProfile(handymanId) {
   document.getElementById('profile-header').innerHTML = `
     <div class="w-14 h-14 rounded-full bg-sand flex items-center justify-center text-2xl font-bold text-terracotta flex-shrink-0">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
     <div>
-      <h3 class="text-lg font-bold font-display">${escapeHtml(u.fullName)}</h3>
+      <div class="flex items-center gap-2 flex-wrap">
+        <h3 class="text-lg font-bold font-display">${escapeHtml(u.fullName)}</h3>
+        ${verifiedBadge(u)}
+      </div>
       <p class="text-sm text-ink/50">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(catLabel(u.category))} · ${escapeHtml(u.wilaya || '')}</p>
     </div>
   `;
@@ -1831,6 +1863,7 @@ function initHandymanDashboard() {
   showScreen('screen-handyman');
   document.getElementById('availability-toggle').checked = currentUser.available !== false;
   document.getElementById('specialty-badge').textContent = `${CATEGORY_ICONS[currentUser.category]||''} ${catLabel(currentUser.category)}`;
+  document.getElementById('self-verified-badge').innerHTML = verifiedBadge(currentUser);
   switchHandymanTab('feed');
   attachUsersListener();
   attachJobsListener();
@@ -2129,7 +2162,7 @@ function renderUsersTable() {
         <span class="text-xs bg-sand px-2 py-1 rounded-full capitalize">${escapeHtml(roleLabel(u.role))}${u.role==='handyman' ? ' · '+escapeHtml(catLabel(u.category||'')) : ''}</span>
       </td>
       <td class="px-4 py-3 text-ink/70">${escapeHtml(u.phone)}</td>
-      <td class="px-4 py-3">${statusBadge}</td>
+      <td class="px-4 py-3"><div class="flex flex-col items-start gap-1">${statusBadge}${verifiedBadge(u)}</div></td>
       <td class="px-4 py-3 text-ink/60 text-xs">${formatDate(u.trialEndDate)}</td>
       <td class="px-4 py-3">
         <div class="flex items-center justify-end gap-1.5 flex-wrap">
