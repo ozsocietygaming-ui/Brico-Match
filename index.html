@@ -300,6 +300,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span id="client-name-display" class="text-sm font-medium hidden sm:inline"></span>
+        <span id="client-self-verified-badge" class="hidden sm:inline"></span>
         <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
       </div>
     </div>
@@ -1222,6 +1223,7 @@ function refreshLocalizedSelects() {
 function refreshDynamicViews() {
   if (!currentUser) return;
   if (currentUser.role === 'client') {
+    document.getElementById('client-self-verified-badge').innerHTML = verifiedBadge(currentUser);
     if (!document.getElementById('client-tab-post-job').classList.contains('hidden-force')) renderMyPostedJobs();
     if (!document.getElementById('client-tab-explore').classList.contains('hidden-force')) renderHandymenList();
     if (!document.getElementById('client-tab-requests').classList.contains('hidden-force')) renderMyRequests();
@@ -1559,6 +1561,7 @@ function logout() {
 function initClientDashboard() {
   showScreen('screen-client');
   document.getElementById('client-name-display').textContent = currentUser.fullName;
+  document.getElementById('client-self-verified-badge').innerHTML = verifiedBadge(currentUser);
   switchClientTab('post-job');
   attachUsersListener();
   attachJobsListener();
@@ -1846,7 +1849,7 @@ function renderMyRequests() {
             <h4 class="font-semibold font-display truncate">${escapeHtml(r.title)}</h4>
             <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(statusLabel(r.status))}</span>
           </div>
-          <p class="text-sm text-ink/60 mb-2">${escapeHtml(t('to_label'))} <span class="font-medium">${escapeHtml(r.handymanName)}</span> · ${escapeHtml(catLabel(r.category))}</p>
+          <p class="text-sm text-ink/60 mb-2 flex items-center gap-1.5 flex-wrap">${escapeHtml(t('to_label'))} <span class="font-medium">${escapeHtml(r.handymanName)}</span> ${verifiedBadge(usersCacheData[r.handymanId])} · ${escapeHtml(catLabel(r.category))}</p>
           <p class="text-xs text-ink/40">${timeAgo(r.createdAt)}</p>
         </div>
       </div>
@@ -1922,8 +1925,9 @@ function renderJobFeed() {
       </div>
       ${(j.clientAddress || j.clientWilaya) ? `<p class="text-xs text-ink/50 mb-3">📍 ${escapeHtml(j.clientAddress || '')}${j.clientAddress && j.clientWilaya ? ', ' : ''}${escapeHtml(j.clientWilaya || '')}</p>` : ''}
       <div class="flex items-center justify-between border-t border-stone pt-3">
-        <div>
+        <div class="flex items-center gap-2 flex-wrap">
           <p class="text-sm font-medium">${escapeHtml(j.clientName)}</p>
+          ${verifiedBadge(usersCacheData[j.clientId])}
         </div>
         <a href="tel:${escapeHtml(j.clientPhone)}" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition">${escapeHtml(t('call_client_btn'))}</a>
       </div>
@@ -1964,7 +1968,7 @@ function renderDirectRequests() {
             <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${statusStyle[r.status]}">${escapeHtml(statusLabel(r.status))}</span>
           </div>
           <p class="text-sm text-ink/60 mb-1">${escapeHtml(r.details)}</p>
-          <p class="text-xs text-ink/40">${escapeHtml(t('from_label'))} <span class="font-medium text-ink/60">${escapeHtml(r.clientName)}</span> · ${timeAgo(r.createdAt)}</p>
+          <p class="text-xs text-ink/40 flex items-center gap-1.5 flex-wrap">${escapeHtml(t('from_label'))} <span class="font-medium text-ink/60">${escapeHtml(r.clientName)}</span> ${verifiedBadge(usersCacheData[r.clientId])} · ${timeAgo(r.createdAt)}</p>
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3 pt-3 border-t border-stone flex-wrap">
