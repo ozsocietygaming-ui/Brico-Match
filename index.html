@@ -142,43 +142,44 @@
   </div>
 </div>
 
-<!-- SMS VERIFICATION MODAL -->
-<div id="modal-sms-verify" class="hidden-force fixed inset-0 bg-ink/60 z-[85] items-center justify-center p-4">
+<!-- WHATSAPP VERIFICATION MODAL -->
+<div id="modal-wa-verify" class="hidden-force fixed inset-0 bg-ink/60 z-[85] items-center justify-center p-4">
   <div class="bg-cream rounded-2xl shadow-card max-w-sm w-full p-6 fade-in text-center">
     <div class="flex justify-between items-start mb-2">
-      <h3 class="text-lg font-bold font-display" data-i18n="sms_verify_title">Verify Your Phone</h3>
-      <button onclick="closeModal('modal-sms-verify'); teardownSmsVerification();" class="text-ink/40 hover:text-ink text-xl leading-none">✕</button>
+      <h3 class="text-lg font-bold font-display" data-i18n="wa_verify_title">Verify Your Phone</h3>
+      <button onclick="closeModal('modal-wa-verify'); teardownWaVerification();" class="text-ink/40 hover:text-ink text-xl leading-none">✕</button>
     </div>
 
-    <p class="text-sm text-ink/60 mb-4" data-i18n="sms_verify_instructions">Tap the button below to send a one-time code from your own phone. This confirms you own this SIM.</p>
+    <p class="text-sm text-ink/60 mb-4" data-i18n="wa_verify_instructions">Tap the button below to send a one-time code from your own WhatsApp. This confirms you own this number.</p>
 
     <div class="bg-sand rounded-xl p-3 mb-4">
-      <p class="text-[11px] text-ink/50 mb-1" data-i18n="sms_verify_code_label">Your code</p>
-      <p id="sms-verify-token" class="font-mono font-bold text-lg tracking-wider text-terracotta">BM-XXXXXX</p>
+      <p class="text-[11px] text-ink/50 mb-1" data-i18n="wa_verify_code_label">Your code</p>
+      <p id="wa-verify-token" class="font-mono font-bold text-lg tracking-wider text-terracotta">BM-XXXXXX</p>
     </div>
 
-    <a id="smsLinkBtn" href="#" class="block w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-3 rounded-xl transition mb-3">
-      📤 <span data-i18n="sms_verify_send">Send Verification SMS</span>
+    <a id="waLinkBtn" href="#" target="_blank" rel="noopener" class="block w-full bg-[#25D366] hover:bg-[#1EBE5A] text-white font-semibold py-3 rounded-xl transition mb-3 flex items-center justify-center gap-2">
+      💬 <span data-i18n="wa_verify_send">Send via WhatsApp</span>
     </a>
 
-    <div id="smsQrContainer" class="hidden-force mb-3"></div>
-    <p id="smsQrHint" class="hidden-force text-xs text-ink/50 mb-3" data-i18n="sms_verify_qr_hint">Scan this code with your phone's camera to send the SMS.</p>
+    <div id="waQrContainer" class="hidden-force mb-3"></div>
+    <p id="waQrHint" class="hidden-force text-xs text-ink/50 mb-3" data-i18n="wa_verify_qr_hint">Scan this code with your phone's camera to open WhatsApp.</p>
 
-    <div id="sms-verify-pending" class="text-xs text-ink/50">
-      ⏳ <span data-i18n="sms_verify_waiting">Waiting for confirmation…</span>
-      <span id="sms-verify-timer" class="font-mono font-semibold">3:00</span>
+    <div id="wa-verify-pending" class="text-xs text-ink/50">
+      ⏳ <span data-i18n="wa_verify_waiting">Waiting for confirmation…</span>
+      <span id="wa-verify-timer" class="font-mono font-semibold">3:00</span>
     </div>
 
-    <div id="sms-verify-success" class="hidden-force text-sm text-green-700 font-semibold">
-      ✅ <span data-i18n="sms_verify_done">Phone verified!</span>
+    <div id="wa-verify-success" class="hidden-force text-sm text-green-700 font-semibold">
+      ✅ <span data-i18n="wa_verify_done">Phone verified!</span>
     </div>
 
-    <div id="sms-verify-expired" class="hidden-force">
-      <p class="text-sm text-terracotta-dark font-medium mb-2" data-i18n="sms_verify_expired">This code expired.</p>
-      <button type="button" onclick="initSmsVerification('reg-phone')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition" data-i18n="sms_verify_retry">Get a new code</button>
+    <div id="wa-verify-expired" class="hidden-force">
+      <p class="text-sm text-terracotta-dark font-medium mb-2" data-i18n="wa_verify_expired">This code expired.</p>
+      <button type="button" onclick="initWaVerification('reg-phone')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition" data-i18n="wa_verify_retry">Get a new code</button>
     </div>
   </div>
 </div>
+
 
 <!-- HANDYMAN PROFILE MODAL -->
 <div id="modal-handyman-profile" class="hidden-force fixed inset-0 bg-ink/60 z-[85] items-center justify-center p-4">
@@ -251,8 +252,8 @@
         <input required id="reg-username" type="text" data-i18n-ph="reg_username_ph" placeholder="Choose a Username" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <input required id="reg-password" type="password" data-i18n-ph="reg_password_ph" placeholder="Choose a Password" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
         <input required id="reg-phone" type="tel" data-i18n-ph="reg_phone_ph" placeholder="Phone Number (05/06/07XXXXXXXX)" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40">
-        <button type="button" onclick="initSmsVerification('reg-phone')" class="w-full text-sm border border-stone rounded-xl py-2.5 font-medium text-ink/70 hover:bg-sand transition flex items-center justify-center gap-2">
-          <span id="reg-sms-verify-label">📲 <span data-i18n="sms_verify_btn">Verify via SMS</span></span>
+        <button type="button" onclick="initWaVerification('reg-phone')" class="w-full text-sm border border-[#25D366]/40 bg-[#25D366]/5 rounded-xl py-2.5 font-medium text-[#128C4A] hover:bg-[#25D366]/10 transition flex items-center justify-center gap-2">
+          <span id="reg-wa-verify-label">💬 <span data-i18n="wa_verify_btn">Verify via WhatsApp</span></span>
         </button>
         <select required id="reg-wilaya" class="w-full px-4 py-3 rounded-xl border border-stone bg-cream focus:outline-none focus:ring-2 focus:ring-terracotta/40 text-ink/80">
           <option value="" disabled selected>Select your Wilaya</option>
@@ -513,7 +514,7 @@ const ADMIN_PHONE = "0662558982";
 const TRIAL_DAYS = 7;
 const SESSION_KEY = "bricomatch_session";
 const LANG_KEY = "bricomatch_lang";
-const VERIFICATION_NUMBER = "+213XXXXXXXXX"; // TODO: replace with your dedicated inbound SMS number/short code
+const VERIFICATION_WA_NUMBER = "213XXXXXXXXX"; // TODO: your WhatsApp Business number, digits only, no + and no leading 0 (country code + local number, e.g. 213555123456)
 
 // ============================================================
 // TRANSLATIONS (EN / FR / AR)
@@ -708,20 +709,20 @@ en: {
   cat_carpenter: "Carpenter",
   cat_mason: "Mason",
   cat_general: "General Repair",
-  sms_verify_btn: "Verify via SMS",
-  sms_verify_title: "Verify Your Phone",
-  sms_verify_instructions: "Tap the button below to send a one-time code from your own phone. This confirms you own this SIM.",
-  sms_verify_code_label: "Your code",
-  sms_verify_send: "Send Verification SMS",
-  sms_verify_qr_hint: "Scan this code with your phone's camera to send the SMS.",
-  sms_verify_waiting: "Waiting for confirmation…",
-  sms_verify_done: "Phone verified!",
-  sms_verify_expired: "This code expired.",
-  sms_verify_retry: "Get a new code",
-  toast_sms_invalid_phone: "Enter a valid Algerian phone number first",
-  toast_sms_start_failed: "Could not start verification: ",
-  toast_sms_verified: "Phone verified!",
-  toast_must_verify_phone: "Please verify your phone number via SMS before creating your account",
+  wa_verify_btn: "Verify via WhatsApp",
+  wa_verify_title: "Verify Your Phone",
+  wa_verify_instructions: "Tap the button below to send a one-time code from your own WhatsApp. This confirms you own this number.",
+  wa_verify_code_label: "Your code",
+  wa_verify_send: "Send via WhatsApp",
+  wa_verify_qr_hint: "Scan this code with your phone's camera to open WhatsApp.",
+  wa_verify_waiting: "Waiting for confirmation…",
+  wa_verify_done: "Phone verified!",
+  wa_verify_expired: "This code expired.",
+  wa_verify_retry: "Get a new code",
+  toast_wa_invalid_phone: "Enter a valid Algerian phone number first",
+  toast_wa_start_failed: "Could not start verification: ",
+  toast_wa_verified: "Phone verified!",
+  toast_must_verify_phone: "Please verify your phone number via WhatsApp before creating your account",
   badge_verified: "✅ Verified",
   badge_unverified: "⚠️ Not Verified",
   verify_btn: "✅ Verify",
@@ -918,20 +919,20 @@ fr: {
   cat_carpenter: "Menuisier",
   cat_mason: "Maçon",
   cat_general: "Réparation générale",
-  sms_verify_btn: "Vérifier par SMS",
-  sms_verify_title: "Vérifiez votre téléphone",
-  sms_verify_instructions: "Appuyez sur le bouton ci-dessous pour envoyer un code unique depuis votre propre téléphone. Cela confirme que vous possédez cette carte SIM.",
-  sms_verify_code_label: "Votre code",
-  sms_verify_send: "Envoyer le SMS de vérification",
-  sms_verify_qr_hint: "Scannez ce code avec l'appareil photo de votre téléphone pour envoyer le SMS.",
-  sms_verify_waiting: "En attente de confirmation…",
-  sms_verify_done: "Téléphone vérifié !",
-  sms_verify_expired: "Ce code a expiré.",
-  sms_verify_retry: "Obtenir un nouveau code",
-  toast_sms_invalid_phone: "Saisissez d'abord un numéro de téléphone algérien valide",
-  toast_sms_start_failed: "Impossible de démarrer la vérification : ",
-  toast_sms_verified: "Téléphone vérifié !",
-  toast_must_verify_phone: "Veuillez vérifier votre numéro par SMS avant de créer votre compte",
+  wa_verify_btn: "Vérifier via WhatsApp",
+  wa_verify_title: "Vérifiez votre téléphone",
+  wa_verify_instructions: "Appuyez sur le bouton ci-dessous pour envoyer un code unique depuis votre propre WhatsApp. Cela confirme que vous possédez ce numéro.",
+  wa_verify_code_label: "Votre code",
+  wa_verify_send: "Envoyer via WhatsApp",
+  wa_verify_qr_hint: "Scannez ce code avec l'appareil photo de votre téléphone pour ouvrir WhatsApp.",
+  wa_verify_waiting: "En attente de confirmation…",
+  wa_verify_done: "Téléphone vérifié !",
+  wa_verify_expired: "Ce code a expiré.",
+  wa_verify_retry: "Obtenir un nouveau code",
+  toast_wa_invalid_phone: "Saisissez d'abord un numéro de téléphone algérien valide",
+  toast_wa_start_failed: "Impossible de démarrer la vérification : ",
+  toast_wa_verified: "Téléphone vérifié !",
+  toast_must_verify_phone: "Veuillez vérifier votre numéro via WhatsApp avant de créer votre compte",
   badge_verified: "✅ Vérifié",
   badge_unverified: "⚠️ Non vérifié",
   verify_btn: "✅ Vérifier",
@@ -1128,20 +1129,20 @@ ar: {
   cat_carpenter: "نجار",
   cat_mason: "بنّاء",
   cat_general: "إصلاحات عامة",
-  sms_verify_btn: "التحقق عبر الرسائل القصيرة",
-  sms_verify_title: "تحقق من هاتفك",
-  sms_verify_instructions: "اضغط على الزر أدناه لإرسال رمز لمرة واحدة من هاتفك. هذا يؤكد أنك تملك بطاقة SIM هذه.",
-  sms_verify_code_label: "رمزك",
-  sms_verify_send: "إرسال رسالة التحقق",
-  sms_verify_qr_hint: "امسح هذا الرمز بكاميرا هاتفك لإرسال الرسالة.",
-  sms_verify_waiting: "بانتظار التأكيد…",
-  sms_verify_done: "تم التحقق من الهاتف!",
-  sms_verify_expired: "انتهت صلاحية هذا الرمز.",
-  sms_verify_retry: "احصل على رمز جديد",
-  toast_sms_invalid_phone: "أدخل رقم هاتف جزائري صالح أولاً",
-  toast_sms_start_failed: "تعذر بدء التحقق: ",
-  toast_sms_verified: "تم التحقق من الهاتف!",
-  toast_must_verify_phone: "يرجى التحقق من رقم هاتفك عبر رسالة نصية قبل إنشاء حسابك",
+  wa_verify_btn: "التحقق عبر واتساب",
+  wa_verify_title: "تحقق من هاتفك",
+  wa_verify_instructions: "اضغط على الزر أدناه لإرسال رمز لمرة واحدة من واتساب الخاص بك. هذا يؤكد أنك تملك هذا الرقم.",
+  wa_verify_code_label: "رمزك",
+  wa_verify_send: "الإرسال عبر واتساب",
+  wa_verify_qr_hint: "امسح هذا الرمز بكاميرا هاتفك لفتح واتساب.",
+  wa_verify_waiting: "بانتظار التأكيد…",
+  wa_verify_done: "تم التحقق من الهاتف!",
+  wa_verify_expired: "انتهت صلاحية هذا الرمز.",
+  wa_verify_retry: "احصل على رمز جديد",
+  toast_wa_invalid_phone: "أدخل رقم هاتف جزائري صالح أولاً",
+  toast_wa_start_failed: "تعذر بدء التحقق: ",
+  toast_wa_verified: "تم التحقق من الهاتف!",
+  toast_must_verify_phone: "يرجى التحقق من رقم هاتفك عبر واتساب قبل إنشاء حسابك",
   badge_verified: "✅ تم التحقق",
   badge_unverified: "⚠️ غير متحقق",
   verify_btn: "✅ توثيق",
@@ -2347,13 +2348,13 @@ function emptyState(icon, title, subtitle) {
 }
 
 // ============================================================
-// SMS REVERSE-VERIFICATION (client-side token/UI only)
+// WHATSAPP REVERSE-VERIFICATION (client-side token/UI only)
 // ------------------------------------------------------------
 // IMPORTANT: This code can only CREATE a pending token and READ
 // its status. It never writes status:"verified" itself — that
-// must be done by a trusted server process (e.g. a Cloud Function
-// triggered by your SMS gateway's inbound-message webhook) after
-// it confirms the SMS really arrived from that phone number.
+// must be done by a trusted server process (a Cloud Function
+// subscribed to your WhatsApp Cloud API webhook) after Meta
+// confirms the message really arrived from that WhatsApp number.
 // Lock this down in your RTDB rules, e.g.:
 //   "pending_verifications": {
 //     "$token": {
@@ -2364,9 +2365,9 @@ function emptyState(icon, title, subtitle) {
 //   }
 // Without that, "verified" is just a client-writable flag anyone
 // could set via the console — do not gate anything sensitive on
-// it until the server-side piece exists.
+// it until the server-side webhook exists.
 // ============================================================
-let smsVerification = { token: null, phone: null, statusRef: null, timerInterval: null, expiresAt: null };
+let waVerification = { token: null, phone: null, statusRef: null, timerInterval: null, expiresAt: null };
 
 function normalizeAlgerianPhone(raw) {
   const digits = (raw || '').replace(/[\s\-]/g, '');
@@ -2383,12 +2384,12 @@ function generateVerificationToken() {
   return 'BM-' + code;
 }
 
-function initSmsVerification(phoneInputId) {
+function initWaVerification(phoneInputId) {
   const inputEl = document.getElementById(phoneInputId);
   const e164 = normalizeAlgerianPhone(inputEl ? inputEl.value : '');
-  if (!e164) { showToast(t('toast_sms_invalid_phone'), 'error'); return; }
+  if (!e164) { showToast(t('toast_wa_invalid_phone'), 'error'); return; }
 
-  teardownSmsVerification(); // clear any previous pending token/listener first
+  teardownWaVerification(); // clear any previous pending token/listener first
 
   const token = generateVerificationToken();
   const createdAt = Date.now();
@@ -2399,22 +2400,23 @@ function initSmsVerification(phoneInputId) {
     created_at: createdAt,
     status: 'pending'
   }).then(() => {
-    smsVerification = { token, phone: e164, statusRef: null, timerInterval: null, expiresAt };
-    renderSmsVerificationUI(token);
-    listenForVerification(token, e164);
-    startSmsCountdown(expiresAt);
-  }).catch(err => showToast(t('toast_sms_start_failed') + err.message, 'error'));
+    waVerification = { token, phone: e164, statusRef: null, timerInterval: null, expiresAt };
+    renderWaVerificationUI(token);
+    listenForWaVerification(token, e164);
+    startWaCountdown(expiresAt);
+  }).catch(err => showToast(t('toast_wa_start_failed') + err.message, 'error'));
 }
 
-function renderSmsVerificationUI(token) {
-  const smsUri = `sms:${VERIFICATION_NUMBER}?body=${encodeURIComponent(token)}`;
+function renderWaVerificationUI(token) {
+  // VERIFICATION_WA_NUMBER must be digits only (country code + number, no + and no leading 0)
+  const waUri = `https://wa.me/${VERIFICATION_WA_NUMBER}?text=${encodeURIComponent(token)}`;
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  document.getElementById('sms-verify-token').textContent = token;
-  document.getElementById('smsLinkBtn').href = smsUri;
+  document.getElementById('wa-verify-token').textContent = token;
+  document.getElementById('waLinkBtn').href = waUri;
 
-  const qrWrap = document.getElementById('smsQrContainer');
-  const qrHint = document.getElementById('smsQrHint');
+  const qrWrap = document.getElementById('waQrContainer');
+  const qrHint = document.getElementById('waQrHint');
   if (isMobile) {
     qrWrap.classList.add('hidden-force');
     qrHint.classList.add('hidden-force');
@@ -2425,48 +2427,48 @@ function renderSmsVerificationUI(token) {
     // a third-party service via the image URL.
     qrWrap.classList.remove('hidden-force');
     qrHint.classList.remove('hidden-force');
-    qrWrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(smsUri)}" alt="Scan to send verification SMS" class="mx-auto rounded-lg border border-stone">`;
+    qrWrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(waUri)}" alt="Scan to open WhatsApp" class="mx-auto rounded-lg border border-stone">`;
   }
 
-  setSmsStatusState('pending');
-  openModal('modal-sms-verify');
+  setWaStatusState('pending');
+  openModal('modal-wa-verify');
 }
 
-function listenForVerification(token, e164) {
+function listenForWaVerification(token, e164) {
   const statusRef = db.ref('pending_verifications/' + token + '/status');
-  smsVerification.statusRef = statusRef;
+  waVerification.statusRef = statusRef;
   statusRef.on('value', snap => {
-    if (snap.val() === 'verified') handleSmsVerified(token, e164);
+    if (snap.val() === 'verified') handleWaVerified(token, e164);
   });
 }
 
-function handleSmsVerified(token, e164) {
-  setSmsStatusState('verified');
-  if (smsVerification.timerInterval) clearInterval(smsVerification.timerInterval);
-  if (smsVerification.statusRef) smsVerification.statusRef.off();
+function handleWaVerified(token, e164) {
+  setWaStatusState('verified');
+  if (waVerification.timerInterval) clearInterval(waVerification.timerInterval);
+  if (waVerification.statusRef) waVerification.statusRef.off();
 
-  window.verifiedPhoneNumber = e164; // check this in handleRegister()/handleLogin() flows if you want to require it
+  window.verifiedPhoneNumber = e164; // checked in handleRegister() before allowing account creation
 
   if (currentUser && currentUser.id && currentUser.role !== 'admin') {
     db.ref('users/' + currentUser.id).update({ is_verified: true, verified_phone: e164 });
   }
 
   db.ref('pending_verifications/' + token).remove();
-  showToast(t('toast_sms_verified'), 'success');
+  showToast(t('toast_wa_verified'), 'success');
   setTimeout(() => {
-    closeModal('modal-sms-verify');
-    smsVerification = { token: null, phone: null, statusRef: null, timerInterval: null, expiresAt: null };
+    closeModal('modal-wa-verify');
+    waVerification = { token: null, phone: null, statusRef: null, timerInterval: null, expiresAt: null };
   }, 1200);
 }
 
-function startSmsCountdown(expiresAt) {
-  const el = document.getElementById('sms-verify-timer');
-  smsVerification.timerInterval = setInterval(() => {
+function startWaCountdown(expiresAt) {
+  const el = document.getElementById('wa-verify-timer');
+  waVerification.timerInterval = setInterval(() => {
     const remaining = expiresAt - Date.now();
     if (remaining <= 0) {
-      clearInterval(smsVerification.timerInterval);
-      setSmsStatusState('expired');
-      if (smsVerification.statusRef) smsVerification.statusRef.off();
+      clearInterval(waVerification.timerInterval);
+      setWaStatusState('expired');
+      if (waVerification.statusRef) waVerification.statusRef.off();
       return;
     }
     const m = Math.floor(remaining / 60000);
@@ -2475,18 +2477,18 @@ function startSmsCountdown(expiresAt) {
   }, 1000);
 }
 
-function setSmsStatusState(state) {
-  ['sms-verify-pending', 'sms-verify-success', 'sms-verify-expired'].forEach(id =>
+function setWaStatusState(state) {
+  ['wa-verify-pending', 'wa-verify-success', 'wa-verify-expired'].forEach(id =>
     document.getElementById(id).classList.add('hidden-force'));
-  const map = { pending: 'sms-verify-pending', verified: 'sms-verify-success', expired: 'sms-verify-expired' };
+  const map = { pending: 'wa-verify-pending', verified: 'wa-verify-success', expired: 'wa-verify-expired' };
   document.getElementById(map[state]).classList.remove('hidden-force');
 }
 
-function teardownSmsVerification() {
-  if (smsVerification.statusRef) { smsVerification.statusRef.off(); }
-  if (smsVerification.timerInterval) { clearInterval(smsVerification.timerInterval); }
-  if (smsVerification.token) { db.ref('pending_verifications/' + smsVerification.token).remove().catch(() => {}); }
-  smsVerification = { token: null, phone: null, statusRef: null, timerInterval: null, expiresAt: null };
+function teardownWaVerification() {
+  if (waVerification.statusRef) { waVerification.statusRef.off(); }
+  if (waVerification.timerInterval) { clearInterval(waVerification.timerInterval); }
+  if (waVerification.token) { db.ref('pending_verifications/' + waVerification.token).remove().catch(() => {}); }
+  waVerification = { token: null, phone: null, statusRef: null, timerInterval: null, expiresAt: null };
 }
 </script>
 </body>
