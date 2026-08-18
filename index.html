@@ -48,7 +48,12 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-  body { font-family: 'Inter', sans-serif; background-color: #F5F2EB; }
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  * { box-sizing: border-box; }
+  img, svg { max-width: 100%; height: auto; }
+  html { overflow-x: hidden; }
+  body { font-family: 'Inter', sans-serif; background-color: #F5F2EB; overflow-x: hidden; max-width: 100vw; }
+  img, svg { max-width: 100%; height: auto; }
   h1, h2, h3, h4, .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
   .hidden-force { display: none !important; }
   ::-webkit-scrollbar { height: 6px; width: 6px; }
@@ -72,9 +77,9 @@
 
 <!-- LANGUAGE SWITCHER (always visible) -->
 <div id="lang-switcher" class="fixed top-3 right-3 z-[95] flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
-  <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition">EN</button>
-  <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition">FR</button>
-  <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition">AR</button>
+  <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+  <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+  <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
 </div>
 
 <!-- TOAST CONTAINER -->
@@ -99,7 +104,7 @@
         <h3 class="text-lg font-bold font-display" data-i18n="dh_modal_title">Direct Hire Request</h3>
         <p class="text-sm text-ink/60"><span data-i18n="dh_modal_sending_to">Sending a request to</span> <span id="dh-handyman-name" class="font-semibold text-terracotta"></span></p>
       </div>
-      <button onclick="closeModal('modal-direct-hire')" class="text-ink/40 hover:text-ink text-xl leading-none">✕</button>
+      <button onclick="closeModal('modal-direct-hire')" class="text-ink/40 hover:text-ink text-xl leading-none p-2 -m-2">✕</button>
     </div>
     <form id="form-direct-hire" onsubmit="submitDirectHire(event)" class="space-y-3">
       <div>
@@ -147,7 +152,7 @@
   <div class="bg-cream rounded-2xl shadow-card max-w-sm w-full p-6 fade-in text-center">
     <div class="flex justify-between items-start mb-2">
       <h3 class="text-lg font-bold font-display" data-i18n="wa_verify_title">Verify Your Phone</h3>
-      <button onclick="closeModal('modal-wa-verify')" class="text-ink/40 hover:text-ink text-xl leading-none">✕</button>
+      <button onclick="closeModal('modal-wa-verify')" class="text-ink/40 hover:text-ink text-xl leading-none p-2 -m-2">✕</button>
     </div>
 
     <p class="text-sm text-ink/60 mb-4" data-i18n="wa_verify_instructions">Tap the button below to send a one-time code from your own WhatsApp. This confirms you own this number.</p>
@@ -186,7 +191,7 @@
   <div class="bg-cream rounded-2xl shadow-card max-w-lg w-full p-6 fade-in max-h-[85vh] overflow-y-auto">
     <div class="flex justify-between items-start mb-4">
       <div id="profile-header" class="flex items-center gap-3"></div>
-      <button onclick="closeModal('modal-handyman-profile')" class="text-ink/40 hover:text-ink text-xl leading-none flex-shrink-0">✕</button>
+      <button onclick="closeModal('modal-handyman-profile')" class="text-ink/40 hover:text-ink text-xl leading-none flex-shrink-0 p-2 -m-2">✕</button>
     </div>
     <div id="profile-body"></div>
   </div>
@@ -288,7 +293,7 @@
 <!-- ===================== CLIENT DASHBOARD ===================== -->
 <div id="screen-client" class="hidden-force min-h-screen pb-10">
   <header class="bg-white border-b border-stone sticky top-0 z-30">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-y-2">
       <div class="flex items-center gap-2">
         <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">🛠️</div>
         <div>
@@ -296,16 +301,16 @@
           <p class="text-[11px] text-ink/40 leading-none mt-0.5" data-i18n="client_space">Client Space</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
         <span id="client-name-display" class="text-sm font-medium hidden sm:inline"></span>
         <span id="client-self-verified-badge"></span>
-        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
+        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-2 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
       </div>
     </div>
     <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
-      <button data-tab="post-job" onclick="switchClientTab('post-job')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_post_job">📝 Post a Job</button>
-      <button data-tab="explore" onclick="switchClientTab('explore')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_explore">🔍 Explore Handymen</button>
-      <button data-tab="requests" onclick="switchClientTab('requests')" class="client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_requests">📋 My Requests</button>
+      <button data-tab="post-job" onclick="switchClientTab('post-job')" class="client-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition" data-i18n="tab_post_job">📝 Post a Job</button>
+      <button data-tab="explore" onclick="switchClientTab('explore')" class="client-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition" data-i18n="tab_explore">🔍 Explore Handymen</button>
+      <button data-tab="requests" onclick="switchClientTab('requests')" class="client-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition" data-i18n="tab_requests">📋 My Requests</button>
     </div>
   </header>
 
@@ -380,13 +385,13 @@
           <span class="text-xs font-semibold" data-i18n="available_for_work_label">Available for Work</span>
           <input type="checkbox" id="availability-toggle" class="switch" onchange="toggleAvailability()">
         </label>
-        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
+        <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-2 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
       </div>
     </div>
     <div class="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
-      <button data-tab="feed" onclick="switchHandymanTab('feed')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_feed">💼 Job Opportunities</span></button>
-      <button data-tab="direct" onclick="switchHandymanTab('direct')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_direct">📥 Direct Requests</span> <span id="direct-req-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
-      <button data-tab="fulfilled" onclick="switchHandymanTab('fulfilled')" class="handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_fulfilled">✅ Fulfilled Jobs</span></button>
+      <button data-tab="feed" onclick="switchHandymanTab('feed')" class="handyman-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition"><span data-i18n="tab_feed">💼 Job Opportunities</span></button>
+      <button data-tab="direct" onclick="switchHandymanTab('direct')" class="handyman-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition"><span data-i18n="tab_direct">📥 Direct Requests</span> <span id="direct-req-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
+      <button data-tab="fulfilled" onclick="switchHandymanTab('fulfilled')" class="handyman-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition"><span data-i18n="tab_fulfilled">✅ Fulfilled Jobs</span></button>
     </div>
   </header>
 
@@ -420,7 +425,7 @@
 <!-- ===================== ADMIN DASHBOARD ===================== -->
 <div id="screen-admin" class="hidden-force min-h-screen pb-10">
   <header class="bg-ink border-b border-stone sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-y-2">
       <div class="flex items-center gap-2">
         <div class="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-lg">⚙️</div>
         <div>
@@ -428,12 +433,12 @@
           <p class="text-[11px] text-cream/50 leading-none mt-0.5" data-i18n="master_control">Master Control</p>
         </div>
       </div>
-      <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-1.5 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
+      <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-2 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
     </div>
     <div class="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
-      <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_users">👥 Users</button>
-      <button data-tab="jobs" onclick="switchAdminTab('jobs')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition" data-i18n="tab_jobs">📋 Job Posts</button>
-      <button data-tab="verifications" onclick="switchAdminTab('verifications')" class="admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition"><span data-i18n="tab_verifications">🛡️ Verifications</span> <span id="pending-verify-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
+      <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition" data-i18n="tab_users">👥 Users</button>
+      <button data-tab="jobs" onclick="switchAdminTab('jobs')" class="admin-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition" data-i18n="tab_jobs">📋 Job Posts</button>
+      <button data-tab="verifications" onclick="switchAdminTab('verifications')" class="admin-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition"><span data-i18n="tab_verifications">🛡️ Verifications</span> <span id="pending-verify-badge" class="hidden-force ml-1 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded-full"></span></button>
     </div>
   </header>
 
@@ -517,7 +522,7 @@ const ADMIN_PHONE = "0662558982";
 const TRIAL_DAYS = 7;
 const SESSION_KEY = "bricomatch_session";
 const LANG_KEY = "bricomatch_lang";
-const VERIFICATION_WA_NUMBER = "213672506576"; // TODO: your WhatsApp Business number, digits only, no + and no leading 0 (country code + local number, e.g. 213555123456)
+const VERIFICATION_WA_NUMBER = "213XXXXXXXXX"; // TODO: your WhatsApp Business number, digits only, no + and no leading 0 (country code + local number, e.g. 213555123456)
 
 // ============================================================
 // TRANSLATIONS (EN / FR / AR)
@@ -1252,7 +1257,7 @@ function blockIfUnverified() {
 function updateLangSwitcherUI() {
   document.querySelectorAll('.lang-btn').forEach(b => {
     const active = b.dataset.lang === currentLang;
-    b.className = 'lang-btn px-2.5 py-1 rounded-full text-xs font-semibold transition ' + (active ? 'bg-terracotta text-white' : 'text-ink/50 hover:bg-sand');
+    b.className = 'lang-btn px-3 py-2 rounded-full text-xs font-semibold transition ' + (active ? 'bg-terracotta text-white' : 'text-ink/50 hover:bg-sand');
   });
 }
 
@@ -1653,7 +1658,7 @@ function switchClientTab(tab) {
   document.getElementById('client-tab-' + tab).classList.remove('hidden-force');
   document.querySelectorAll('.client-tab-btn').forEach(b => {
     const active = b.dataset.tab === tab;
-    b.className = 'client-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition ' +
+    b.className = 'client-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition ' +
       (active ? 'bg-terracotta text-white' : 'bg-white text-ink/60 hover:bg-sand');
   });
   if (tab === 'explore') renderHandymenList();
@@ -1712,7 +1717,7 @@ function renderMyPostedJobs() {
           <span>${timeAgo(j.createdAt)}</span>
         </div>
       </div>
-      <button onclick="deleteOwnJob('${id}')" class="text-ink/30 hover:text-terracotta-dark text-lg flex-shrink-0" title="Delete job">🗑️</button>
+      <button onclick="deleteOwnJob('${id}')" class="text-ink/30 hover:text-terracotta-dark text-lg flex-shrink-0 p-2 -m-1" title="Delete job">🗑️</button>
     </div>
   `).join('');
 }
@@ -1774,22 +1779,22 @@ function renderHandymenList() {
       : `<span class="text-xs text-ink/30">${escapeHtml(t('no_reviews_yet'))}</span>`;
     return `
     <div class="bg-white rounded-2xl shadow-soft p-5">
-      <div class="flex items-start justify-between mb-2">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-full bg-sand flex items-center justify-center text-lg font-bold text-terracotta">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
-          <div>
-            <h4 class="font-semibold font-display">${escapeHtml(u.fullName)}</h4>
-            <p class="text-xs text-ink/50">${escapeHtml(u.wilaya || '')}</p>
+      <div class="flex items-start justify-between gap-2 flex-wrap mb-2">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-11 h-11 rounded-full bg-sand flex items-center justify-center text-lg font-bold text-terracotta flex-shrink-0">${escapeHtml(u.fullName.charAt(0).toUpperCase())}</div>
+          <div class="min-w-0">
+            <h4 class="font-semibold font-display truncate">${escapeHtml(u.fullName)}</h4>
+            <p class="text-xs text-ink/50 truncate">${escapeHtml(u.wilaya || '')}</p>
           </div>
         </div>
-        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">${escapeHtml(t('available_badge'))}</span>
+        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap flex-shrink-0">${escapeHtml(t('available_badge'))}</span>
       </div>
       <div class="mb-3 flex items-center gap-2 flex-wrap">${ratingLine} ${verifiedBadge(u)}</div>
       <span class="inline-block text-xs bg-sand px-2.5 py-1 rounded-full font-medium mb-3">${CATEGORY_ICONS[u.category]||''} ${escapeHtml(catLabel(u.category))}</span>
       <div class="grid grid-cols-3 gap-2">
-        <a href="tel:${escapeHtml(u.phone)}" class="text-center text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
-        <button onclick="openHandymanProfile('${id}')" class="text-sm border border-stone rounded-xl py-2 font-medium hover:bg-sand transition">${escapeHtml(t('profile_btn'))}</button>
-        <button onclick="openDirectHireModal('${id}')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2 font-semibold transition">${escapeHtml(t('hire_btn'))}</button>
+        <a href="tel:${escapeHtml(u.phone)}" class="text-center text-sm border border-stone rounded-xl py-2.5 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
+        <button onclick="openHandymanProfile('${id}')" class="text-sm border border-stone rounded-xl py-2.5 font-medium hover:bg-sand transition">${escapeHtml(t('profile_btn'))}</button>
+        <button onclick="openDirectHireModal('${id}')" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl py-2.5 font-semibold transition">${escapeHtml(t('hire_btn'))}</button>
       </div>
     </div>
   `;
@@ -1915,7 +1920,7 @@ function renderMyRequests() {
           <p class="text-[11px] text-ink/40 mb-1.5">${escapeHtml(t('mark_completion_prompt'))}</p>
           <div class="flex items-center gap-2 flex-wrap">
             ${renderCompletionButtons(id, 'client', r.clientCompletionMark)}
-            ${bothFulfilled && !hasRated ? `<button onclick="openRateModal('${id}','${r.handymanId}','${escapeHtml(r.handymanName).replace(/'/g,"\\'")}','${escapeHtml(r.title).replace(/'/g,"\\'")}')" class="text-sm rounded-xl px-3 py-1.5 font-semibold transition bg-amber-100 text-amber-700 hover:bg-amber-200">${escapeHtml(t('rate_handyman_btn'))}</button>` : ''}
+            ${bothFulfilled && !hasRated ? `<button onclick="openRateModal('${id}','${r.handymanId}','${escapeHtml(r.handymanName).replace(/'/g,"\\'")}','${escapeHtml(r.title).replace(/'/g,"\\'")}')" class="text-sm rounded-xl px-3 py-2 font-semibold transition bg-amber-100 text-amber-700 hover:bg-amber-200">${escapeHtml(t('rate_handyman_btn'))}</button>` : ''}
             ${hasRated ? `<span class="text-xs text-ink/40 italic">${escapeHtml(t('already_reviewed'))}</span>` : ''}
           </div>
           ${bothFulfilled ? `<p class="text-[11px] text-green-700 mt-1.5">${escapeHtml(t('confirmed_both'))}</p>` : ''}
@@ -1960,7 +1965,7 @@ function switchHandymanTab(tab) {
   document.getElementById('handyman-tab-' + tab).classList.remove('hidden-force');
   document.querySelectorAll('.handyman-tab-btn').forEach(b => {
     const active = b.dataset.tab === tab;
-    b.className = 'handyman-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition ' +
+    b.className = 'handyman-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition ' +
       (active ? 'bg-terracotta text-white' : 'bg-white text-ink/60 hover:bg-sand');
   });
   if (tab === 'feed') renderJobFeed();
@@ -2010,12 +2015,12 @@ function renderJobFeed() {
         <span>${timeAgo(j.createdAt)}</span>
       </div>
       ${(j.clientAddress || j.clientWilaya) ? `<p class="text-xs text-ink/50 mb-3">📍 ${escapeHtml(j.clientAddress || '')}${j.clientAddress && j.clientWilaya ? ', ' : ''}${escapeHtml(j.clientWilaya || '')}</p>` : ''}
-      <div class="flex items-center justify-between border-t border-stone pt-3">
-        <div class="flex items-center gap-2 flex-wrap">
-          <p class="text-sm font-medium">${escapeHtml(j.clientName)}</p>
+      <div class="flex items-center justify-between border-t border-stone pt-3 gap-2 flex-wrap">
+        <div class="flex items-center gap-2 flex-wrap min-w-0">
+          <p class="text-sm font-medium truncate max-w-[180px]">${escapeHtml(j.clientName)}</p>
           ${verifiedBadge(usersCacheData[j.clientId])}
         </div>
-        <a href="tel:${escapeHtml(j.clientPhone)}" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2 font-semibold transition">${escapeHtml(t('call_client_btn'))}</a>
+        <a href="tel:${escapeHtml(j.clientPhone)}" class="text-sm bg-terracotta hover:bg-terracotta-dark text-white rounded-xl px-4 py-2.5 font-semibold transition flex-shrink-0">${escapeHtml(t('call_client_btn'))}</a>
       </div>
     </div>
   `).join('');
@@ -2058,10 +2063,10 @@ function renderDirectRequests() {
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3 pt-3 border-t border-stone flex-wrap">
-        <a href="tel:${escapeHtml(r.clientPhone)}" class="text-sm border border-stone rounded-xl px-3 py-1.5 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
+        <a href="tel:${escapeHtml(r.clientPhone)}" class="text-sm border border-stone rounded-xl px-3 py-2 font-medium hover:bg-sand transition">${escapeHtml(t('call_btn'))}</a>
         ${r.status === 'pending' ? `
-          <button onclick="respondToRequest('${id}','accepted')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('accept_btn'))}</button>
-          <button onclick="respondToRequest('${id}','refused')" class="text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('refuse_btn'))}</button>
+          <button onclick="respondToRequest('${id}','accepted')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-2 font-semibold transition">${escapeHtml(t('accept_btn'))}</button>
+          <button onclick="respondToRequest('${id}','refused')" class="text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl px-3 py-2 font-semibold transition">${escapeHtml(t('refuse_btn'))}</button>
         ` : ''}
       </div>
       ${r.status === 'accepted' ? `
@@ -2088,7 +2093,7 @@ function renderCompletionButtons(reqId, side, currentMark) {
     if (isActive) stateClasses = activeClass + ' cursor-default';
     else if (locked) stateClasses = 'border border-stone opacity-40 cursor-not-allowed';
     else stateClasses = 'border border-stone hover:bg-sand';
-    return `<button type="button" ${onclickAttr} ${disabledAttr} class="text-sm rounded-xl px-3 py-1.5 font-semibold transition ${stateClasses}">${label}</button>`;
+    return `<button type="button" ${onclickAttr} ${disabledAttr} class="text-sm rounded-xl px-3 py-2 font-semibold transition ${stateClasses}">${label}</button>`;
   };
   let html = build('fulfilled', escapeHtml(t('btn_fulfilled')), 'bg-green-600 text-white') + build('unfulfilled', escapeHtml(t('btn_unfulfilled')), 'bg-red-500 text-white');
   if (locked) html += `<span class="text-[11px] text-ink/40 italic">${escapeHtml(t('locked_label'))}</span>`;
@@ -2206,7 +2211,7 @@ function switchAdminTab(tab) {
   document.getElementById('admin-tab-' + tab).classList.remove('hidden-force');
   document.querySelectorAll('.admin-tab-btn').forEach(b => {
     const active = b.dataset.tab === tab;
-    b.className = 'admin-tab-btn whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition ' +
+    b.className = 'admin-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition ' +
       (active ? 'bg-terracotta text-white' : 'bg-cream/10 text-cream/70 hover:bg-cream/20');
   });
   if (tab === 'users') renderUsersTable();
@@ -2260,10 +2265,10 @@ function renderUsersTable() {
       <td class="px-4 py-3 text-ink/60 text-xs">${formatDate(u.trialEndDate)}</td>
       <td class="px-4 py-3">
         <div class="flex items-center justify-end gap-1.5 flex-wrap">
-          <button onclick="openTrialModal('${id}','${escapeHtml(u.username)}')" class="text-xs bg-sand hover:bg-stone px-2.5 py-1.5 rounded-lg font-medium transition" title="Add trial days">${escapeHtml(t('add_trial_btn'))}</button>
-          <button onclick="toggleVerified('${id}', ${!!u.is_verified})" class="text-xs ${u.is_verified ? 'bg-sand text-ink/60 hover:bg-stone' : 'bg-terracotta/10 text-terracotta hover:bg-terracotta/20'} px-2.5 py-1.5 rounded-lg font-medium transition">${u.is_verified ? escapeHtml(t('unverify_btn')) : escapeHtml(t('verify_btn'))}</button>
-          <button onclick="toggleBlock('${id}', ${blocked})" class="text-xs ${blocked ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'} px-2.5 py-1.5 rounded-lg font-medium transition">${blocked ? escapeHtml(t('unblock_btn')) : escapeHtml(t('block_btn'))}</button>
-          <button onclick="deleteUser('${id}','${escapeHtml(u.fullName).replace(/'/g,"\\'")}')" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1.5 rounded-lg font-medium transition">${escapeHtml(t('delete_btn'))}</button>
+          <button onclick="openTrialModal('${id}','${escapeHtml(u.username)}')" class="text-xs bg-sand hover:bg-stone px-3 py-2 rounded-lg font-medium transition" title="Add trial days">${escapeHtml(t('add_trial_btn'))}</button>
+          <button onclick="toggleVerified('${id}', ${!!u.is_verified})" class="text-xs ${u.is_verified ? 'bg-sand text-ink/60 hover:bg-stone' : 'bg-terracotta/10 text-terracotta hover:bg-terracotta/20'} px-3 py-2 rounded-lg font-medium transition">${u.is_verified ? escapeHtml(t('unverify_btn')) : escapeHtml(t('verify_btn'))}</button>
+          <button onclick="toggleBlock('${id}', ${blocked})" class="text-xs ${blocked ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'} px-3 py-2 rounded-lg font-medium transition">${blocked ? escapeHtml(t('unblock_btn')) : escapeHtml(t('block_btn'))}</button>
+          <button onclick="deleteUser('${id}','${escapeHtml(u.fullName).replace(/'/g,"\\'")}')" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-2 rounded-lg font-medium transition">${escapeHtml(t('delete_btn'))}</button>
         </div>
       </td>
     </tr>`;
@@ -2334,9 +2339,9 @@ function renderJobsAdmin() {
         <span class="bg-sand px-2 py-0.5 rounded-full">${CATEGORY_ICONS[j.category]||''} ${escapeHtml(catLabel(j.category))}</span>
         <span>${timeAgo(j.createdAt)}</span>
       </div>
-      <div class="flex items-center justify-between border-t border-stone pt-3">
-        <p class="text-sm text-ink/60">${escapeHtml(t('by_label'))} ${escapeHtml(j.clientName)}</p>
-        <button onclick="deleteJobAdmin('${id}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('delete_btn'))}</button>
+      <div class="flex items-center justify-between border-t border-stone pt-3 gap-2 flex-wrap">
+        <p class="text-sm text-ink/60 truncate min-w-0">${escapeHtml(t('by_label'))} ${escapeHtml(j.clientName)}</p>
+        <button onclick="deleteJobAdmin('${id}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-2 font-semibold transition flex-shrink-0">${escapeHtml(t('delete_btn'))}</button>
       </div>
     </div>
   `).join('');
@@ -2373,9 +2378,9 @@ function renderPendingVerifications() {
       </div>
       <p class="text-xs text-ink/40 mb-3">${timeAgo(v.created_at)}</p>
       <div class="flex items-center gap-2 flex-wrap border-t border-stone pt-3">
-        <a href="${waLink}" target="_blank" rel="noopener" class="text-sm border border-[#25D366]/40 text-[#128C4A] rounded-xl px-3 py-1.5 font-medium hover:bg-[#25D366]/10 transition">💬 WhatsApp</a>
-        ${!expired ? `<button onclick="approvePendingVerification('${token}')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('approve_verification_btn'))}</button>` : ''}
-        <button onclick="deletePendingVerification('${token}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-1.5 font-semibold transition">${escapeHtml(t('reject_verification_btn'))}</button>
+        <a href="${waLink}" target="_blank" rel="noopener" class="text-sm border border-[#25D366]/40 text-[#128C4A] rounded-xl px-3 py-2 font-medium hover:bg-[#25D366]/10 transition">💬 WhatsApp</a>
+        ${!expired ? `<button onclick="approvePendingVerification('${token}')" class="text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl px-3 py-2 font-semibold transition">${escapeHtml(t('approve_verification_btn'))}</button>` : ''}
+        <button onclick="deletePendingVerification('${token}')" class="text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-xl px-3 py-2 font-semibold transition">${escapeHtml(t('reject_verification_btn'))}</button>
       </div>
     </div>
   `;
@@ -2569,7 +2574,7 @@ function renderWaVerificationUI(token) {
     // a third-party service via the image URL.
     qrWrap.classList.remove('hidden-force');
     qrHint.classList.remove('hidden-force');
-    qrWrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(waUri)}" alt="Scan to open WhatsApp" class="mx-auto rounded-lg border border-stone">`;
+    qrWrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(waUri)}" alt="Scan to open WhatsApp" class="mx-auto max-w-full h-auto rounded-lg border border-stone" style="width:220px;max-width:100%;">`;
   }
 
   setWaStatusState('pending');
