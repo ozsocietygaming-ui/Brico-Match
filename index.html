@@ -75,13 +75,6 @@
 </head>
 <body class="text-ink antialiased">
 
-<!-- LANGUAGE SWITCHER (always visible) -->
-<div id="lang-switcher" class="fixed top-3 right-3 z-[95] flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
-  <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
-  <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
-  <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
-</div>
-
 <!-- TOAST CONTAINER -->
 <div id="toast-container" class="fixed bottom-4 right-4 left-4 sm:left-auto flex flex-col gap-2 z-[100] items-end"></div>
 
@@ -200,6 +193,13 @@
 <!-- ===================== ROLE SELECT SCREEN ===================== -->
 <div id="screen-role-select" class="min-h-screen flex items-center justify-center p-4">
   <div class="max-w-lg w-full fade-in">
+    <div class="flex justify-end mb-4">
+      <div class="lang-switcher-inline flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+        <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+        <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+        <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
+      </div>
+    </div>
     <div class="text-center mb-10">
       <div onclick="handleLogoSecretClick()" class="w-16 h-16 rounded-2xl bg-terracotta text-white text-3xl flex items-center justify-center mx-auto mb-4 shadow-soft cursor-default select-none">🛠️</div>
       <h1 class="text-3xl sm:text-4xl font-extrabold font-display text-ink mb-2">Brico-Match</h1>
@@ -229,7 +229,14 @@
 <!-- ===================== AUTH SCREEN (Client / Handyman) ===================== -->
 <div id="screen-auth" class="hidden-force min-h-screen flex items-center justify-center p-4">
   <div class="max-w-md w-full fade-in">
-    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1" data-i18n="back_btn">← Back</button>
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink flex items-center gap-1" data-i18n="back_btn">← Back</button>
+      <div class="lang-switcher-inline flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+        <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+        <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+        <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
+      </div>
+    </div>
     <div class="bg-white rounded-2xl shadow-card p-6 sm:p-8">
       <div class="flex items-center gap-3 mb-6">
         <div id="auth-role-icon" class="w-11 h-11 rounded-xl bg-sand flex items-center justify-center text-xl"></div>
@@ -276,7 +283,14 @@
 <!-- ===================== ADMIN LOGIN SCREEN ===================== -->
 <div id="screen-admin-login" class="hidden-force min-h-screen flex items-center justify-center p-4">
   <div class="max-w-sm w-full fade-in">
-    <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink mb-4 flex items-center gap-1" data-i18n="back_btn">← Back</button>
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="showScreen('screen-role-select')" class="text-sm text-ink/50 hover:text-ink flex items-center gap-1" data-i18n="back_btn">← Back</button>
+      <div class="lang-switcher-inline flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+        <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+        <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+        <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
+      </div>
+    </div>
     <div class="bg-white rounded-2xl shadow-card p-8 text-center">
       <div class="w-12 h-12 rounded-xl bg-slateaccent/10 text-slateaccent flex items-center justify-center mx-auto mb-4 text-xl">🔐</div>
       <h2 class="text-xl font-bold font-display mb-1" data-i18n="admin_login_title">Admin Login</h2>
@@ -302,6 +316,11 @@
         </div>
       </div>
       <div class="flex items-center gap-3 flex-wrap">
+        <div class="lang-switcher-inline flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+          <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+          <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+          <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
+        </div>
         <span id="client-name-display" class="text-sm font-medium hidden sm:inline"></span>
         <span id="client-self-verified-badge"></span>
         <button onclick="logout()" class="text-sm bg-sand hover:bg-stone px-3 py-2 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
@@ -380,6 +399,11 @@
         </div>
       </div>
       <div class="flex items-center gap-3 flex-wrap">
+        <div class="lang-switcher-inline flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+          <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+          <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+          <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
+        </div>
         <span id="self-verified-badge"></span>
         <label class="flex items-center gap-2 bg-sand px-3 py-1.5 rounded-full cursor-pointer">
           <span class="text-xs font-semibold" data-i18n="available_for_work_label">Available for Work</span>
@@ -433,7 +457,14 @@
           <p class="text-[11px] text-cream/50 leading-none mt-0.5" data-i18n="master_control">Master Control</p>
         </div>
       </div>
-      <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-2 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="lang-switcher-inline flex gap-1 bg-white/95 backdrop-blur rounded-full shadow-soft p-1 border border-stone">
+          <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">EN</button>
+          <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">FR</button>
+          <button type="button" data-lang="ar" onclick="setLanguage('ar')" class="lang-btn px-3 py-2 rounded-full text-xs font-semibold transition">AR</button>
+        </div>
+        <button onclick="logout()" class="text-sm bg-cream/10 hover:bg-cream/20 text-cream px-3 py-2 rounded-lg font-medium transition" data-i18n="logout_btn">Log out</button>
+      </div>
     </div>
     <div class="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto tab-scroll pb-2">
       <button data-tab="users" onclick="switchAdminTab('users')" class="admin-tab-btn whitespace-nowrap px-4 py-2.5 rounded-full text-sm font-semibold transition" data-i18n="tab_users">👥 Users</button>
@@ -1261,13 +1292,6 @@ function updateLangSwitcherUI() {
   });
 }
 
-function updateLangSwitcherPosition() {
-  const el = document.getElementById('lang-switcher');
-  if (!el) return;
-  if (document.documentElement.dir === 'rtl') { el.style.right = 'auto'; el.style.left = '0.75rem'; }
-  else { el.style.left = 'auto'; el.style.right = '0.75rem'; }
-}
-
 function applyStaticTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
@@ -1328,7 +1352,6 @@ function setLanguage(lang) {
   document.documentElement.lang = lang;
   document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
   updateLangSwitcherUI();
-  updateLangSwitcherPosition();
   applyStaticTranslations();
   refreshLocalizedSelects();
   refreshDynamicViews();
